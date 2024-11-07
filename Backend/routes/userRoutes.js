@@ -1,16 +1,18 @@
 // routes/userRoutes.js
 import { Router } from 'express';
-const router = Router();
 import * as userController from '../controllers/userController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
+import { createUserValidation, updateUserValidation, getUserByIdValidation } from '../middlewares/validators/userValidator.js';
 
-// Rutas protegidas con autenticación
+const router = Router();
+
+// Ruta para crear un nuevo usuario (protegida, solo para usuarios con permisos)
+router.post('/', authMiddleware, createUserValidation, userController.createUser);
+
+// Rutas protegidas para operaciones CRUD
 router.get('/', authMiddleware, userController.getUsers);
-router.get('/:id', authMiddleware, userController.getUserById);
-router.put('/:id', authMiddleware, userController.updateUser);
+router.get('/:id', authMiddleware, getUserByIdValidation, userController.getUserById);
+router.put('/:id', authMiddleware, updateUserValidation, userController.updateUser);
 router.delete('/:id', authMiddleware, userController.deleteUser);
-
-// Ruta para crear un usuario (puede estar protegida o no)
-router.post('/', userController.createUser);
 
 export default router;

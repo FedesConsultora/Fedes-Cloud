@@ -2,6 +2,12 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Usuario } from '../models/index.js';
+import {
+    InvalidCredentialsError,
+    EmailAlreadyExistsError,
+    UserNotFoundError,
+} from '../utils/errors/UserErrors.js';
+
 
 // Método para iniciar sesión
 export const login = async (req, res, next) => {
@@ -11,19 +17,13 @@ export const login = async (req, res, next) => {
     // Buscar al usuario por email
     const user = await Usuario.findOne({ where: { email } });
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Credenciales inválidas',
-      });
+        throw new UserNotFoundError();
     }
 
     // Verificar la contraseña
     const validPassword = await bcrypt.compare(contraseña, user.contraseña);
     if (!validPassword) {
-      return res.status(401).json({
-        success: false,
-        message: 'Credenciales inválidas',
-      });
+      throw new InvalidCredentialsError();
     }
 
     // Generar el token JWT
@@ -59,6 +59,11 @@ export const register = async (req, res, next) => {
       id_rol,
       id_autenticacion,
     } = req.body;
+    // Verificar si el email ya existe
+    const existingUser = await Usuario.findOne({ where: { email } });
+    if (existingUser) {
+      throw new EmailAlreadyExistsError();
+    }
 
     // Encriptar la contraseña
     const hashedPassword = await bcrypt.hash(contraseña, 10);
@@ -70,7 +75,7 @@ export const register = async (req, res, next) => {
       contraseña: hashedPassword,
       fechaNacimiento,
       id_rol,
-      id_estado: 1, // Estado activo por defecto
+      id_estado: 1,
       preferenciasNotificaciones: true,
       id_autenticacion,
     });

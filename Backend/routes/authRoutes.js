@@ -1,12 +1,14 @@
 // routes/authRoutes.js
 import { Router } from 'express';
-const router = Router();
 import * as authController from '../controllers/authController.js';
+import { registerValidation, loginValidation } from '../middlewares/validators/authValidator.js'; // Importa desde authValidator.js
 
-// Ruta para iniciar sesión
-router.post('/login', authController.login);
+const router = Router();
 
 // Ruta para registrar un nuevo usuario
-router.post('/register', authController.register);
+router.post('/register', registerValidation, authController.register);
+
+// Ruta para iniciar sesión
+router.post('/login', loginValidation, authController.login);
 
 export default router;
