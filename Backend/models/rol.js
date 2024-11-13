@@ -9,6 +9,7 @@ export default (sequelize, DataTypes) => {
         through: models.RolPermiso,
         foreignKey: 'id_rol',
         otherKey: 'id_permiso',
+        as: 'permisos',
       });
     }
   }

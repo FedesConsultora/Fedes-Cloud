@@ -6,10 +6,7 @@ import { createUserValidation, updateUserValidation, getUserByIdValidation } fro
 
 const router = Router();
 
-// Ruta para crear un nuevo usuario (protegida, solo para usuarios con permisos)
 router.post('/', authMiddleware, createUserValidation, userController.createUser);
-
-// Rutas protegidas para operaciones CRUD
 router.get('/', authMiddleware, userController.getUsers);
 router.get('/:id', authMiddleware, getUserByIdValidation, userController.getUserById);
 router.put('/:id', authMiddleware, updateUserValidation, userController.updateUser);

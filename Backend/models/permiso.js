@@ -8,8 +8,9 @@ export default (sequelize, DataTypes) => {
         through: models.RolPermiso,
         foreignKey: 'id_permiso',
         otherKey: 'id_rol',
+        as: 'roles',
       });
-      Permiso.hasMany(models.Accion, { foreignKey: 'id_permiso' });
+      Permiso.hasMany(models.Accion, { foreignKey: 'id_permiso', as: 'acciones' });
     }
   }
 

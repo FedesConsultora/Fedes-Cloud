@@ -11,6 +11,8 @@ export const createUserValidation = [
     .trim()
     .notEmpty()
     .withMessage('El nombre es obligatorio')
+    .isLength({ max: 50 })
+    .withMessage('El nombre no puede exceder los 50 caracteres')
     .escape(),
 
   // Validación para el campo 'apellido'
@@ -18,35 +20,59 @@ export const createUserValidation = [
     .trim()
     .notEmpty()
     .withMessage('El apellido es obligatorio')
+    .isLength({ max: 50 })
+    .withMessage('El apellido no puede exceder los 50 caracteres')
     .escape(),
 
   // Validación para el campo 'email'
   body('email')
     .isEmail()
     .withMessage('Debe ser un email válido')
-    .normalizeEmail(),
+    .normalizeEmail()
+    .isLength({ max: 100 })
+    .withMessage('El email no puede exceder los 100 caracteres'),
 
   // Validación para el campo 'contraseña'
   body('contraseña')
-    .isLength({ min: 6 })
-    .withMessage('La contraseña debe tener al menos 6 caracteres')
+    .isLength({ min: 8 })
+    .withMessage('La contraseña debe tener al menos 8 caracteres')
+    .matches(/[a-z]/)
+    .withMessage('La contraseña debe contener al menos una letra minúscula')
+    .matches(/[A-Z]/)
+    .withMessage('La contraseña debe contener al menos una letra mayúscula')
+    .matches(/\d/)
+    .withMessage('La contraseña debe contener al menos un número')
+    .matches(/[@$!%*?&]/)
+    .withMessage('La contraseña debe contener al menos un carácter especial (@, $, !, %, *, ?, &)')
     .escape(),
 
   // Validación para el campo 'fechaNacimiento'
   body('fechaNacimiento')
-    .isDate()
-    .withMessage('Debe ser una fecha válida')
-    .toDate(),
+    .isDate({ format: 'YYYY-MM-DD' })
+    .withMessage('Debe ser una fecha válida en formato YYYY-MM-DD')
+    .custom((value) => {
+      const today = new Date();
+      const birthDate = new Date(value);
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      if (age < 18) {
+        throw new Error('Debe ser mayor de 18 años');
+      }
+      return true;
+    }),
 
   // Validación para el campo 'id_rol'
   body('id_rol')
-    .isInt()
-    .withMessage('El ID del rol debe ser un número entero'),
+    .isInt({ gt: 0 })
+    .withMessage('El ID del rol debe ser un número entero positivo'),
 
   // Validación para el campo 'id_autenticacion'
   body('id_autenticacion')
-    .isInt()
-    .withMessage('El ID de autenticación debe ser un número entero'),
+    .isInt({ gt: 0 })
+    .withMessage('El ID de autenticación debe ser un número entero positivo'),
 
   // Middleware para manejar los errores de validación
   (req, res, next) => {
@@ -64,8 +90,8 @@ export const createUserValidation = [
 export const updateUserValidation = [
   // Validación para el parámetro 'id'
   param('id')
-    .isInt()
-    .withMessage('El ID del usuario debe ser un número entero'),
+    .isInt({ gt: 0 })
+    .withMessage('El ID del usuario debe ser un número entero positivo'),
 
   // Validación para el campo 'nombre'
   body('nombre')
@@ -73,6 +99,8 @@ export const updateUserValidation = [
     .trim()
     .notEmpty()
     .withMessage('El nombre no puede estar vacío')
+    .isLength({ max: 50 })
+    .withMessage('El nombre no puede exceder los 50 caracteres')
     .escape(),
 
   // Validación para el campo 'apellido'
@@ -81,6 +109,8 @@ export const updateUserValidation = [
     .trim()
     .notEmpty()
     .withMessage('El apellido no puede estar vacío')
+    .isLength({ max: 50 })
+    .withMessage('El apellido no puede exceder los 50 caracteres')
     .escape(),
 
   // Validación para el campo 'email'
@@ -88,39 +118,61 @@ export const updateUserValidation = [
     .optional()
     .isEmail()
     .withMessage('Debe ser un email válido')
-    .normalizeEmail(),
+    .normalizeEmail()
+    .isLength({ max: 100 })
+    .withMessage('El email no puede exceder los 100 caracteres'),
 
   // Validación para el campo 'contraseña'
   body('contraseña')
     .optional()
-    .isLength({ min: 6 })
-    .withMessage('La contraseña debe tener al menos 6 caracteres')
+    .isLength({ min: 8 })
+    .withMessage('La contraseña debe tener al menos 8 caracteres')
+    .matches(/[a-z]/)
+    .withMessage('La contraseña debe contener al menos una letra minúscula')
+    .matches(/[A-Z]/)
+    .withMessage('La contraseña debe contener al menos una letra mayúscula')
+    .matches(/\d/)
+    .withMessage('La contraseña debe contener al menos un número')
+    .matches(/[@$!%*?&]/)
+    .withMessage('La contraseña debe contener al menos un carácter especial (@, $, !, %, *, ?, &)')
     .escape(),
 
   // Validación para el campo 'fechaNacimiento'
   body('fechaNacimiento')
     .optional()
-    .isDate()
-    .withMessage('Debe ser una fecha válida')
-    .toDate(),
+    .isDate({ format: 'YYYY-MM-DD' })
+    .withMessage('Debe ser una fecha válida en formato YYYY-MM-DD')
+    .custom((value) => {
+      const today = new Date();
+      const birthDate = new Date(value);
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      if (age < 18) {
+        throw new Error('Debe ser mayor de 18 años');
+      }
+      return true;
+    }),
 
   // Validación para el campo 'id_rol'
   body('id_rol')
     .optional()
-    .isInt()
-    .withMessage('El ID del rol debe ser un número entero'),
+    .isInt({ gt: 0 })
+    .withMessage('El ID del rol debe ser un número entero positivo'),
 
   // Validación para el campo 'id_estado'
   body('id_estado')
     .optional()
-    .isInt()
-    .withMessage('El ID del estado debe ser un número entero'),
+    .isInt({ gt: 0 })
+    .withMessage('El ID del estado debe ser un número entero positivo'),
 
   // Validación para el campo 'id_autenticacion'
   body('id_autenticacion')
     .optional()
-    .isInt()
-    .withMessage('El ID de autenticación debe ser un número entero'),
+    .isInt({ gt: 0 })
+    .withMessage('El ID de autenticación debe ser un número entero positivo'),
 
   // Middleware para manejar los errores de validación
   (req, res, next) => {
@@ -138,8 +190,8 @@ export const updateUserValidation = [
 export const getUserByIdValidation = [
   // Validación para el parámetro 'id'
   param('id')
-    .isInt()
-    .withMessage('El ID del usuario debe ser un número entero'),
+    .isInt({ gt: 0 })
+    .withMessage('El ID del usuario debe ser un número entero positivo'),
 
   // Middleware para manejar los errores de validación
   (req, res, next) => {

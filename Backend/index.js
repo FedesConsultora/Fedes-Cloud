@@ -1,11 +1,9 @@
 // index.js
-import dotenv from 'dotenv';
 import app from './app.js';
 import { sequelize } from './models/index.js';
 import logger from './utils/logger.js';
 
-// Carga las variables de entorno desde el archivo .env
-dotenv.config();
+
 // Define el puerto en el que el servidor escuchará
 const PORT = process.env.PORT || 3000;
 

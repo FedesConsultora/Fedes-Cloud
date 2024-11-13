@@ -1,6 +1,5 @@
 // controllers/userController.js
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { Usuario, Rol, Estado, Autenticacion } from '../models/index.js';
 import {
   UserNotFoundError,
@@ -26,7 +25,8 @@ export const createUser = async (req, res, next) => {
     } = req.body;
 
     // Verificar permisos
-    if (!req.user || !req.user.permisos.includes('create_user')) {
+    if (!req.user || !req.user.permisos.includes('manage_users')) {
+      logger.warn(`Permiso denegado para crear usuario: ID del usuario solicitante ${req.user ? req.user.id : 'Desconocido'}`);
       throw new PermissionDeniedError();
     }
 
@@ -52,60 +52,27 @@ export const createUser = async (req, res, next) => {
       id_autenticacion,
     });
 
-    logger.info(`Usuario creado: ID ${newUser.id_usuario}`);
+    logger.info(`Usuario creado exitosamente: ID ${newUser.id_usuario}`);
 
     res.status(201).json({
       success: true,
       message: 'Usuario creado exitosamente',
-      data: newUser,
+      data: {
+        id_usuario: newUser.id_usuario,
+        nombre: newUser.nombre,
+        apellido: newUser.apellido,
+        email: newUser.email,
+        fechaNacimiento: newUser.fechaNacimiento,
+        id_rol: newUser.id_rol,
+        id_estado: newUser.id_estado,
+        preferenciasNotificaciones: newUser.preferenciasNotificaciones,
+        id_autenticacion: newUser.id_autenticacion,
+        createdAt: newUser.createdAt,
+        updatedAt: newUser.updatedAt,
+      },
     });
   } catch (error) {
     logger.error(`Error al crear usuario: ${error.message}`);
-    next(error);
-  }
-};
-
-/**
- * Inicio de sesión de usuario.
- */
-export const login = async (req, res, next) => {
-  try {
-    const { email, contraseña } = req.body;
-
-    // Buscar al usuario por email
-    const user = await Usuario.findOne({ where: { email } });
-    if (!user) {
-      logger.warn(`Login fallido: Usuario con email ${email} no encontrado`);
-      throw new InvalidCredentialsError(); // Respuesta genérica por seguridad
-    }
-
-    // Verificar la contraseña
-    const validPassword = await bcrypt.compare(contraseña, user.contraseña);
-    if (!validPassword) {
-      logger.warn(`Login fallido: Contraseña inválida para el email ${email}`);
-      throw new InvalidCredentialsError();
-    }
-
-    // Generar el token JWT
-    const token = jwt.sign(
-      {
-        id_usuario: user.id_usuario,
-        nombre: user.nombre,
-        id_rol: user.id_rol,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' } // El token expirará en 1 hora
-    );
-
-    logger.info(`Usuario ${user.id_usuario} inició sesión exitosamente`);
-
-    res.status(200).json({
-      success: true,
-      message: 'Inicio de sesión exitoso',
-      data: { token },
-    });
-  } catch (error) {
-    logger.error(`Error en login: ${error.message}`);
     next(error);
   }
 };
@@ -116,13 +83,18 @@ export const login = async (req, res, next) => {
 export const getUsers = async (req, res, next) => {
   try {
     // Verificar permisos
-    if (!req.user || !req.user.permisos.includes('view_users')) {
+    logger.debug(`Verificando permisos para obtener usuarios: ${JSON.stringify(req.user)}`);
+    if (!req.user || !req.user.permisos.includes('manage_users')) {
+      logger.warn(`Permiso denegado para obtener usuarios: ID del usuario solicitante ${req.user ? req.user.id : 'Desconocido'}`);
       throw new PermissionDeniedError();
     }
 
     const users = await Usuario.findAll({
       include: [Rol, Estado, Autenticacion],
+      attributes: { exclude: ['contraseña'] }, // Excluir la contraseña de la respuesta
     });
+
+    logger.info(`Usuarios obtenidos exitosamente por el usuario ID ${req.user.id}`);
 
     res.status(200).json({
       success: true,
@@ -143,12 +115,14 @@ export const getUserById = async (req, res, next) => {
     const { id } = req.params;
 
     // Verificar permisos
-    if (!req.user || !req.user.permisos.includes('view_user')) {
+    if (!req.user || !req.user.permisos.includes('manage_users')) {
+      logger.warn(`Permiso denegado para obtener usuario ID ${id}: ID del usuario solicitante ${req.user ? req.user.id : 'Desconocido'}`);
       throw new PermissionDeniedError();
     }
 
     const user = await Usuario.findByPk(id, {
       include: [Rol, Estado, Autenticacion],
+      attributes: { exclude: ['contraseña'] }, // Excluir la contraseña de la respuesta
     });
 
     if (!user) {
@@ -156,13 +130,15 @@ export const getUserById = async (req, res, next) => {
       throw new UserNotFoundError();
     }
 
+    logger.info(`Usuario ID ${id} obtenido exitosamente por el usuario ID ${req.user.id}`);
+
     res.status(200).json({
       success: true,
       message: 'Usuario obtenido exitosamente',
       data: user,
     });
   } catch (error) {
-    logger.error(`Error al obtener usuario por ID: ${error.message}`);
+    logger.error(`Error al obtener usuario por ID ${req.params.id}: ${error.message}`);
     next(error);
   }
 };
@@ -182,10 +158,12 @@ export const updateUser = async (req, res, next) => {
       id_rol,
       id_estado,
       id_autenticacion,
+      contraseña, // Asegúrate de permitir actualizar la contraseña si es necesario
     } = req.body;
 
     // Verificar permisos
-    if (!req.user || !req.user.permisos.includes('update_user')) {
+    if (!req.user || !req.user.permisos.includes('manage_users')) {
+      logger.warn(`Permiso denegado para actualizar usuario ID ${id}: ID del usuario solicitante ${req.user ? req.user.id : 'Desconocido'}`);
       throw new PermissionDeniedError();
     }
 
@@ -204,26 +182,44 @@ export const updateUser = async (req, res, next) => {
       }
     }
 
+    // Encriptar la nueva contraseña si se proporciona
+    let hashedPassword = user.contraseña;
+    if (contraseña) {
+      hashedPassword = await bcrypt.hash(contraseña, 10);
+    }
+
     await user.update({
-      nombre,
-      apellido,
-      email,
-      fechaNacimiento,
-      preferenciasNotificaciones,
-      id_rol,
-      id_estado,
-      id_autenticacion,
+      nombre: nombre || user.nombre,
+      apellido: apellido || user.apellido,
+      email: email || user.email,
+      contraseña: hashedPassword,
+      fechaNacimiento: fechaNacimiento || user.fechaNacimiento,
+      preferenciasNotificaciones: preferenciasNotificaciones !== undefined ? preferenciasNotificaciones : user.preferenciasNotificaciones,
+      id_rol: id_rol || user.id_rol,
+      id_estado: id_estado || user.id_estado,
+      id_autenticacion: id_autenticacion || user.id_autenticacion,
     });
 
-    logger.info(`Usuario actualizado: ID ${user.id_usuario}`);
+    logger.info(`Usuario actualizado exitosamente: ID ${user.id_usuario} por el usuario ID ${req.user.id}`);
 
     res.status(200).json({
       success: true,
       message: 'Usuario actualizado exitosamente',
-      data: user,
+      data: {
+        id_usuario: user.id_usuario,
+        nombre: user.nombre,
+        apellido: user.apellido,
+        email: user.email,
+        fechaNacimiento: user.fechaNacimiento,
+        id_rol: user.id_rol,
+        id_estado: user.id_estado,
+        preferenciasNotificaciones: user.preferenciasNotificaciones,
+        id_autenticacion: user.id_autenticacion,
+        updatedAt: user.updatedAt,
+      },
     });
   } catch (error) {
-    logger.error(`Error al actualizar usuario: ${error.message}`);
+    logger.error(`Error al actualizar usuario ID ${req.params.id}: ${error.message}`);
     next(error);
   }
 };
@@ -236,7 +232,8 @@ export const deleteUser = async (req, res, next) => {
     const { id } = req.params;
 
     // Verificar permisos
-    if (!req.user || !req.user.permisos.includes('delete_user')) {
+    if (!req.user || !req.user.permisos.includes('manage_users')) {
+      logger.warn(`Permiso denegado para eliminar usuario ID ${id}: ID del usuario solicitante ${req.user ? req.user.id : 'Desconocido'}`);
       throw new PermissionDeniedError();
     }
 
@@ -248,15 +245,15 @@ export const deleteUser = async (req, res, next) => {
 
     await user.destroy();
 
-    logger.info(`Usuario eliminado: ID ${user.id_usuario}`);
+    logger.info(`Usuario eliminado exitosamente: ID ${id} por el usuario ID ${req.user.id}`);
 
     res.status(200).json({
       success: true,
       message: 'Usuario eliminado exitosamente',
-      data: { id: user.id_usuario },
+      data: { id },
     });
   } catch (error) {
-    logger.error(`Error al eliminar usuario: ${error.message}`);
+    logger.error(`Error al eliminar usuario ID ${req.params.id}: ${error.message}`);
     next(error);
   }
 };

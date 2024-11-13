@@ -10,8 +10,24 @@ const swaggerOptions = {
       version: '1.0.0',
       description: 'Documentación de la API de Fedes Cloud',
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
   },
-  apis: ['./routes/*.js', './models/*.js'],
+  apis: [
+    './docs/*.js', // Incluye todos los archivos de documentación, incluyendo schemas.js
+  ],
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
