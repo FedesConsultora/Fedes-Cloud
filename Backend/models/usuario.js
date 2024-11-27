@@ -1,11 +1,10 @@
-// models/usuario.js
 import { Model } from 'sequelize';
 
 export default (sequelize, DataTypes) => {
   class Usuario extends Model {
     static associate(models) {
-      Usuario.belongsTo(models.Rol, { foreignKey: 'id_rol' });
       Usuario.belongsTo(models.Estado, { foreignKey: 'id_estado' });
+      Usuario.belongsTo(models.Rol, { foreignKey: 'id_rol' });
       Usuario.belongsTo(models.Autenticacion, { foreignKey: 'id_autenticacion' });
     }
   }
@@ -13,9 +12,10 @@ export default (sequelize, DataTypes) => {
   Usuario.init(
     {
       id_usuario: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        primaryKey: true,
+        allowNull: false,
         autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER.UNSIGNED,
       },
       nombre: {
         type: DataTypes.STRING,
@@ -30,7 +30,7 @@ export default (sequelize, DataTypes) => {
         allowNull: false,
         unique: true,
       },
-      contraseña: {
+      password: {
         type: DataTypes.STRING(255),
         allowNull: false,
       },
@@ -45,7 +45,6 @@ export default (sequelize, DataTypes) => {
       preferenciasNotificaciones: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: true,
       },
       id_estado: {
         type: DataTypes.INTEGER.UNSIGNED,
@@ -58,6 +57,22 @@ export default (sequelize, DataTypes) => {
       id_autenticacion: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
+      },
+      resetPasswordToken: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      resetPasswordExpires: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      emailToken: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      emailConfirmed: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
       },
     },
     {

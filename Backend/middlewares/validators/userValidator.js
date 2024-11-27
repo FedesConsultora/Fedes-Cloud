@@ -33,7 +33,7 @@ export const createUserValidation = [
     .withMessage('El email no puede exceder los 100 caracteres'),
 
   // Validación para el campo 'contraseña'
-  body('contraseña')
+  body('password')
     .isLength({ min: 8 })
     .withMessage('La contraseña debe tener al menos 8 caracteres')
     .matches(/[a-z]/)
@@ -123,7 +123,7 @@ export const updateUserValidation = [
     .withMessage('El email no puede exceder los 100 caracteres'),
 
   // Validación para el campo 'contraseña'
-  body('contraseña')
+  body('password')
     .optional()
     .isLength({ min: 8 })
     .withMessage('La contraseña debe tener al menos 8 caracteres')

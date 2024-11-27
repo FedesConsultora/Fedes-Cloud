@@ -33,7 +33,7 @@ export const registerValidation = [
     .withMessage('El email no puede exceder los 100 caracteres'),
 
   // Validación para el campo 'contraseña'
-  body('contraseña')
+  body('password')
     .isLength({ min: 8 })
     .withMessage('La contraseña debe tener al menos 8 caracteres')
     .matches(/[a-z]/)
@@ -92,7 +92,7 @@ export const loginValidation = [
     .withMessage('El email no puede exceder los 100 caracteres'),
 
   // Validación para el campo 'contraseña'
-  body('contraseña')
+  body('password')
     .notEmpty()
     .withMessage('La contraseña es obligatoria')
     .isLength({ min: 8 })
@@ -100,6 +100,50 @@ export const loginValidation = [
     .escape(),
 
   // Middleware para manejar los errores de validación
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(new ValidationError(errors.array()));
+    }
+    next();
+  },
+];
+
+export const requestPasswordResetValidation = [
+  body('email')
+    .isEmail()
+    .withMessage('Debe ser un email válido')
+    .normalizeEmail()
+    .isLength({ max: 100 })
+    .withMessage('El email no puede exceder los 100 caracteres'),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(new ValidationError(errors.array()));
+    }
+    next();
+  },
+];
+
+export const resetPasswordValidation = [
+  body('token')
+    .notEmpty()
+    .withMessage('El token es obligatorio'),
+
+  body('password')
+    .isLength({ min: 8 })
+    .withMessage('La contraseña debe tener al menos 8 caracteres')
+    .matches(/[a-z]/)
+    .withMessage('La contraseña debe contener al menos una letra minúscula')
+    .matches(/[A-Z]/)
+    .withMessage('La contraseña debe contener al menos una letra mayúscula')
+    .matches(/\d/)
+    .withMessage('La contraseña debe contener al menos un número')
+    .matches(/[@$!%*?&]/)
+    .withMessage('La contraseña debe contener al menos un carácter especial (@, $, !, %, *, ?, &)')
+    .escape(),
+
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

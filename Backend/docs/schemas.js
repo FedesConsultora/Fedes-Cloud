@@ -65,7 +65,7 @@
  *         - nombre
  *         - apellido
  *         - email
- *         - contraseña
+ *         - password
  *         - fechaNacimiento
  *         - id_autenticacion
  *       properties:
@@ -78,7 +78,7 @@
  *         email:
  *           type: string
  *           example: 'nuevo.usuario@example.com'
- *         contraseña:
+ *         password:
  *           type: string
  *           example: 'NuevoP@ssw0rd'
  *         fechaNacimiento:
@@ -94,7 +94,7 @@
  *         - nombre
  *         - apellido
  *         - email
- *         - contraseña
+ *         - password
  *         - fechaNacimiento
  *         - id_rol
  *         - id_autenticacion
@@ -111,7 +111,7 @@
  *           type: string
  *           description: Correo electrónico del usuario
  *           example: 'nuevo.usuario@example.com'
- *         contraseña:
+ *         password:
  *           type: string
  *           description: Contraseña del usuario
  *           example: 'NuevoP@ssw0rd'
@@ -132,12 +132,12 @@
  *       type: object
  *       required:
  *         - email
- *         - contraseña
+ *         - password
  *       properties:
  *         email:
  *           type: string
  *           example: 'admin@example.com'
- *         contraseña:
+ *         password:
  *           type: string
  *           example: 'Admin@123'
  *     Role:
@@ -225,4 +225,36 @@
  *           type: string
  *           description: Descripción del permiso
  *           example: 'Permiso para gestionar roles'
+ *     RequestPasswordReset:
+ *       type: object
+ *       required:
+ *         - email
+ *       properties:
+ *         email:
+ *           type: string
+ *           description: Correo electrónico del usuario que solicita el restablecimiento
+ *           example: 'usuario@example.com'
+ *     ResetPassword:
+ *       type: object
+ *       required:
+ *         - token
+ *         - password
+ *       properties:
+ *         token:
+ *           type: string
+ *           description: Token de restablecimiento de contraseña
+ *           example: 'abcdef1234567890'
+ *         password:
+ *           type: string
+ *           description: Nueva contraseña del usuario
+ *           example: 'NuevaP@ssw0rd'
+ *     ConfirmEmailResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           example: true
+ *         message:
+ *           type: string
+ *           example: 'Correo electrónico confirmado exitosamente'
  */

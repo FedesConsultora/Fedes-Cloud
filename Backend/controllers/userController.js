@@ -18,7 +18,7 @@ export const createUser = async (req, res, next) => {
       nombre,
       apellido,
       email,
-      contraseña,
+      password,
       fechaNacimiento,
       id_rol,
       id_autenticacion,
@@ -38,13 +38,13 @@ export const createUser = async (req, res, next) => {
     }
 
     // Encriptar la contraseña
-    const hashedPassword = await bcrypt.hash(contraseña, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await Usuario.create({
       nombre,
       apellido,
       email,
-      contraseña: hashedPassword,
+      password: hashedPassword,
       fechaNacimiento,
       id_rol,
       id_estado: 1, // Estado activo por defecto
