@@ -1,0 +1,56 @@
+// src/styles/scss/abstracts/_variables.scss
+
+// Light mode variables
+$color-primary: #0066FF; // Azul primario
+$color-dark: #0D254D;     // Azul oscuro
+$color-light: #FFFFFF;    // Gris claro
+$color-black: #010C1E;    // Negro
+
+// Dark mode variables
+$dark-color-primary: #3399FF; // Azul primario alternativo para dark mode
+$dark-color-dark: #1A2B3C;     // Azul oscuro alternativo para dark mode
+$dark-color-light: #333333;    // Gris claro alternativo para dark mode
+$dark-color-black: #FFFFFF;    // Blanco para texto en dark mode
+
+// Colores para estados hover
+$color-primary-hover: darken($color-primary, 10%);
+$color-dark-hover: darken($color-dark, 10%);
+
+$dark-color-primary-hover: lighten($dark-color-primary, 10%);
+$dark-color-dark-hover: lighten($dark-color-dark, 10%);
+
+// Definir el mapa de temas
+$themes: (
+  light: (
+    primary-color: $color-primary,
+    primary-color-hover: $color-primary-hover,
+    dark-color: $color-dark,
+    dark-color-hover: $color-dark-hover,
+    light-color: $color-light,
+    black-color: $color-black,
+    background-color: $color-light,
+    text-color: $color-black,
+    shadow-color: rgba(#0066FF , 0.2),
+    delete-color: rgb(222, 42, 42),
+    delete-color-hover: darken(rgb(222, 42, 42), 10%),
+    read-message-bg: #e8f4f8,
+    read-message-hover-bg: #f1f3f4,
+    font: 'Poppins', // Fuente definida
+  ),
+  dark: (
+    primary-color: $dark-color-primary,
+    primary-color-hover: $dark-color-primary-hover,
+    dark-color: $dark-color-dark,
+    dark-color-hover: $dark-color-dark-hover,
+    light-color: $dark-color-light,
+    black-color: $dark-color-black,
+    background-color: $dark-color-dark,
+    text-color: $dark-color-black,
+    shadow-color: rgba(#1A2B3C , 0.2),
+    delete-color: rgb(222, 42, 42),
+    delete-color-hover: darken(rgb(222, 42, 42), 10%),
+    read-message-bg: #333333,
+    read-message-hover-bg: #444444,
+    font: 'Poppins', // Fuente definida
+  ),
+);

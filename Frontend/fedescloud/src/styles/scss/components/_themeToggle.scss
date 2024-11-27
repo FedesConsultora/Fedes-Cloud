@@ -1,0 +1,78 @@
+// src/styles/scss/components/_themeToggle.scss
+
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.theme-slider {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+    background-color: mixins.theme(primary-color);
+    border-radius: 34px;
+    cursor: pointer;
+    transition: background-color 0.4s;
+
+    .icon {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.4rem;
+      color: mixins.theme(primary-white-color);
+      transition: opacity 0.4s, transform 0.4s;
+    }
+
+    .sun-icon {
+      left: 10px;
+      opacity: 1;
+    }
+
+    .moon-icon {
+      right: 10px;
+      opacity: 0;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      height: 26px;
+      width: 26px;
+      background-color: mixins.theme(primary-white-color);
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.4s;
+    }
+  }
+
+  /* Estilos para modo oscuro */
+  input:checked + .slider {
+    background-color: mixins.theme(primary-black-color);
+  }
+
+  input:checked + .slider .sun-icon {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+
+  input:checked + .slider .moon-icon {
+    opacity: 1;
+    transform: translateX(10px);
+  }
+
+  input:checked + .slider::before {
+    transform: translateX(30px);
+  }
+}

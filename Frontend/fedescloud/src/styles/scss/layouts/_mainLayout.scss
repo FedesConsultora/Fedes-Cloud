@@ -1,0 +1,30 @@
+// src/styles/scss/layouts/_mainLayout.scss
+
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.main-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  padding: 20px;
+  background-color: theme(background-color);
+  color: theme(text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.footer {
+  background-color: theme(light-color);
+  padding: 10px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}

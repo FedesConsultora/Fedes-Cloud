@@ -1,0 +1,19 @@
+// src/styles/scss/components/_logo.scss
+
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.logo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+
+  img {
+    width: 75%;
+    margin-right: 10px;
+    transition: filter 0.3s ease;
+  }
+  .nube{
+    width: 25%;
+  }
+}

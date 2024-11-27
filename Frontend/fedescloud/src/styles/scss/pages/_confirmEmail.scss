@@ -1,0 +1,55 @@
+// src/styles/scss/pages/_confirmEmail.scss
+
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.confirm-email-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+
+  .confirm-email-container {
+    width: 400px;
+    background-color: theme(background-color);
+    color: theme(text-color);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px theme(shadow-color);
+    text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+    h2 {
+      margin-bottom: 1rem;
+      color: theme(primary-color);
+      font-weight: 600;
+    }
+
+    p {
+      margin-bottom: 2rem;
+      font-size: 1rem;
+    }
+
+    .button {
+      padding: 0.75rem 1.5rem;
+      background-color: theme(primary-color);
+      color: theme(primary-white-color);
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: theme(primary-color-hover);
+      }
+    }
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .confirm-email-container {
+      width: 80%;
+    }
+  }
+}

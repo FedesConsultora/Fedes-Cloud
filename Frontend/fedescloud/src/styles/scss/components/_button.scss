@@ -1,0 +1,19 @@
+// src/styles/scss/components/_button.scss
+
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.button {
+  display: inline-block;
+  background-color: mixins.theme(primary-color);
+  color: mixins.theme(primary-white-color);
+  padding: 12px 24px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+
+  &:hover {
+    background-color: mixins.theme(primary-color-hover);
+  }
+}

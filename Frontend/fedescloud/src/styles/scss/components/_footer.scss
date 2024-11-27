@@ -1,0 +1,11 @@
+// src/styles/scss/components/_footer.scss
+
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.footer {
+  background-color: mixins.theme(light-color);
+  padding: 10px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}

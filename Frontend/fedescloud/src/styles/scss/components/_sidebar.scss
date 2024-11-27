@@ -1,0 +1,55 @@
+// src/styles/scss/components/_sidebar.scss
+
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.sidebar {
+  width: 250px;
+  background-color: mixins.theme(primary-color);
+  color: mixins.theme(primary-white-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+
+  .logo-container {
+    margin-bottom: 40px;
+
+    .logo {
+      width: 150px;
+      transition: filter 0.3s ease;
+    }
+  }
+
+  .navigation {
+    flex: 1;
+
+    ul {
+      list-style: none;
+      width: 100%;
+      padding: 0;
+
+      li {
+        width: 100%;
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: mixins.theme(color-primary)
+        }
+
+        svg {
+          margin-right: 10px;
+        }
+
+        span {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}

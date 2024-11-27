@@ -1,0 +1,68 @@
+// src/styles/scss/components/_form.scss
+
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: mixins.theme(background-color);
+  color: mixins.theme(text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 400px;
+  width: 100%;
+  background-color: mixins.theme(background-color);
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px mixins.theme(shadow-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+
+  h2 {
+    text-align: center;
+    color: mixins.theme(text-color);
+    margin-bottom: 20px;
+    transition: color 0.3s ease;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  label {
+    margin-bottom: 5px;
+    color: mixins.theme(text-color);
+    font-weight: bold;
+    transition: color 0.3s ease;
+  }
+
+  input {
+    padding: 10px;
+    border: 1px solid mixins.theme(primary-black-color);
+    border-radius: 4px;
+    font-size: 16px;
+    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: mixins.theme(primary-color);
+    }
+  }
+
+  .error {
+    color: red;
+    font-size: 14px;
+  }
+
+  button {
+    align-self: center;
+  }
+}

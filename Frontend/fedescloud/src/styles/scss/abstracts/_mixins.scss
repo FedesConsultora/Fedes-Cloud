@@ -1,0 +1,21 @@
+// src/styles/scss/abstracts/_mixins.scss
+
+@use 'sass:color';
+@use 'variables' as vars;
+
+// Función para obtener el valor de una variable de tema
+@function theme($property) {
+  @return var(--#{$property});
+}
+
+// Mixin para aplicar los colores del tema
+@mixin apply-theme($theme-name) {
+  @each $property, $value in map-get(vars.$themes, $theme-name) {
+    --#{$property}: #{$value};
+  }
+}
+
+// Mixin para aplicar la fuente
+@mixin apply-font {
+  font-family: map-get(map-get(vars.$themes, 'light'), font);
+}

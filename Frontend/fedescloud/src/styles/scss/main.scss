@@ -1,0 +1,45 @@
+// src/styles/scss/main.scss
+
+@use 'abstracts/variables' as vars;
+@use 'abstracts/mixins' as mixins;
+@use 'base/reset';
+@use 'components/button';
+@use 'components/form';
+@use 'components/themeToggle';
+@use 'components/sweetalert';
+@use 'layouts/mainLayout';
+@use 'layouts/authLayout';
+@use 'pages/login';
+@use 'pages/register';
+@use 'pages/resetPassword';
+@use 'pages/confirmEmail';
+@use 'components/sidebar';
+@use 'components/footer';
+@use 'components/logo';
+
+
+/* Aplicar el tema claro por defecto dentro de :root */
+:root {
+    @include mixins.apply-theme(light);
+    
+}
+
+/* Aplicar el tema oscuro cuando el cuerpo tenga la clase `.dark-mode` */
+body.dark-theme {
+    @include mixins.apply-theme(dark);
+    video {
+        filter: brightness(0.7);
+        -webkit-filter: brightness(0.7);
+}
+}
+
+/* Aplicar la fuente global */
+body {
+  @include mixins.apply-font();
+  background-color: mixins.theme(background-color);
+  color: mixins.theme(text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+
+}
+
+/* Puedes agregar estilos globales adicionales aquí si es necesario */

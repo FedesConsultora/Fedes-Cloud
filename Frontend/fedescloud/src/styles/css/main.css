@@ -1,0 +1,592 @@
+@charset "UTF-8";
+/* Reset CSS */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.button {
+  display: inline-block;
+  background-color: var(--primary-color);
+  color: var(--primary-white-color);
+  padding: 12px 24px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.button:hover {
+  background-color: var(--primary-color-hover);
+}
+
+.form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 400px;
+  width: 100%;
+  background-color: var(--background-color);
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px var(--shadow-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.form h2 {
+  text-align: center;
+  color: var(--text-color);
+  margin-bottom: 20px;
+  transition: color 0.3s ease;
+}
+.form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+.form label {
+  margin-bottom: 5px;
+  color: var(--text-color);
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+.form input {
+  padding: 10px;
+  border: 1px solid var(--primary-black-color);
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+.form input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+.form .error {
+  color: red;
+  font-size: 14px;
+}
+.form button {
+  align-self: center;
+}
+
+.theme-slider {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  /* Estilos para modo oscuro */
+}
+.theme-slider input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.theme-slider .slider {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 30px;
+  background-color: var(--primary-color);
+  border-radius: 34px;
+  cursor: pointer;
+  transition: background-color 0.4s;
+}
+.theme-slider .slider .icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.4rem;
+  color: var(--primary-white-color);
+  transition: opacity 0.4s, transform 0.4s;
+}
+.theme-slider .slider .sun-icon {
+  left: 10px;
+  opacity: 1;
+}
+.theme-slider .slider .moon-icon {
+  right: 10px;
+  opacity: 0;
+}
+.theme-slider .slider::before {
+  content: "";
+  position: absolute;
+  height: 26px;
+  width: 26px;
+  background-color: var(--primary-white-color);
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.4s;
+}
+.theme-slider input:checked + .slider {
+  background-color: var(--primary-black-color);
+}
+.theme-slider input:checked + .slider .sun-icon {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+.theme-slider input:checked + .slider .moon-icon {
+  opacity: 1;
+  transform: translateX(10px);
+}
+.theme-slider input:checked + .slider::before {
+  transform: translateX(30px);
+}
+
+.swal2-popup {
+  background-color: var(--background-color);
+  color: var(--dark-color);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.swal2-title {
+  color: var(--dark-color);
+  font-size: 24px;
+}
+
+.swal2-content {
+  font-size: 16px;
+}
+
+.swal2-confirm-button {
+  background-color: var(--primary-color);
+  color: var(--color-light);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+.swal2-confirm-button:hover {
+  background-color: var(--primary-color-hover);
+}
+
+.main-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  padding: 20px;
+  background-color: theme(background-color);
+  color: theme(text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.footer {
+  background-color: theme(light-color);
+  padding: 10px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.auth-layout {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+.auth-layout .auth-container {
+  position: relative;
+  width: 50%;
+  z-index: 2;
+}
+.auth-layout .background-video {
+  width: 75%;
+  height: 100%;
+  overflow: hidden;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+.auth-layout .background-video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.login-page {
+  display: flex;
+  justify-content: center;
+}
+.login-page .login-container {
+  width: 80%;
+}
+.login-page .login-container h2 {
+  margin-bottom: 1.5rem;
+  color: theme(primary-color);
+  text-align: center;
+  font-weight: 600;
+}
+.login-page .login-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.login-page .login-container form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+.login-page .login-container form .form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.login-page .login-container form .form-group input {
+  padding: 0.75rem;
+  border: 1px solid theme(dark-color);
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+.login-page .login-container form .form-group input:focus {
+  outline: none;
+  border-color: theme(primary-color);
+  box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+}
+.login-page .login-container form .form-group .error {
+  color: red;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+.login-page .login-container form .button {
+  padding: 0.75rem;
+  background-color: theme(primary-color);
+  color: theme(primary-white-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+.login-page .login-container form .button:hover {
+  background-color: theme(primary-color-hover);
+}
+.login-page .login-container .additional-links {
+  margin-top: 1rem;
+  text-align: center;
+}
+.login-page .login-container .additional-links .link {
+  color: theme(primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+.login-page .login-container .additional-links .link:hover {
+  text-decoration: underline;
+}
+.login-page .login-container .additional-links .switch-auth {
+  margin-top: 1rem;
+}
+.login-page .login-container .additional-links .switch-auth p {
+  font-size: 0.9rem;
+}
+.login-page .login-container .additional-links .switch-auth p a {
+  color: theme(primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+.login-page .login-container .additional-links .switch-auth p a:hover {
+  text-decoration: underline;
+}
+
+.register-page .register-container {
+  width: 100%;
+}
+.register-page .register-container h2 {
+  margin-bottom: 1.5rem;
+  color: theme(primary-color);
+  text-align: center;
+  font-weight: 600;
+}
+.register-page .register-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.register-page .register-container form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+.register-page .register-container form .form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.register-page .register-container form .form-group input {
+  padding: 0.75rem;
+  border: 1px solid theme(dark-color);
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+.register-page .register-container form .form-group input:focus {
+  outline: none;
+  border-color: theme(primary-color);
+  box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+}
+.register-page .register-container form .form-group .error {
+  color: red;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+.register-page .register-container form .button {
+  padding: 0.75rem;
+  background-color: theme(primary-color);
+  color: theme(primary-white-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+.register-page .register-container form .button:hover {
+  background-color: theme(primary-color-hover);
+}
+.register-page .register-container .switch-auth {
+  margin-top: 1rem;
+  text-align: center;
+}
+.register-page .register-container .switch-auth p {
+  font-size: 0.9rem;
+}
+.register-page .register-container .switch-auth p a {
+  color: theme(primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+.register-page .register-container .switch-auth p a:hover {
+  text-decoration: underline;
+}
+
+.reset-password-page .reset-password-container {
+  width: 100%;
+}
+.reset-password-page .reset-password-container h2 {
+  margin-bottom: 1.5rem;
+  color: theme(primary-color);
+  text-align: center;
+  font-weight: 600;
+}
+.reset-password-page .reset-password-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.reset-password-page .reset-password-container form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+.reset-password-page .reset-password-container form .form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.reset-password-page .reset-password-container form .form-group input {
+  padding: 0.75rem;
+  border: 1px solid theme(dark-color);
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+.reset-password-page .reset-password-container form .form-group input:focus {
+  outline: none;
+  border-color: theme(primary-color);
+  box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+}
+.reset-password-page .reset-password-container form .form-group .error {
+  color: red;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+.reset-password-page .reset-password-container form .button {
+  padding: 0.75rem;
+  background-color: theme(primary-color);
+  color: theme(primary-white-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+.reset-password-page .reset-password-container form .button:hover {
+  background-color: theme(primary-color-hover);
+}
+
+.confirm-email-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  /* Responsive Design */
+}
+.confirm-email-page .confirm-email-container {
+  width: 400px;
+  background-color: theme(background-color);
+  color: theme(text-color);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px theme(shadow-color);
+  text-align: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.confirm-email-page .confirm-email-container h2 {
+  margin-bottom: 1rem;
+  color: theme(primary-color);
+  font-weight: 600;
+}
+.confirm-email-page .confirm-email-container p {
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+.confirm-email-page .confirm-email-container .button {
+  padding: 0.75rem 1.5rem;
+  background-color: theme(primary-color);
+  color: theme(primary-white-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.confirm-email-page .confirm-email-container .button:hover {
+  background-color: theme(primary-color-hover);
+}
+@media (max-width: 768px) {
+  .confirm-email-page .confirm-email-container {
+    width: 80%;
+  }
+}
+
+.sidebar {
+  width: 250px;
+  background-color: var(--primary-color);
+  color: var(--primary-white-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.sidebar .logo-container {
+  margin-bottom: 40px;
+}
+.sidebar .logo-container .logo {
+  width: 150px;
+  transition: filter 0.3s ease;
+}
+.sidebar .navigation {
+  flex: 1;
+}
+.sidebar .navigation ul {
+  list-style: none;
+  width: 100%;
+  padding: 0;
+}
+.sidebar .navigation ul li {
+  width: 100%;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.sidebar .navigation ul li:hover {
+  background-color: var(--color-primary);
+}
+.sidebar .navigation ul li svg {
+  margin-right: 10px;
+}
+.sidebar .navigation ul li span {
+  font-size: 16px;
+}
+
+.footer {
+  background-color: var(--light-color);
+  padding: 10px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+.logo img {
+  width: 75%;
+  margin-right: 10px;
+  transition: filter 0.3s ease;
+}
+.logo .nube {
+  width: 25%;
+}
+
+/* Aplicar el tema claro por defecto dentro de :root */
+:root {
+  --primary-color: #0066FF;
+  --primary-color-hover: rgb(0, 81.6, 204);
+  --dark-color: #0D254D;
+  --dark-color-hover: rgb(5.6333333333, 16.0333333333, 33.3666666667);
+  --light-color: #FFFFFF;
+  --black-color: #010C1E;
+  --background-color: #FFFFFF;
+  --text-color: #010C1E;
+  --shadow-color: rgba(0, 102, 255, 0.2);
+  --delete-color: rgb(222, 42, 42);
+  --delete-color-hover: rgb(184.4268292683, 28.5731707317, 28.5731707317);
+  --read-message-bg: #e8f4f8;
+  --read-message-hover-bg: #f1f3f4;
+  --font: Poppins;
+}
+
+/* Aplicar el tema oscuro cuando el cuerpo tenga la clase `.dark-mode` */
+body.dark-theme {
+  --primary-color: #3399FF;
+  --primary-color-hover: rgb(102, 178.5, 255);
+  --dark-color: #1A2B3C;
+  --dark-color-hover: rgb(41.4186046512, 68.5, 95.5813953488);
+  --light-color: #333333;
+  --black-color: #FFFFFF;
+  --background-color: #1A2B3C;
+  --text-color: #FFFFFF;
+  --shadow-color: rgba(26, 43, 60, 0.2);
+  --delete-color: rgb(222, 42, 42);
+  --delete-color-hover: rgb(184.4268292683, 28.5731707317, 28.5731707317);
+  --read-message-bg: #333333;
+  --read-message-hover-bg: #444444;
+  --font: Poppins;
+}
+body.dark-theme video {
+  filter: brightness(0.7);
+  -webkit-filter: brightness(0.7);
+}
+
+/* Aplicar la fuente global */
+body {
+  font-family: "Poppins";
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Puedes agregar estilos globales adicionales aquí si es necesario */
+
+/*# sourceMappingURL=main.css.map */
