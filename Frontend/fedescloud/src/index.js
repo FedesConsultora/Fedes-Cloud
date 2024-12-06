@@ -8,11 +8,12 @@ import {AuthProvider} from './contexts/AuthContext.js'; // Importar el AuthProvi
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+  
   <React.StrictMode>
-    <ThemeProvider>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+          <App />
+      </ThemeProvider>
+    </AuthProvider>
   </React.StrictMode>
 );

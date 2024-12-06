@@ -5,12 +5,14 @@ $color-primary: #0066FF; // Azul primario
 $color-dark: #0D254D;     // Azul oscuro
 $color-light: #FFFFFF;    // Gris claro
 $color-black: #010C1E;    // Negro
+$color-gray: #bfbbbb;     // Gris claro
 
 // Dark mode variables
 $dark-color-primary: #3399FF; // Azul primario alternativo para dark mode
 $dark-color-dark: #1A2B3C;     // Azul oscuro alternativo para dark mode
 $dark-color-light: #333333;    // Gris claro alternativo para dark mode
 $dark-color-black: #FFFFFF;    // Blanco para texto en dark mode
+
 
 // Colores para estados hover
 $color-primary-hover: darken($color-primary, 10%);
@@ -28,6 +30,7 @@ $themes: (
     dark-color-hover: $color-dark-hover,
     light-color: $color-light,
     black-color: $color-black,
+    gray-color: $color-gray,
     background-color: $color-light,
     text-color: $color-black,
     shadow-color: rgba(#0066FF , 0.2),

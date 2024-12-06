@@ -46,14 +46,19 @@ export const registerValidation = [
     .withMessage('La contraseña debe contener al menos un carácter especial (@, $, !, %, *, ?, &)')
     .escape(),
 
-  // Validación para el campo 'fechaNacimiento'
+  // Validación para el campo 'fechaNacimiento' en formato DD/MM/YYYY
   body('fechaNacimiento')
-    .isDate({ format: 'YYYY-MM-DD' })
-    .withMessage('Debe ser una fecha válida en formato YYYY-MM-DD')
+    .matches(/^\d{2}\/\d{2}\/\d{4}$/)
+    .withMessage('Debe ser una fecha válida en formato DD/MM/YYYY')
     .custom((value) => {
+      const [day, month, year] = value.split('/');
+      const birthDate = new Date(`${year}-${month}-${day}`); // Convertir a YYYY-MM-DD para JavaScript
+      if (isNaN(birthDate.getTime())) {
+        throw new Error('Fecha de nacimiento inválida');
+      }
+
       const today = new Date();
-      const birthDate = new Date(value);
-      const age = today.getFullYear() - birthDate.getFullYear();
+      let age = today.getFullYear() - birthDate.getFullYear();
       const m = today.getMonth() - birthDate.getMonth();
       if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
         age--;
@@ -79,9 +84,6 @@ export const registerValidation = [
   },
 ];
 
-/**
- * Validación para el inicio de sesión de usuarios (Auth Module).
- */
 export const loginValidation = [
   // Validación para el campo 'email'
   body('email')
@@ -141,9 +143,67 @@ export const resetPasswordValidation = [
     .matches(/\d/)
     .withMessage('La contraseña debe contener al menos un número')
     .matches(/[@$!%*?&]/)
-    .withMessage('La contraseña debe contener al menos un carácter especial (@, $, !, %, *, ?, &)')
-    .escape(),
+    .withMessage('La contraseña debe contener al menos un carácter especial (@, $, !, %, *, ?, &)'),
+  
 
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(new ValidationError(errors.array()));
+    }
+    next();
+  },
+];
+
+export const resendConfirmEmailValidation = [
+  body('email')
+    .notEmpty()
+    .withMessage('El email es obligatorio')
+    .isEmail()
+    .withMessage('Debe ser un email válido'),
+
+  body('clientURI')
+    .notEmpty()
+    .withMessage('El clientURI es obligatorio')
+    .isURL()
+    .withMessage('Debe ser una URL válida')
+    .custom((value) => {
+      if (!allowedClientURIs.includes(value)) {
+        throw new Error('clientURI no está permitido');
+      }
+      return true;
+    }),
+
+  // Middleware para manejar los errores de validación
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(new ValidationError(errors.array()));
+    }
+    next();
+  },
+];
+
+export const resendPasswordResetValidation = [
+  body('email')
+    .notEmpty()
+    .withMessage('El email es obligatorio')
+    .isEmail()
+    .withMessage('Debe ser un email válido'),
+
+  body('clientURI')
+    .notEmpty()
+    .withMessage('El clientURI es obligatorio')
+    .isURL()
+    .withMessage('Debe ser una URL válida')
+    .custom((value) => {
+      if (!allowedClientURIs.includes(value)) {
+        throw new Error('clientURI no está permitido');
+      }
+      return true;
+    }),
+
+  // Middleware para manejar los errores de validación
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

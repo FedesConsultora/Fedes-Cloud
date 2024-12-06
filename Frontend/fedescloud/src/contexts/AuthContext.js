@@ -1,7 +1,7 @@
 // src/contexts/AuthContext.js
-
 import React, { createContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import config from '../config/config.js'; 
 
 // Crear el contexto
 export const AuthContext = createContext();
@@ -10,106 +10,80 @@ export const AuthContext = createContext();
 export function AuthProvider({ children }) {
   // Estado de autenticación
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null); // Estado del token
-  const [loading, setLoading] = useState(true); // Estado de carga
+  const [loading, setLoading] = useState(true); 
 
-  // Función para iniciar sesión
-  const login = async (authToken) => {
-    // Guardar el token en localStorage y en el estado
-    localStorage.setItem('authToken', authToken);
-    setToken(authToken);
-
+  // Función para obtener el perfil del usuario
+  const fetchUserProfile = async () => {
     try {
-      // Realizar una solicitud al backend para obtener el perfil del usuario
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/profile`, {
+      const response = await fetch(`${config.API_URL}/auth/profile`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`, // Enviar el token en la cabecera
         },
+        credentials: 'include', // Importante para enviar cookies
       });
-
+      console.log('Response: ', response);
       if (response.ok) {
         const userData = await response.json();
-        setUser(userData);
+        setUser(userData.data); // Asumiendo que la respuesta tiene una propiedad 'data'
       } else {
-        // Si la respuesta no es ok, manejar el error
-        console.error('Error al obtener el perfil del usuario:', response.statusText);
-        localStorage.removeItem('authToken');
         setUser(null);
-        setToken(null);
       }
     } catch (error) {
       console.error('Error al conectar con el servidor:', error);
-      localStorage.removeItem('authToken');
       setUser(null);
-      setToken(null);
     } finally {
-      setLoading(false); // Finalizar la carga
+      console.log('entre a finally')
+      if (loading) {
+        setLoading(false); 
+      }
     }
   };
 
-  // Función para cerrar sesión
-  const logout = () => {
-    // Eliminar el token del localStorage y reiniciar el estado
-    localStorage.removeItem('authToken');
-    setUser(null);
-    setToken(null);
+  // Función para iniciar sesión
+  const login = async () => {
+    // Después de un inicio de sesión exitoso, obtenemos el perfil del usuario
+    await fetchUserProfile();
   };
 
-  // Función para actualizar el usuario
+  const logout = async () => {
+    try {
+      const response = await fetch(`${config.API_URL}/auth/logout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      console.log('Response: ', response);
+      if (response.ok) {
+        setUser(null);
+      }
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
+
+  // Función para actualizar el usuario (si es necesario)
   const updateUser = (updatedUserData) => {
     setUser(updatedUserData);
   };
 
   useEffect(() => {
-    // Obtener el token del localStorage
-    const storedToken = localStorage.getItem('authToken');
+    // Al iniciar la aplicación, verificar si el usuario está autenticado
+    fetchUserProfile();
 
-    if (storedToken) {
-      setToken(storedToken); // Guardar el token en el estado
-      // Intentar obtener el perfil del usuario
-      const fetchUserProfile = async () => {
-        try {
-          const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/profile`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${storedToken}`, // Enviar el token en la cabecera
-            },
-          });
-
-          if (response.ok) {
-            const userData = await response.json();
-            setUser(userData);
-          } else {
-            // Si la respuesta no es ok, manejar el error
-            console.error('Error al obtener el perfil del usuario:', response.statusText);
-            localStorage.removeItem('authToken');
-            setUser(null);
-            setToken(null);
-          }
-        } catch (error) {
-          console.error('Error al conectar con el servidor:', error);
-          localStorage.removeItem('authToken');
-          setUser(null);
-          setToken(null);
-        } finally {
-          setLoading(false); // Finalizar la carga
-        }
-      };
-
+    // Verificar periódicamente si el usuario está autenticado
+    const intervalId = setInterval(() => {
       fetchUserProfile();
-    } else {
-      // No hay token, el usuario no está autenticado
-      setUser(null);
-      setToken(null);
-      setLoading(false); // Finalizar la carga
-    }
+    }, 5 * 60 * 1000); // Cada 5 minutos
+
+    // Limpiar el intervalo al desmontar el componente
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, loading, updateUser }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

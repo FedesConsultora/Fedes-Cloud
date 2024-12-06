@@ -6,6 +6,7 @@ import Register from './Register.js';
 import ResetPassword from './ResetPassword.js';
 import ConfirmEmail from './ConfirmEmail.js';
 import AuthLayout from '../layouts/AuthLayout.js';
+import RequestPasswordReset from './RequestPasswordReset.js';
 
 const AuthPage = () => {
   const location = useLocation();
@@ -26,6 +27,7 @@ const AuthPage = () => {
           path="register"
           element={<Register toggleAuth={toggleAuth} />}
         />
+        <Route path="request-password-reset" element={<RequestPasswordReset />}/>
         <Route path="reset-password" element={<ResetPassword />} />
         <Route path="confirm-email" element={<ConfirmEmail />} />
         <Route path="*" element={<Navigate to="login" />} />

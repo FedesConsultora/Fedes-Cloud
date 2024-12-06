@@ -25,7 +25,6 @@ const Sidebar = () => {
             <FaCog />
             <span>Configuración</span>
           </li>
-          {/* Agrega más enlaces de navegación según sea necesario */}
         </ul>
       </nav>
     </aside>

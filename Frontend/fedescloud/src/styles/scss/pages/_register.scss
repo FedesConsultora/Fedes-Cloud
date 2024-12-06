@@ -1,15 +1,18 @@
 // src/styles/scss/pages/_register.scss
-
 @use 'sass:color';
 @use '../abstracts/mixins' as mixins;
 
 .register-page {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+
   .register-container {
-    width: 100%;
+    width: 15rem;
 
     h2 {
       margin-bottom: 1.5rem;
-      color: theme(primary-color);
+      color: mixins.theme(color-dark);
       text-align: center;
       font-weight: 600;
     }
@@ -30,14 +33,14 @@
 
         input {
           padding: 0.75rem;
-          border: 1px solid theme(dark-color);
+          border: 1px solid mixins.theme(dark-color);
           border-radius: 4px;
           font-size: 1rem;
           transition: border-color 0.3s ease;
 
           &:focus {
             outline: none;
-            border-color: theme(primary-color);
+            border-color: mixins.theme(primary-color);
             box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
           }
         }
@@ -51,8 +54,8 @@
 
       .button {
         padding: 0.75rem;
-        background-color: theme(primary-color);
-        color: theme(primary-white-color);
+        background-color: mixins.theme(primary-color);
+        color: mixins.theme(light-color);
         border: none;
         border-radius: 4px;
         font-size: 1rem;
@@ -61,20 +64,19 @@
         margin-top: 1rem;
 
         &:hover {
-          background-color: theme(primary-color-hover);
+          background-color: mixins.theme(primary-color-hover);
         }
       }
     }
 
     .switch-auth {
       margin-top: 1rem;
-      text-align: center;
-
+      margin-bottom: 1rem;
       p {
         font-size: 0.9rem;
 
         a {
-          color: theme(primary-color);
+          color: mixins.theme(primary-color);
           text-decoration: none;
           font-weight: 500;
 
@@ -84,5 +86,23 @@
         }
       }
     }
+  }
+}
+
+@media (min-width: 520px) {
+  .register-page {
+    .register-container {
+      width: 25rem;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .register-page {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    background-color: rgba($color: #ffffff, $alpha: 0.01);
+    backdrop-filter: blur(5px);
   }
 }

@@ -74,6 +74,10 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
+      emailTokenExpires: { 
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
     },
     {
       sequelize,

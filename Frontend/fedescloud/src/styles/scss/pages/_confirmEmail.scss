@@ -1,55 +1,77 @@
 // src/styles/scss/pages/_confirmEmail.scss
-
 @use 'sass:color';
 @use '../abstracts/mixins' as mixins;
 
 .confirm-email-page {
   display: flex;
   justify-content: center;
+  padding: 3rem;
+  min-height: 100vh;
+  background-color: rgba($color: #ffffff, $alpha: 0.01);
+  backdrop-filter: blur(5px);
   align-items: center;
-  height: 100vh;
-
   .confirm-email-container {
-    width: 400px;
-    background-color: theme(background-color);
-    color: theme(text-color);
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 0 10px theme(shadow-color);
+    width: 15rem;
     text-align: center;
-    transition: background-color 0.3s ease, color 0.3s ease;
 
     h2 {
-      margin-bottom: 1rem;
-      color: theme(primary-color);
+      margin-bottom: 1.5rem;
+      color: mixins.theme(color-dark);
       font-weight: 600;
     }
 
     p {
-      margin-bottom: 2rem;
-      font-size: 1rem;
+      font-size: 1.5rem;
+      color: mixins.theme(dark-color);
     }
 
     .button {
-      padding: 0.75rem 1.5rem;
-      background-color: theme(primary-color);
-      color: theme(primary-white-color);
+      padding: 0.75rem;
+      background-color: mixins.theme(primary-color);
+      color: mixins.theme(light-color);
       border: none;
       border-radius: 4px;
       font-size: 1rem;
       cursor: pointer;
       transition: background-color 0.3s ease;
+      margin-top: 1rem;
 
       &:hover {
-        background-color: theme(primary-color-hover);
+        background-color: mixins.theme(primary-color-hover);
       }
     }
   }
+  .resend-button{
+    padding: 0.75rem;
+    background-color: mixins.theme(primary-color);
+    color: mixins.theme(light-color);
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 1rem;
 
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .confirm-email-container {
-      width: 80%;
+    &:hover {
+      background-color: theme(primary-color-hover);
     }
+  }
+}
+
+@media (min-width: 520px) {
+  .confirm-email-page {
+    .confirm-email-container {
+      width: 25rem;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .confirm-email-page {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    background-color: rgba($color: #ffffff, $alpha: 0.01);
+    backdrop-filter: blur(5px);
   }
 }

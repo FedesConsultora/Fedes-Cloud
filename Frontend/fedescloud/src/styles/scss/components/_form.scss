@@ -45,11 +45,15 @@
   }
 
   input {
-    padding: 10px;
-    border: 1px solid mixins.theme(primary-black-color);
-    border-radius: 4px;
-    font-size: 16px;
-    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    padding: 0.75rem;
+    border: 1px solid #c6c6c6;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
 
     &:focus {
       outline: none;

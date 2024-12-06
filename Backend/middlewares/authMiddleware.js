@@ -5,14 +5,13 @@ import { Usuario, Rol, Permiso, Estado, Autenticacion, Accion } from '../models/
 import logger from '../utils/logger.js';
 
 const authMiddleware = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  // Obtener el token desde las cookies
+  const token = req.cookies.token;
 
-  // Verifica si el encabezado de autorización está presente y tiene el formato correcto
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  // Verifica si el token está presente
+  if (!token) {
     return next(new UnauthorizedError('Token de autenticación faltante o inválido'));
   }
-
-  const token = authHeader.split(' ')[1];
 
   try {
     logger.info(`El token entrante es: ${token}`);
@@ -58,7 +57,7 @@ const authMiddleware = async (req, res, next) => {
 
     // Convierte el objeto Sequelize en un objeto plano
     const userData = user.toJSON();
-
+    console.log(userData);
     // Verifica que el rol tenga permisos
     if (!userData.Rol || !Array.isArray(userData.Rol.permisos)) {
       logger.error(`El rol del usuario no tiene permisos asociados.`);

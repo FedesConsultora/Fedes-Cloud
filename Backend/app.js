@@ -2,7 +2,7 @@
 
 import dotenv from 'dotenv';
 dotenv.config(); // Carga las variables de entorno antes de cualquier otra importación
-
+import cookieParser from 'cookie-parser'; // Para parsear cookies
 import express from 'express';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
@@ -11,6 +11,7 @@ import cors from 'cors';
 import routes from './routes/index.js';
 import errorHandler from './middlewares/errorHandler.js';
 import { swaggerUi, swaggerDocs } from './docs/swagger.js';
+import logger from './utils/logger.js';
 
 const app = express();
 
@@ -22,12 +23,12 @@ app.use(helmet());
 // Middleware de CORS
 // Configura CORS para permitir solicitudes desde tu frontend
 const corsOptions = {
-  origin: 'https://localhost:3000', // Reemplaza con la URL de tu frontend
+  origin: 'http://localhost:3000', // Reemplaza con la URL de tu frontend
   optionsSuccessStatus: 200,
   credentials: true, // Si necesitas enviar cookies o encabezados de autorización
 };
 app.use(cors(corsOptions));
-
+app.use(cookieParser());
 
 // Middleware de Rate Limiting
 // Limita el número de solicitudes por IP para prevenir ataques de fuerza bruta y DDoS
@@ -50,6 +51,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(xss());
 
 
+
 // Middleware de Rutas de la API
 app.use('/', routes);
 
@@ -60,5 +62,16 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 // Middleware de Manejo de Errores
 // Debe estar después de todas las rutas y otros middlewares
 app.use(errorHandler);
+// Handler para Rechazos de Promesas No Manejados
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Puedes decidir si deseas cerrar el servidor o no
+});
+
+// Handler para Excepciones No Capturadas
+process.on('uncaughtException', (error) => {
+  logger.error('Uncaught Exception thrown:', error);
+  // Puedes decidir si deseas cerrar el servidor o no
+});
 
 export default app;

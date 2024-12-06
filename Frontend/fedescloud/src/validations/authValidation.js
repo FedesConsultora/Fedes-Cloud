@@ -25,6 +25,10 @@ export const registerValidationSchema = yup.object().shape({
     .matches(/\d/, 'La contraseña debe contener al menos un número')
     .matches(/[@$!%*?&]/, 'La contraseña debe contener al menos un carácter especial (@, $, !, %, *, ?, &)')
     .max(100, 'La contraseña no puede exceder los 100 caracteres'),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref('password'), null], 'Las contraseñas deben coincidir')
+    .required('Confirmar contraseña es obligatorio'),
   fechaNacimiento: yup
     .date()
     .required('La fecha de nacimiento es obligatoria')
@@ -75,6 +79,7 @@ export const requestPasswordResetValidationSchema = yup.object().shape({
 // Esquema de validación para restablecer contraseña
 export const resetPasswordValidationSchema = yup.object().shape({
   token: yup.string().required('El token es obligatorio'),
+  email: yup.string().required('El email es obligatorio').email('Debe ser un email válido'),
   password: yup
     .string()
     .required('La contraseña es obligatoria')
@@ -84,4 +89,8 @@ export const resetPasswordValidationSchema = yup.object().shape({
     .matches(/\d/, 'La contraseña debe contener al menos un número')
     .matches(/[@$!%*?&]/, 'La contraseña debe contener al menos un carácter especial (@, $, !, %, *, ?, &)')
     .max(100, 'La contraseña no puede exceder los 100 caracteres'),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref('password'), null], 'Las contraseñas deben coincidir')
+    .required('Confirmar contraseña es obligatorio'),
 });

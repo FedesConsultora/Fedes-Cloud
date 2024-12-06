@@ -59,11 +59,15 @@
   transition: color 0.3s ease;
 }
 .form input {
-  padding: 10px;
-  border: 1px solid var(--primary-black-color);
-  border-radius: 4px;
-  font-size: 16px;
-  transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+  padding: 0.75rem;
+  border: 1px solid #c6c6c6;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
 }
 .form input:focus {
   outline: none;
@@ -92,8 +96,8 @@
 .theme-slider .slider {
   position: relative;
   display: inline-block;
-  width: 60px;
-  height: 30px;
+  width: 80px;
+  height: 40px;
   background-color: var(--primary-color);
   border-radius: 34px;
   cursor: pointer;
@@ -104,30 +108,33 @@
   top: 50%;
   transform: translateY(-50%);
   font-size: 1.4rem;
-  color: var(--primary-white-color);
+  color: var(--color-light);
   transition: opacity 0.4s, transform 0.4s;
 }
 .theme-slider .slider .sun-icon {
   left: 10px;
+  top: 23px;
   opacity: 1;
 }
 .theme-slider .slider .moon-icon {
-  right: 10px;
+  right: 20px;
+  top: 7px;
   opacity: 0;
+  color: var(--light-color);
 }
 .theme-slider .slider::before {
   content: "";
   position: absolute;
   height: 26px;
   width: 26px;
-  background-color: var(--primary-white-color);
+  background-color: var(--color-light);
   border-radius: 50%;
   top: 2px;
   left: 2px;
   transition: transform 0.4s;
 }
 .theme-slider input:checked + .slider {
-  background-color: var(--primary-black-color);
+  background-color: var(--black-color);
 }
 .theme-slider input:checked + .slider .sun-icon {
   opacity: 0;
@@ -199,7 +206,6 @@ main {
 .auth-layout {
   position: relative;
   width: 100%;
-  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -207,11 +213,17 @@ main {
 }
 .auth-layout .auth-container {
   position: relative;
-  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
   z-index: 2;
+  min-height: 100vh;
 }
 .auth-layout .background-video {
-  width: 75%;
+  position: absolute;
+  width: 100%;
   height: 100%;
   overflow: hidden;
   border-top-left-radius: 8px;
@@ -223,16 +235,27 @@ main {
   object-fit: cover;
 }
 
+@media (min-width: 1024px) {
+  .auth-layout .auth-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+  }
+}
 .login-page {
   display: flex;
+  min-height: 100vh;
   justify-content: center;
+  padding: 3rem;
+  padding-top: 6rem;
 }
 .login-page .login-container {
-  width: 80%;
+  width: 15rem;
 }
 .login-page .login-container h2 {
   margin-bottom: 1.5rem;
-  color: theme(primary-color);
+  color: var(--color-dark);
   text-align: center;
   font-weight: 600;
 }
@@ -251,10 +274,14 @@ main {
 }
 .login-page .login-container form .form-group input {
   padding: 0.75rem;
-  border: 1px solid theme(dark-color);
-  border-radius: 4px;
+  border: 1px solid #c6c6c6;
+  border-radius: 10px;
   font-size: 1rem;
   transition: border-color 0.3s ease;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
 }
 .login-page .login-container form .form-group input:focus {
   outline: none;
@@ -268,8 +295,8 @@ main {
 }
 .login-page .login-container form .button {
   padding: 0.75rem;
-  background-color: theme(primary-color);
-  color: theme(primary-white-color);
+  background-color: var(--primary-color);
+  color: var(--light-color);
   border: none;
   border-radius: 4px;
   font-size: 1rem;
@@ -285,7 +312,7 @@ main {
   text-align: center;
 }
 .login-page .login-container .additional-links .link {
-  color: theme(primary-color);
+  color: var(--primary-color);
   text-decoration: none;
   font-weight: 500;
 }
@@ -299,7 +326,7 @@ main {
   font-size: 0.9rem;
 }
 .login-page .login-container .additional-links .switch-auth p a {
-  color: theme(primary-color);
+  color: var(--primary-color);
   text-decoration: none;
   font-weight: 500;
 }
@@ -307,12 +334,32 @@ main {
   text-decoration: underline;
 }
 
+@media (min-width: 520px) {
+  .login-page .login-container {
+    width: 25rem;
+  }
+}
+@media (min-width: 1024px) {
+  .login-page {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(5px);
+    padding-top: 3rem;
+  }
+}
+.register-page {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
 .register-page .register-container {
-  width: 100%;
+  width: 15rem;
 }
 .register-page .register-container h2 {
   margin-bottom: 1.5rem;
-  color: theme(primary-color);
+  color: var(--color-dark);
   text-align: center;
   font-weight: 600;
 }
@@ -331,14 +378,14 @@ main {
 }
 .register-page .register-container form .form-group input {
   padding: 0.75rem;
-  border: 1px solid theme(dark-color);
+  border: 1px solid var(--dark-color);
   border-radius: 4px;
   font-size: 1rem;
   transition: border-color 0.3s ease;
 }
 .register-page .register-container form .form-group input:focus {
   outline: none;
-  border-color: theme(primary-color);
+  border-color: var(--primary-color);
   box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
 }
 .register-page .register-container form .form-group .error {
@@ -348,8 +395,8 @@ main {
 }
 .register-page .register-container form .button {
   padding: 0.75rem;
-  background-color: theme(primary-color);
-  color: theme(primary-white-color);
+  background-color: var(--primary-color);
+  color: var(--light-color);
   border: none;
   border-radius: 4px;
   font-size: 1rem;
@@ -358,17 +405,17 @@ main {
   margin-top: 1rem;
 }
 .register-page .register-container form .button:hover {
-  background-color: theme(primary-color-hover);
+  background-color: var(--primary-color-hover);
 }
 .register-page .register-container .switch-auth {
   margin-top: 1rem;
-  text-align: center;
+  margin-bottom: 1rem;
 }
 .register-page .register-container .switch-auth p {
   font-size: 0.9rem;
 }
 .register-page .register-container .switch-auth p a {
-  color: theme(primary-color);
+  color: var(--primary-color);
   text-decoration: none;
   font-weight: 500;
 }
@@ -376,12 +423,32 @@ main {
   text-decoration: underline;
 }
 
+@media (min-width: 520px) {
+  .register-page .register-container {
+    width: 25rem;
+  }
+}
+@media (min-width: 1024px) {
+  .register-page {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(5px);
+  }
+}
+.reset-password-page {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+  min-height: 100vh;
+}
 .reset-password-page .reset-password-container {
-  width: 100%;
+  width: 15rem;
 }
 .reset-password-page .reset-password-container h2 {
   margin-bottom: 1.5rem;
-  color: theme(primary-color);
+  color: var(--color-dark);
   text-align: center;
   font-weight: 600;
 }
@@ -400,14 +467,18 @@ main {
 }
 .reset-password-page .reset-password-container form .form-group input {
   padding: 0.75rem;
-  border: 1px solid theme(dark-color);
-  border-radius: 4px;
+  border: 1px solid #c6c6c6;
+  border-radius: 10px;
   font-size: 1rem;
   transition: border-color 0.3s ease;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
 }
 .reset-password-page .reset-password-container form .form-group input:focus {
   outline: none;
-  border-color: theme(primary-color);
+  border-color: var(--primary-color);
   box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
 }
 .reset-password-page .reset-password-container form .form-group .error {
@@ -417,8 +488,8 @@ main {
 }
 .reset-password-page .reset-password-container form .button {
   padding: 0.75rem;
-  background-color: theme(primary-color);
-  color: theme(primary-white-color);
+  background-color: var(--primary-color);
+  color: var(--light-color);
   border: none;
   border-radius: 4px;
   font-size: 1rem;
@@ -427,54 +498,206 @@ main {
   margin-top: 1rem;
 }
 .reset-password-page .reset-password-container form .button:hover {
-  background-color: theme(primary-color-hover);
+  background-color: var(--primary-color-hover);
+}
+.reset-password-page .reset-password-container .additional-links {
+  margin-top: 1rem;
+  text-align: center;
+}
+.reset-password-page .reset-password-container .additional-links .link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+.reset-password-page .reset-password-container .additional-links .link:hover {
+  text-decoration: underline;
+}
+.reset-password-page .reset-password-container .additional-links .switch-auth {
+  margin-top: 1rem;
+}
+.reset-password-page .reset-password-container .additional-links .switch-auth p {
+  font-size: 0.9rem;
+}
+.reset-password-page .reset-password-container .additional-links .switch-auth p a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+.reset-password-page .reset-password-container .additional-links .switch-auth p a:hover {
+  text-decoration: underline;
 }
 
+@media (min-width: 520px) {
+  .reset-password-page .reset-password-container {
+    width: 25rem;
+  }
+}
+@media (min-width: 1024px) {
+  .reset-password-page {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(5px);
+  }
+}
 .confirm-email-page {
   display: flex;
   justify-content: center;
+  padding: 3rem;
+  min-height: 100vh;
+  background-color: rgba(255, 255, 255, 0.01);
+  backdrop-filter: blur(5px);
   align-items: center;
-  height: 100vh;
-  /* Responsive Design */
 }
 .confirm-email-page .confirm-email-container {
-  width: 400px;
-  background-color: theme(background-color);
-  color: theme(text-color);
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 0 10px theme(shadow-color);
+  width: 15rem;
   text-align: center;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 .confirm-email-page .confirm-email-container h2 {
-  margin-bottom: 1rem;
-  color: theme(primary-color);
+  margin-bottom: 1.5rem;
+  color: var(--color-dark);
   font-weight: 600;
 }
 .confirm-email-page .confirm-email-container p {
-  margin-bottom: 2rem;
-  font-size: 1rem;
+  font-size: 1.5rem;
+  color: var(--dark-color);
 }
 .confirm-email-page .confirm-email-container .button {
-  padding: 0.75rem 1.5rem;
-  background-color: theme(primary-color);
-  color: theme(primary-white-color);
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
   border: none;
   border-radius: 4px;
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-top: 1rem;
 }
 .confirm-email-page .confirm-email-container .button:hover {
+  background-color: var(--primary-color-hover);
+}
+.confirm-email-page .resend-button {
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+.confirm-email-page .resend-button:hover {
   background-color: theme(primary-color-hover);
 }
-@media (max-width: 768px) {
+
+@media (min-width: 520px) {
   .confirm-email-page .confirm-email-container {
-    width: 80%;
+    width: 25rem;
   }
 }
+@media (min-width: 1024px) {
+  .confirm-email-page {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(5px);
+  }
+}
+.request-password-reset-page {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+  min-height: 100vh;
+}
+.request-password-reset-page .request-password-reset-container {
+  width: 15rem;
+}
+.request-password-reset-page .request-password-reset-container h2 {
+  margin-bottom: 1.5rem;
+  color: var(--color-dark);
+  text-align: center;
+  font-weight: 600;
+}
+.request-password-reset-page .request-password-reset-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.request-password-reset-page .request-password-reset-container form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+.request-password-reset-page .request-password-reset-container form .form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.request-password-reset-page .request-password-reset-container form .form-group input {
+  padding: 0.75rem;
+  border: 1px solid #c6c6c6;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+}
+.request-password-reset-page .request-password-reset-container form .form-group input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+}
+.request-password-reset-page .request-password-reset-container form .form-group .error {
+  color: red;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+.request-password-reset-page .request-password-reset-container form .button {
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+.request-password-reset-page .request-password-reset-container form .button:hover {
+  background-color: var(--primary-color-hover);
+}
+.request-password-reset-page .request-password-reset-container .switch-auth {
+  margin-top: 1rem;
+}
+.request-password-reset-page .request-password-reset-container .switch-auth p {
+  font-size: 0.9rem;
+}
+.request-password-reset-page .request-password-reset-container .switch-auth p a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+.request-password-reset-page .request-password-reset-container .switch-auth p a:hover {
+  text-decoration: underline;
+}
 
+@media (min-width: 520px) {
+  .request-password-reset-page .request-password-reset-container {
+    width: 25rem;
+  }
+}
+@media (min-width: 1024px) {
+  .request-password-reset-page {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(5px);
+  }
+}
 .sidebar {
   width: 250px;
   background-color: var(--primary-color);
@@ -525,18 +748,19 @@ main {
   transition: background-color 0.3s ease;
 }
 
-.logo {
+.logo a {
   display: flex;
   align-items: center;
   margin-bottom: 2rem;
 }
-.logo img {
+.logo a img {
   width: 75%;
-  margin-right: 10px;
+  margin-right: 15px;
   transition: filter 0.3s ease;
 }
-.logo .nube {
-  width: 25%;
+.logo a .nube {
+  width: 20%;
+  margin: 0 !important;
 }
 
 /* Aplicar el tema claro por defecto dentro de :root */
@@ -547,6 +771,7 @@ main {
   --dark-color-hover: rgb(5.6333333333, 16.0333333333, 33.3666666667);
   --light-color: #FFFFFF;
   --black-color: #010C1E;
+  --gray-color: #bfbbbb;
   --background-color: #FFFFFF;
   --text-color: #010C1E;
   --shadow-color: rgba(0, 102, 255, 0.2);

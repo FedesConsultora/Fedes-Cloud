@@ -8,7 +8,6 @@
 .auth-layout {
   position: relative;
   width: 100%;
-  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -16,12 +15,19 @@
 
   .auth-container {
     position: relative;
-    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
     z-index: 2;
+    min-height: 100vh;
   }
 
   .background-video {
-    width: 75%;
+    
+    position: absolute;
+    width: 100%;
     height: 100%;
     overflow: hidden;
     border-top-left-radius: 8px;
@@ -35,4 +41,16 @@
     }
   }
   
+}
+@media (min-width: 1024px) {
+  .auth-layout {
+  
+    .auth-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: start;
+
+    }
+  }
 }

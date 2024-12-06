@@ -18,8 +18,8 @@
   .slider {
     position: relative;
     display: inline-block;
-    width: 60px;
-    height: 30px;
+    width: 80px;
+    height: 40px;
     background-color: mixins.theme(primary-color);
     border-radius: 34px;
     cursor: pointer;
@@ -30,18 +30,21 @@
       top: 50%;
       transform: translateY(-50%);
       font-size: 1.4rem;
-      color: mixins.theme(primary-white-color);
+      color: mixins.theme(color-light);
       transition: opacity 0.4s, transform 0.4s;
     }
 
     .sun-icon {
       left: 10px;
+      top: 23px;
       opacity: 1;
     }
 
     .moon-icon {
-      right: 10px;
+      right: 20px;
+      top: 7px;
       opacity: 0;
+      color: mixins.theme(light-color);
     }
 
     &::before {
@@ -49,7 +52,7 @@
       position: absolute;
       height: 26px;
       width: 26px;
-      background-color: mixins.theme(primary-white-color);
+      background-color: mixins.theme(color-light);
       border-radius: 50%;
       top: 2px;
       left: 2px;
@@ -59,7 +62,7 @@
 
   /* Estilos para modo oscuro */
   input:checked + .slider {
-    background-color: mixins.theme(primary-black-color);
+    background-color: mixins.theme(black-color);
   }
 
   input:checked + .slider .sun-icon {
