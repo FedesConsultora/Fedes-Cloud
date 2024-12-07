@@ -21,10 +21,13 @@
 
 /* Aplicar el tema claro por defecto dentro de :root */
 :root {
-    @include mixins.apply-theme(light);
+  @include mixins.apply-theme(light);
     
 }
-
+html {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
 /* Aplicar el tema oscuro cuando el cuerpo tenga la clase `.dark-mode` */
 body.dark-theme {
     @include mixins.apply-theme(dark);
@@ -34,13 +37,17 @@ body.dark-theme {
 }
 }
 
-/* Aplicar la fuente global */
 body {
   @include mixins.apply-font();
   background-color: mixins.theme(background-color);
   color: mixins.theme(text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
-
+  
+}
+.transition-container {
+  position: relative;
+  overflow-x: hidden;
+  width: 100vw;
+  height: 100%;
 }
 
-/* Puedes agregar estilos globales adicionales aquí si es necesario */

@@ -1,4 +1,3 @@
-@charset "UTF-8";
 /* Reset CSS */
 * {
   margin: 0;
@@ -183,9 +182,11 @@
 }
 
 .main-content {
-  flex: 1;
   display: flex;
   flex-direction: column;
+  max-width: 100vw;
+  flex: 1;
+  overflow-x: hidden;
 }
 
 main {
@@ -194,6 +195,10 @@ main {
   background-color: theme(background-color);
   color: theme(text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-transition: background-color 0.3s ease, color 0.3s ease;
+  -moz-transition: background-color 0.3s ease, color 0.3s ease;
+  -ms-transition: background-color 0.3s ease, color 0.3s ease;
+  -o-transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .footer {
@@ -699,20 +704,24 @@ main {
   }
 }
 .sidebar {
-  width: 250px;
-  background-color: var(--primary-color);
-  color: var(--primary-white-color);
+  width: 280px;
+  background-color: var(--dark-color);
+  color: var(--light-color);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 .sidebar .logo-container {
   margin-bottom: 40px;
+  padding: 1rem;
+  width: 100%;
+  background-color: var(--primary-color);
+  display: flex;
+  justify-content: center;
 }
 .sidebar .logo-container .logo {
-  width: 150px;
+  width: 190px;
   transition: filter 0.3s ease;
 }
 .sidebar .navigation {
@@ -738,7 +747,68 @@ main {
   margin-right: 10px;
 }
 .sidebar .navigation ul li span {
-  font-size: 16px;
+  font-size: 19px;
+}
+.sidebar .user-info {
+  padding: 1rem;
+  width: 100%;
+  background-color: var(--dark-blue-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.sidebar .user-details {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  justify-content: center;
+}
+.sidebar .user-avatar {
+  width: 47px;
+  height: 47px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  -o-border-radius: 50%;
+}
+.sidebar .user-text p {
+  margin: 0;
+  line-height: 1.2;
+  margin-left: 0.3rem;
+  font-size: 0.8rem;
+  color: var(--gray-color);
+}
+.sidebar .user-text p strong {
+  font-size: 1rem;
+  color: var(--light-color) !important;
+  -webkit-text-stroke: 0.3px;
+  -webkit-text-stroke-color: #333;
+}
+.sidebar .logout-button {
+  display: flex;
+  width: 60%;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.7);
+  border: none;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  margin-top: 1rem;
+  color: var(--light-color);
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+}
+.sidebar .logout-button:hover {
+  text-decoration: underline;
+}
+.sidebar .logout-button span {
+  margin-left: 0.9rem;
 }
 
 .footer {
@@ -767,11 +837,12 @@ main {
 :root {
   --primary-color: #0066FF;
   --primary-color-hover: rgb(0, 81.6, 204);
-  --dark-color: #0D254D;
-  --dark-color-hover: rgb(5.6333333333, 16.0333333333, 33.3666666667);
+  --dark-color: #010C1E;
+  --dark-color-hover: black;
   --light-color: #FFFFFF;
   --black-color: #010C1E;
-  --gray-color: #bfbbbb;
+  --gray-color: #E0E0E0;
+  --dark-blue-color: #0D254D;
   --background-color: #FFFFFF;
   --text-color: #010C1E;
   --shadow-color: rgba(0, 102, 255, 0.2);
@@ -782,6 +853,11 @@ main {
   --font: Poppins;
 }
 
+html {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 /* Aplicar el tema oscuro cuando el cuerpo tenga la clase `.dark-mode` */
 body.dark-theme {
   --primary-color: #3399FF;
@@ -790,6 +866,8 @@ body.dark-theme {
   --dark-color-hover: rgb(41.4186046512, 68.5, 95.5813953488);
   --light-color: #333333;
   --black-color: #FFFFFF;
+  --gray-color: #E0E0E0;
+  --dark-blue-color: #0D254D;
   --background-color: #1A2B3C;
   --text-color: #FFFFFF;
   --shadow-color: rgba(26, 43, 60, 0.2);
@@ -804,7 +882,6 @@ body.dark-theme video {
   -webkit-filter: brightness(0.7);
 }
 
-/* Aplicar la fuente global */
 body {
   font-family: "Poppins";
   background-color: var(--background-color);
@@ -812,6 +889,11 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Puedes agregar estilos globales adicionales aquí si es necesario */
+.transition-container {
+  position: relative;
+  overflow-x: hidden;
+  width: 100vw;
+  height: 100%;
+}
 
 /*# sourceMappingURL=main.css.map */

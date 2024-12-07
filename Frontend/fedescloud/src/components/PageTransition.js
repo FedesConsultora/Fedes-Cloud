@@ -34,7 +34,7 @@ const PageTransition = ({ children }) => {
       exit="out"
       variants={variants}
       transition={transition}
-      style={{ position: 'absolute', width: '100%' }}
+      style={ { position: 'absolute', width: '100%' } }
     >
       {children}
     </motion.div>

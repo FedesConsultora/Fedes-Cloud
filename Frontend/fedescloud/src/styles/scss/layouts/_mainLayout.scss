@@ -5,13 +5,16 @@
 
 .main-layout {
   display: flex;
+  
   min-height: 100vh;
 }
 
 .main-content {
-  flex: 1;
   display: flex;
   flex-direction: column;
+  max-width: 100vw;
+  flex: 1;
+  overflow-x: hidden; // Esto previene que si algo se sale, no aparezca scroll horizontal
 }
 
 main {
@@ -20,6 +23,10 @@ main {
   background-color: theme(background-color);
   color: theme(text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-transition: background-color 0.3s ease, color 0.3s ease;
+  -moz-transition: background-color 0.3s ease, color 0.3s ease;
+  -ms-transition: background-color 0.3s ease, color 0.3s ease;
+  -o-transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .footer {

@@ -6,13 +6,10 @@ import config from '../config/config.js';
 // Crear el contexto
 export const AuthContext = createContext();
 
-// Proveedor del contexto
 export function AuthProvider({ children }) {
-  // Estado de autenticación
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true); 
 
-  // Función para obtener el perfil del usuario
   const fetchUserProfile = async () => {
     try {
       const response = await fetch(`${config.API_URL}/auth/profile`, {
@@ -20,12 +17,11 @@ export function AuthProvider({ children }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Importante para enviar cookies
+        credentials: 'include', 
       });
-      console.log('Response: ', response);
       if (response.ok) {
         const userData = await response.json();
-        setUser(userData.data); // Asumiendo que la respuesta tiene una propiedad 'data'
+        setUser(userData.data); 
       } else {
         setUser(null);
       }
@@ -33,7 +29,6 @@ export function AuthProvider({ children }) {
       console.error('Error al conectar con el servidor:', error);
       setUser(null);
     } finally {
-      console.log('entre a finally')
       if (loading) {
         setLoading(false); 
       }

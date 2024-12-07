@@ -18,82 +18,82 @@ const AppRoutes = () => {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode='wait'>
-      <Routes location={location} key={location.pathname}>
-        {/* Rutas públicas: si estás logueado, te manda a / */}
-        <Route
-          path="/auth/*"
-          element={
-            <PublicRoute>
+    <div className="transition-container">
+      <AnimatePresence mode='wait'>
+        <Routes location={location} key={location.pathname}>
+          {/* Rutas públicas: si estás logueado, te manda a / */}
+          <Route
+            path="/auth/*"
+            element={
+              <PublicRoute>
+                  <AuthPage />
+              </PublicRoute>
+            }
+          />
+
+          <Route
+            path="/reset-password"
+            element={
               <PageTransition>
-                <AuthPage />
+                <ResetPassword />
               </PageTransition>
-            </PublicRoute>
-          }
-        />
+            }
+          />
 
-        <Route
-          path="/reset-password"
-          element={
-            <PageTransition>
-              <ResetPassword />
-            </PageTransition>
-          }
-        />
+          <Route
+            path="/confirm-email"
+            element={
+              <PageTransition>
+                <ConfirmEmail />
+              </PageTransition>
+            }
+          />
 
-        <Route
-          path="/confirm-email"
-          element={
-            <PageTransition>
-              <ConfirmEmail />
-            </PageTransition>
-          }
-        />
+          {/* Rutas Protegidas */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <Home />
+                  </PageTransition>
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <Profile />
+                  </PageTransition>
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Rutas Protegidas */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <PageTransition>
-                  <Home />
-                </PageTransition>
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
-        
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <PageTransition>
-                  <Profile />
-                </PageTransition>
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <Settings />
+                  </PageTransition>
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
 
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <PageTransition>
-                  <Settings />
-                </PageTransition>
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Redireccionar cualquier otra ruta a / */}
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </AnimatePresence>
+          {/* Redireccionar cualquier otra ruta a / */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </AnimatePresence>
+    </div>
   );
 };
 
