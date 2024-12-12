@@ -1,0 +1,26 @@
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.home {
+  padding: 2rem;
+  background-color: mixins.theme(background-color);
+  color: mixins.theme(text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+
+  h1 {
+    font-size: 2rem;
+    text-align: center;
+    color: mixins.theme(dark-color);
+    margin-bottom: 1.5rem;
+  }
+
+  // Puedes agregar más estilos para secciones dentro del home
+  .welcome-message {
+    font-size: 1.2rem;
+    text-align: center;
+    line-height: 1.5;
+    max-width: 600px;
+    margin: 0 auto;
+    color: mixins.theme(dark-blue-color);
+  }
+}

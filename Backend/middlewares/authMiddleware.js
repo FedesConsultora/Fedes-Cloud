@@ -57,7 +57,6 @@ const authMiddleware = async (req, res, next) => {
 
     // Convierte el objeto Sequelize en un objeto plano
     const userData = user.toJSON();
-    console.log(userData);
     // Verifica que el rol tenga permisos
     if (!userData.Rol || !Array.isArray(userData.Rol.permisos)) {
       logger.error(`El rol del usuario no tiene permisos asociados.`);
@@ -66,7 +65,7 @@ const authMiddleware = async (req, res, next) => {
 
     // Adjunta la información del usuario al objeto de la solicitud
     req.user = {
-      id: userData.id_usuario,
+      id_usuario: userData.id_usuario,
       nombre: userData.nombre,
       email: userData.email,
       permisos: userData.Rol.permisos.map((permiso) => permiso.nombre),

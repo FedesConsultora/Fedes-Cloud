@@ -1,30 +1,36 @@
 // src/components/UserInfo.js
 import React, { useContext } from 'react';
+import { FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { AuthContext } from '../contexts/AuthContext.js';
-import { FaSignOutAlt } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const UserInfo = ({ onLogout }) => {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  if (!user) return null; // Si no hay usuario logueado, no muestra nada.
+  if (!user) return null;
 
   return (
     <div className="user-info">
-        <div className="user-details">
-            <img
-                src={`${process.env.PUBLIC_URL}/assets/icons/user-placeholder2.png`}
-                alt="User Avatar"
-                className="user-avatar"
-            />
-            <div className="user-text">
-                <p><strong>{user.nombre} {user.apellido}</strong></p>
-                <p>ID: {user.id_usuario}</p>
-            </div>
+      <div className="user-details" onClick={() => navigate('/profile')}>
+        <img
+          src={`${process.env.PUBLIC_URL}/assets/icons/user-placeholder2.png`}
+          alt="User Avatar"
+          className="user-avatar"
+        />
+        <div className="user-text">
+          <p><strong>{user.nombre} {user.apellido}</strong></p>
+          <p>ID: {user.id_usuario}</p>
         </div>
-        <button className="logout-button" onClick={onLogout}>
-            <FaSignOutAlt />
-            <span>Logout</span>
-        </button>
+      </div>
+      <button className="logout-button" onClick={onLogout}>
+        <FaSignOutAlt />
+        <span>Logout</span>
+      </button>
+      <button className="profile-button" onClick={() => navigate('/profile')}>
+        <FaUser />
+        <span>Perfil</span>
+      </button>
     </div>
   );
 };

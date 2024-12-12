@@ -11,9 +11,6 @@ import {
 
 const router = Router();
 
-// Verifica que las funciones del controlador están definidas
-console.log('permisoController:', permisoController);
-
 // Crear un nuevo permiso
 router.post(
   '/',

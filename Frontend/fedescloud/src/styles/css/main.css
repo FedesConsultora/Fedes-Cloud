@@ -703,6 +703,136 @@ main {
     backdrop-filter: blur(5px);
   }
 }
+.settings-page {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+  min-height: 100vh;
+  min-width: 100%;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.settings-page .settings-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.settings-page .settings-container h2 {
+  margin-bottom: 2rem;
+  color: var(--dark-color);
+  text-align: center;
+  font-weight: 600;
+  font-size: 2rem;
+}
+.settings-page .settings-container .settings-section {
+  background-color: var(--light-color);
+  border-radius: 10px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 0 10px var(--shadow-color);
+  margin-bottom: 2rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.settings-page .settings-container .settings-section h3 {
+  font-size: 1.4rem;
+  color: var(--dark-blue-color);
+  margin-bottom: 1rem;
+}
+.settings-page .settings-container .settings-section p {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+.settings-page .settings-container .settings-section .enable-two-factor .form-group,
+.settings-page .settings-container .settings-section .disable-2fa .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+.settings-page .settings-container .settings-section .enable-two-factor .form-group label,
+.settings-page .settings-container .settings-section .disable-2fa .form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.settings-page .settings-container .settings-section .enable-two-factor .form-group input,
+.settings-page .settings-container .settings-section .disable-2fa .form-group input {
+  padding: 0.75rem;
+  border: 1px solid #c6c6c6;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+.settings-page .settings-container .settings-section .enable-two-factor .form-group input:focus,
+.settings-page .settings-container .settings-section .disable-2fa .form-group input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+}
+.settings-page .settings-container .settings-section .enable-two-factor .button,
+.settings-page .settings-container .settings-section .disable-2fa .button {
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+  width: 100%;
+  text-align: center;
+}
+.settings-page .settings-container .settings-section .enable-two-factor .button:hover,
+.settings-page .settings-container .settings-section .disable-2fa .button:hover {
+  background-color: var(--primary-color-hover);
+}
+.settings-page .settings-container .settings-section .enable-two-factor img,
+.settings-page .settings-container .settings-section .disable-2fa img {
+  display: block;
+  margin: 1rem auto;
+  max-width: 200px;
+}
+.settings-page .settings-container .settings-section .enable-two-factor .error,
+.settings-page .settings-container .settings-section .disable-2fa .error {
+  color: red;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+@media (min-width: 520px) {
+  .settings-page .settings-container {
+    width: 25rem;
+  }
+}
+@media (min-width: 1024px) {
+  .settings-page {
+    align-items: flex-start;
+  }
+  .settings-page .settings-container {
+    width: 45rem;
+  }
+}
+.home {
+  padding: 2rem;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.home h1 {
+  font-size: 2rem;
+  text-align: center;
+  color: var(--dark-color);
+  margin-bottom: 1.5rem;
+}
+.home .welcome-message {
+  font-size: 1.2rem;
+  text-align: center;
+  line-height: 1.5;
+  max-width: 600px;
+  margin: 0 auto;
+  color: var(--dark-blue-color);
+}
+
 .sidebar {
   width: 280px;
   background-color: var(--dark-color);
@@ -751,40 +881,51 @@ main {
 }
 .sidebar .user-info {
   padding: 1rem;
-  width: 100%;
-  background-color: var(--dark-blue-color);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  border-top: 1px solid #ccc;
 }
-.sidebar .user-details {
+.sidebar .user-info .user-details {
   display: flex;
   align-items: center;
   margin-bottom: 0.5rem;
-  justify-content: center;
+  cursor: pointer;
 }
-.sidebar .user-avatar {
-  width: 47px;
-  height: 47px;
-  border-radius: 50%;
+.sidebar .user-info .user-details:hover {
+  text-decoration: underline;
+}
+.sidebar .user-info .user-details .user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 1000%;
   margin-right: 0.5rem;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  -ms-border-radius: 50%;
-  -o-border-radius: 50%;
 }
-.sidebar .user-text p {
+.sidebar .user-info .user-text p {
   margin: 0;
   line-height: 1.2;
-  margin-left: 0.3rem;
-  font-size: 0.8rem;
-  color: var(--gray-color);
 }
-.sidebar .user-text p strong {
-  font-size: 1rem;
-  color: var(--light-color) !important;
+.sidebar .user-info .user-text p strong {
   -webkit-text-stroke: 0.3px;
   -webkit-text-stroke-color: #333;
+}
+.sidebar .user-info .logout-button, .sidebar .user-info .profile-button {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  background-color: var(--gray-color);
+  border: none;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  color: #333;
+  border-radius: 10px;
+  margin-top: 0.5rem;
+  width: 100%;
+  justify-content: center;
+}
+.sidebar .user-info .logout-button:hover, .sidebar .user-info .profile-button:hover {
+  background-color: var(--primary-color-hover);
+  color: var(--light-color);
+}
+.sidebar .user-info .logout-button span, .sidebar .user-info .profile-button span {
+  margin-left: 0.25rem;
 }
 .sidebar .logout-button {
   display: flex;

@@ -68,12 +68,6 @@ export const registerValidation = [
       }
       return true;
     }),
-
-  // Validación para el campo 'id_autenticacion'
-  body('id_autenticacion')
-    .isInt({ gt: 0 })
-    .withMessage('El ID de autenticación debe ser un número entero positivo'),
-
   // Middleware para manejar los errores de validación
   (req, res, next) => {
     const errors = validationResult(req);

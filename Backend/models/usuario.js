@@ -1,3 +1,5 @@
+// models/usuario.js
+
 import { Model } from 'sequelize';
 
 export default (sequelize, DataTypes) => {
@@ -75,6 +77,27 @@ export default (sequelize, DataTypes) => {
         defaultValue: false,
       },
       emailTokenExpires: { 
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      avatar: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      twoFactorEnabled: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
+      twoFactorSecret: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      twoFactorTempToken: { 
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      twoFactorTempExpires: {
         type: DataTypes.DATE,
         allowNull: true,
       },

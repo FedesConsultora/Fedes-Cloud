@@ -1,0 +1,123 @@
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.settings-page {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+  min-height: 100vh;
+  min-width: 100%;
+  background-color: mixins.theme(background-color);
+  color: mixins.theme(text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+
+  .settings-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+
+    h2 {
+      margin-bottom: 2rem;
+      color: mixins.theme(dark-color);
+      text-align: center;
+      font-weight: 600;
+      font-size: 2rem;
+    }
+
+    .settings-section {
+      background-color: mixins.theme(light-color);
+      border-radius: 10px;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 0 10px mixins.theme(shadow-color);
+      margin-bottom: 2rem;
+      transition: background-color 0.3s ease, color 0.3s ease;
+
+      h3 {
+        font-size: 1.4rem;
+        color: mixins.theme(dark-blue-color);
+        margin-bottom: 1rem;
+      }
+
+      p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+      }
+
+      .enable-two-factor,
+      .disable-2fa {
+        .form-group {
+          display: flex;
+          flex-direction: column;
+          margin-bottom: 1rem;
+
+          label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+          }
+
+          input {
+            padding: 0.75rem;
+            border: 1px solid #c6c6c6;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+
+            &:focus {
+              outline: none;
+              border-color: mixins.theme(primary-color);
+              box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+            }
+          }
+        }
+
+        .button {
+          padding: 0.75rem;
+          background-color: mixins.theme(primary-color);
+          color: mixins.theme(light-color);
+          border: none;
+          border-radius: 4px;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+          margin-top: 1rem;
+          width: 100%;
+          text-align: center;
+
+          &:hover {
+            background-color: mixins.theme(primary-color-hover);
+          }
+        }
+
+        img {
+          display: block;
+          margin: 1rem auto;
+          max-width: 200px;
+        }
+
+        .error {
+          color: red;
+          font-size: 0.875rem;
+          margin-top: 0.25rem;
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 520px) {
+  .settings-page {
+    .settings-container {
+      width: 25rem;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .settings-page {
+    align-items: flex-start;
+    .settings-container {
+      width: 45rem;
+    }
+  }
+}

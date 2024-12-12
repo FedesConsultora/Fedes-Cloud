@@ -25,14 +25,10 @@ const Register = () => {
     try {
       console.log('Raw Data:', data);
       
-      // Formatear la fecha de nacimiento a DD/MM/YYYY
       const formattedFechaNacimiento = formatDate(data.fechaNacimiento);
-      console.log('Formatted Fecha Nacimiento:', formattedFechaNacimiento);
 
-      // Obtener el client URI dinámicamente
-      const clientURI = window.location.origin; // Por ejemplo, 'http://localhost:3000' o 'https://tudominio.com'
+      const clientURI = window.location.origin; 
 
-      // Realiza la solicitud al backend
       const response = await fetch(`${config.API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -42,7 +38,6 @@ const Register = () => {
           email: data.email,
           password: data.password,
           fechaNacimiento: formattedFechaNacimiento,
-          id_autenticacion: data.id_autenticacion, 
           clientURI, 
         }),
       });
@@ -150,21 +145,19 @@ const Register = () => {
             {errors.fechaNacimiento && <span className="error">{errors.fechaNacimiento.message}</span>}
           </div>
 
-          <div className="form-group">
-            <label htmlFor="id_autenticacion">ID de Autenticación</label>
-            <input
-              type="number"
-              id="id_autenticacion"
-              {...register('id_autenticacion', { valueAsNumber: true })}
-              placeholder="Ingresa tu ID de autenticación"
-            />
-            {errors.id_autenticacion && <span className="error">{errors.id_autenticacion.message}</span>}
-          </div>
-
           <button type="submit" className="button" disabled={isSubmitting}>
             {isSubmitting ? 'Registrando...' : 'Registrarse'}
           </button>
         </form>
+        <div className="social-login">
+          <p>O regístrate con:</p>
+          <button className="google-button" onClick={() => window.location.href = `${config.API_URL}/auth/google`}>
+            Continuar con Google
+          </button>
+          <button className="facebook-button" onClick={() => window.location.href = `${config.API_URL}/auth/facebook`}>
+            Continuar con Facebook
+          </button>
+        </div>
         <div className="switch-auth">
           <p>
             ¿Ya tienes una cuenta?{' '}

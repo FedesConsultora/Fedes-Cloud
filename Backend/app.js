@@ -1,8 +1,7 @@
-// app.js
-
+// app.js (Backend)
 import dotenv from 'dotenv';
-dotenv.config(); // Carga las variables de entorno antes de cualquier otra importación
-import cookieParser from 'cookie-parser'; // Para parsear cookies
+dotenv.config(); 
+import cookieParser from 'cookie-parser';
 import express from 'express';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
@@ -12,66 +11,55 @@ import routes from './routes/index.js';
 import errorHandler from './middlewares/errorHandler.js';
 import { swaggerUi, swaggerDocs } from './docs/swagger.js';
 import logger from './utils/logger.js';
+import passport from './config/passport.js';
 
 const app = express();
-
 
 // Middleware de Seguridad HTTP
 app.use(helmet());
 
-
-// Middleware de CORS
-// Configura CORS para permitir solicitudes desde tu frontend
+// Configurar CORS
 const corsOptions = {
-  origin: 'http://localhost:3000', // Reemplaza con la URL de tu frontend
+  origin: 'http://localhost:3000', 
   optionsSuccessStatus: 200,
-  credentials: true, // Si necesitas enviar cookies o encabezados de autorización
+  credentials: true,
 };
 app.use(cors(corsOptions));
+
+// Cookies
 app.use(cookieParser());
 
-// Middleware de Rate Limiting
-// Limita el número de solicitudes por IP para prevenir ataques de fuerza bruta y DDoS
+// Rate limiting
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // Límite de 100 solicitudes por IP por ventana
-  message: 'Demasiadas solicitudes desde esta IP, por favor intenta de nuevo después de 15 minutos',
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Demasiadas solicitudes desde esta IP, intenta más tarde',
 });
 app.use('/api/', apiLimiter);
 
-
-// Middleware de Parsing de Cuerpo
-// Permite parsear solicitudes con cuerpos JSON y URL-encoded
+// Parseo de cuerpo y sanitización
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-
-// Middleware de Sanitización
-// Protege contra ataques XSS sanitizando las entradas
 app.use(xss());
 
+// Inicializar Passport
+app.use(passport.initialize());
 
-
-// Middleware de Rutas de la API
+// Rutas
 app.use('/', routes);
 
-
-// Documentación de la API con Swagger
+// Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-// Middleware de Manejo de Errores
-// Debe estar después de todas las rutas y otros middlewares
+// Error Handler
 app.use(errorHandler);
-// Handler para Rechazos de Promesas No Manejados
+
+// Unhandled Rejections y Uncaught Exceptions
 process.on('unhandledRejection', (reason, promise) => {
   logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  // Puedes decidir si deseas cerrar el servidor o no
 });
-
-// Handler para Excepciones No Capturadas
 process.on('uncaughtException', (error) => {
   logger.error('Uncaught Exception thrown:', error);
-  // Puedes decidir si deseas cerrar el servidor o no
 });
 
 export default app;

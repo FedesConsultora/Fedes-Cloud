@@ -42,11 +42,6 @@ export const registerValidationSchema = yup.object().shape({
       }
       return age >= 18;
     }),
-  id_autenticacion: yup
-    .number()
-    .required('El ID de autenticación es obligatorio')
-    .integer('El ID de autenticación debe ser un número entero')
-    .positive('El ID de autenticación debe ser un número positivo'),
 });
 
 // Esquema de validación para inicio de sesión

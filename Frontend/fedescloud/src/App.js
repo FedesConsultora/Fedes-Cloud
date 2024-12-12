@@ -13,6 +13,7 @@ import ThemeToggle from './components/ThemeToggle.js';
 import PageTransition from './components/PageTransition.js';
 import Profile from './pages/Profile.js'; // Asume que creaste esta página
 import Settings from './pages/Settings.js'; // Página que crearemos
+import TwoFactorAuth from './pages/TwoFactorAuth.js'; // Página para 2FA
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -49,7 +50,6 @@ const AppRoutes = () => {
             }
           />
 
-          {/* Rutas Protegidas */}
           <Route
             path="/"
             element={
@@ -83,6 +83,19 @@ const AppRoutes = () => {
                 <MainLayout>
                   <PageTransition>
                     <Settings />
+                  </PageTransition>
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/two-factor-auth"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <TwoFactorAuth />
                   </PageTransition>
                 </MainLayout>
               </ProtectedRoute>
