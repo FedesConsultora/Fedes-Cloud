@@ -1,5 +1,4 @@
 // routes/authRoutes.js
-
 import { Router } from 'express';
 import * as authController from '../controllers/authController.js';
 import {
@@ -11,19 +10,21 @@ import {
 } from '../middlewares/validators/authValidator.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import passport, { generateJWT } from '../config/passport.js';
-import crypto from 'crypto'; // Asegúrate de importar crypto
-import { Op } from 'sequelize'; // Asegúrate de importar Op
-import { Usuario } from '../models/index.js';
+import crypto from 'crypto';
+import { Op } from 'sequelize';
+import { Usuario,  } from '../models/index.js';
 import speakeasy from 'speakeasy';
 
 
 const router = Router();
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 // Registro local
 router.post('/register', registerValidation, authController.register);
 
-
-router.post('/login', loginValidation, (req, res, next) => {
+// Login local (ya existente)
+router.post('/login', loginValidation, async (req, res, next) => {
   passport.authenticate('local', { session: false }, async (err, user, info) => {
     if (err) return next(err);
     if (!user) {
@@ -36,7 +37,6 @@ router.post('/login', loginValidation, (req, res, next) => {
       user.twoFactorTempToken = tempToken;
       user.twoFactorTempExpires = tempTokenExpires;
       await user.save();
-
       return res.status(200).json({
         success: true,
         message: 'Se requiere autenticación de dos factores.',
@@ -45,11 +45,10 @@ router.post('/login', loginValidation, (req, res, next) => {
       });
     } else {
       const token = generateJWT(user);
-      const isProduction = process.env.NODE_ENV === 'production';
       const cookieOptions = {
         httpOnly: true,
-        secure: isProduction ? true : false,
-        sameSite: isProduction ? 'None' : 'Lax', // 'None' si es https en prod
+        secure: isProduction,
+        sameSite: isProduction ? 'None' : 'Lax',
         maxAge: 60 * 60 * 1000,
       };
       res.cookie('token', token, cookieOptions);
@@ -63,9 +62,9 @@ router.post('/login', loginValidation, (req, res, next) => {
   })(req, res, next);
 });
 
+// Verificación de 2FA
 router.post('/login-2fa', async (req, res, next) => {
   const { tempToken, twoFactorToken } = req.body;
-  console.log('entre a login-2fa')
   if (!tempToken || !twoFactorToken) {
     return res.status(400).json({ success: false, message: 'Token temporal y código de 2FA son obligatorios.' });
   }
@@ -77,7 +76,7 @@ router.post('/login-2fa', async (req, res, next) => {
         twoFactorTempExpires: { [Op.gt]: Date.now() },
       },
     });
-    console.log('pase');
+
     if (!user) {
       return res.status(400).json({ success: false, message: 'Token temporal inválido o expirado.' });
     }
@@ -122,38 +121,65 @@ router.post('/login-2fa', async (req, res, next) => {
   }
 });
 
+router.get('/google', (req, res, next) => {
+  // Guardamos el clientURI en session o en una cookie temporal (si usas session)
+  // Si no tienes sesiones habilitadas, puedes pasarlo en state:
+  const { clientURI } = req.query;
+  const state = clientURI ? encodeURIComponent(clientURI) : '';
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+    session: false,
+    state,
+  })(req, res, next);
+});
+
+// Google OAuth: Callback
+router.get('/google/callback',
+  passport.authenticate('google', { failureRedirect: '/auth/login', session: false }),
+  async (req, res) => {
+    // Aquí req.user ya está autenticado con Google
+    const clientURI = req.query.state ? decodeURIComponent(req.query.state) : 'http://localhost:3000';
+
+    // Verificar 2FA
+    if (req.user.twoFactorEnabled) {
+      const tempToken = crypto.randomBytes(32).toString('hex');
+      const tempTokenExpires = Date.now() + (10 * 60 * 1000);
+      req.user.twoFactorTempToken = tempToken;
+      req.user.twoFactorTempExpires = tempTokenExpires;
+      await req.user.save();
+      // Redirigir al frontend con los parámetros para que muestre la ventana de 2FA
+      // Por ejemplo, el frontend podría leer estos query params para mostrar TwoFactorAuth
+      return res.redirect(`${clientURI}/auth/login?twoFactorRequired=true&tempToken=${tempToken}`);
+    } else {
+      // Sin 2FA: generamos el token JWT y la cookie
+      const token = generateJWT(req.user);
+      const cookieOptions = {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'None' : 'Lax',
+        maxAge: 60 * 60 * 1000,
+      };
+      res.cookie('token', token, cookieOptions);
+      // Redirigir al frontend
+      return res.redirect(clientURI);
+    }
+  }
+);
+
 // Logout
 router.post('/logout', authMiddleware, authController.logout);
 
-// Obtener perfil del usuario autenticado
+// Perfil protegido
 router.get('/profile', authMiddleware, authController.getProfile);
 
 // Confirmación de email
 router.get('/confirm-email', authController.confirmEmail);
 router.post('/resend-confirm-email', authController.resendConfirmEmail);
 
-// Password Reset
+// Reseteo de contraseña
 router.post('/request-password-reset', requestPasswordResetValidation, authController.requestPasswordReset);
 router.post('/reset-password', resetPasswordValidation, authController.resetPassword);
 router.post('/resend-password-reset', resendPasswordResetValidation, authController.resendPasswordReset);
-
-// Google OAuth: Iniciar
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'], session: false }));
-
-// Google OAuth: Callback
-router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/auth/login', session: false }), (req, res) => {
-  // Aquí req.user ya está autenticado
-  const token = generateJWT(req.user);
-  // Establecer la cookie HTTP-only
-  res.cookie('token', token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // true en producción
-    sameSite: 'None', // Ajusta según tu necesidad
-    maxAge: 60 * 60 * 1000, // 1 hora
-  });
-  // Redirigir al frontend
-  res.redirect('http://localhost:3000'); // Cambia esto a tu URL de frontend en producción
-});
 
 // 2FA Routes
 router.post('/enable-2fa', authMiddleware, authController.enableTwoFactor);

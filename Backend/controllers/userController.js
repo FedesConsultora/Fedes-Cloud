@@ -257,3 +257,85 @@ export const deleteUser = async (req, res, next) => {
     next(error);
   }
 };
+
+// controllers/userController.js
+export const updateProfile = async (req, res, next) => {
+  try {
+    const { nombre, apellido, avatar } = req.body;
+    const { id_usuario } = req.user;
+
+    const user = await Usuario.findByPk(id_usuario);
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+
+    await user.update({
+      nombre: nombre || user.nombre,
+      apellido: apellido || user.apellido,
+      avatar: avatar || user.avatar,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Perfil actualizado exitosamente',
+      data: user,
+    });
+  } catch (error) {
+    logger.error(`Error al actualizar perfil: ${error.message}`);
+    next(error);
+  }
+};
+
+export const updateEmail = async (req, res, next) => {
+  try {
+    const { newEmail, confirmationCode } = req.body;
+    const { id_usuario } = req.user;
+
+    const user = await Usuario.findByPk(id_usuario);
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+
+    if (user.emailVerificationCode !== confirmationCode) {
+      throw new ValidationError([{ msg: 'Código de verificación incorrecto', param: 'confirmationCode' }]);
+    }
+
+    await user.update({ email: newEmail, emailVerified: false });
+
+    res.status(200).json({
+      success: true,
+      message: 'Correo electrónico actualizado exitosamente',
+    });
+  } catch (error) {
+    logger.error(`Error al actualizar correo electrónico: ${error.message}`);
+    next(error);
+  }
+};
+
+export const updatePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const { id_usuario } = req.user;
+
+    const user = await Usuario.findByPk(id_usuario);
+    if (!user) {
+      throw new UserNotFoundError();
+    }
+
+    const validPassword = await bcrypt.compare(currentPassword, user.password);
+    if (!validPassword) {
+      throw new ValidationError([{ msg: 'La contraseña actual es incorrecta', param: 'currentPassword' }]);
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await user.update({ password: hashedPassword });
+
+    res.status(200).json({
+      success: true,
+      message: 'Contraseña actualizada exitosamente',
+    });
+  } catch (error) {
+    logger.error(`Error al actualizar contraseña: ${error.message}`);
+    next(error);
+  }
+};
