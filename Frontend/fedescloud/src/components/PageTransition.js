@@ -35,7 +35,7 @@ const PageTransition = ({ children }) => {
       variants={variants}
       transition={transition}
       className='motiondiv'
-      style={ { position: 'absolute', } }
+      style={ {} }
     >
       {children}
     </motion.div>

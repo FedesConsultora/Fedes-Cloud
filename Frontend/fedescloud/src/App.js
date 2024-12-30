@@ -17,7 +17,7 @@ import TwoFactorAuth from './pages/TwoFactorAuth.js'; // Página para 2FA
 
 const AppRoutes = () => {
   const location = useLocation();
-
+  
   return (
     <div className="transition-container">
       <AnimatePresence mode='wait'>

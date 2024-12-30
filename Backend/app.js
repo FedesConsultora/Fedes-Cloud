@@ -45,11 +45,13 @@ app.use(xss());
 // Inicializar Passport
 app.use(passport.initialize());
 
+// Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
 // Rutas
 app.use('/', routes);
 
-// Swagger
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
 
 // Error Handler
 app.use(errorHandler);

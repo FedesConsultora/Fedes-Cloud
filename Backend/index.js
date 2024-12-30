@@ -3,7 +3,6 @@ import app from './app.js';
 import { sequelize } from './models/index.js';
 import logger from './utils/logger.js';
 
-console.log(process.env)
 // Define el puerto en el que el servidor escuchará
 const PORT = process.env.PORT || 3000;
 

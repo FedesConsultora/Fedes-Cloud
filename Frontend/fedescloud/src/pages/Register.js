@@ -151,8 +151,9 @@ const Register = () => {
         </form>
         <div className="social-login">
           <p>O regístrate con:</p>
-          <button className="google-button" onClick={() => window.location.href = `${config.API_URL}/auth/google`}>
-            Continuar con Google
+          <button className="google-button" onClick={() => window.location.href = `${config.API_URL}/auth/google?clientURI=${encodeURIComponent(window.location.origin)}`}>
+            <img className='google-icon' src={`${process.env.PUBLIC_URL}/assets/icons/google-icon.svg`} alt="Google Icon" width="18" height="18" />
+            <span>Continuar con Google</span>
           </button>
           <button className="facebook-button" onClick={() => window.location.href = `${config.API_URL}/auth/facebook`}>
             Continuar con Facebook

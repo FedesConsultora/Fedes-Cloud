@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { AuthContext } from '../contexts/AuthContext.js';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { loginValidationSchema } from '../validations/authValidation.js';
@@ -12,6 +12,11 @@ import TwoFactorAuth from './TwoFactorAuth.js';
 const Login = () => {
   const { login, twoFactorRequired } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const params = new URLSearchParams(location.search);
+  const urlTwoFactorRequired = params.get('twoFactorRequired') === 'true';
+  const urlTempToken = params.get('tempToken');
 
   const {
     register,
@@ -21,6 +26,15 @@ const Login = () => {
   } = useForm({
     resolver: yupResolver(loginValidationSchema),
   });
+
+  useEffect(() => {
+    // Si venimos desde Google OAuth con twoFactorRequired=true en la URL
+    // Actualizamos el estado en el contexto:
+    if (urlTwoFactorRequired && urlTempToken) {
+      // El login del contexto hará que se muestre el 2FA sin llamar fetchUserProfile aún
+      login({ twoFactorRequired: true, tempToken: urlTempToken });
+    }
+  }, [urlTwoFactorRequired, urlTempToken, login]);
 
   const onSubmit = async (data) => {
     try {
@@ -66,6 +80,7 @@ const Login = () => {
       <div className="login-container">
         <Logo />
         <h2>Iniciar Sesión</h2>
+        {/* Si twoFactorRequired es true, mostramos TwoFactorAuth */}
         {!twoFactorRequired ? (
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="form-group">
@@ -89,8 +104,9 @@ const Login = () => {
         )}
         <div className="social-login">
           <p>O inicia sesión con:</p>
-          <button className="google-button" onClick={() => window.location.href = `${config.API_URL}/auth/google`}>
-            Iniciar con Google
+          <button className="google-button" onClick={() => window.location.href = `${config.API_URL}/auth/google?clientURI=${encodeURIComponent(window.location.origin)}`}>
+            <img className='google-icon' src={`${process.env.PUBLIC_URL}/assets/icons/google-icon.svg`} alt="Google Icon" width="18" height="18" />
+            <span>Continuar con Google</span>
           </button>
         </div>
         <div className="additional-links">

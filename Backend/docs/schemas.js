@@ -257,4 +257,53 @@
  *         message:
  *           type: string
  *           example: 'Correo electrónico confirmado exitosamente'
+ *     Service:
+ *       type: object
+ *       properties:
+ *         id_servicio:
+ *           type: integer
+ *           description: ID único del servicio
+ *           example: 1
+ *         nombre:
+ *           type: string
+ *           description: Nombre del servicio
+ *           example: 'Gestión de Certificados'
+ *         estado:
+ *           type: string
+ *           description: Estado del servicio
+ *           example: 'activo'
+ *         idUsuario:
+ *           type: integer
+ *           description: ID del usuario asociado al servicio
+ *           example: 1
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha de creación del servicio
+ *           example: '2023-01-01T00:00:00Z'
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha de actualización del servicio
+ *           example: '2023-01-01T00:00:00Z'
+
+ *     CreateService:
+ *       type: object
+ *       required:
+ *         - nombre
+ *         - estado
+ *         - idUsuario
+ *       properties:
+ *         nombre:
+ *           type: string
+ *           description: Nombre del servicio
+ *           example: 'Gestión de Certificados'
+ *         estado:
+ *           type: string
+ *           description: Estado del servicio
+ *           example: 'activo'
+ *         idUsuario:
+ *           type: integer
+ *           description: ID del usuario asociado al servicio
+ *           example: 1 
  */

@@ -6,6 +6,8 @@ import userRoutes from './userRoutes.js';
 import roleRoutes from './roleRoutes.js';
 import authRoutes from './authRoutes.js';
 import permisoRoutes from './permisoRoutes.js';
+import serviceRoutes from './serviceRoutes.js';
+import dominioRoutes from './dominioRoutes.js';
 
 /**
  * @swagger
@@ -26,6 +28,8 @@ router.use('/auth', authRoutes);
 // Rutas protegidas (requieren autenticación)
 router.use('/users', userRoutes);
 router.use('/roles', roleRoutes);
-router.use('/permiso', permisoRoutes);
+router.use('/permisos', permisoRoutes);
+router.use('/services', serviceRoutes)
+router.use('/dominios', dominioRoutes); 
 
 export default router;

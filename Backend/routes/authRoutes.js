@@ -57,6 +57,7 @@ router.post('/login', loginValidation, async (req, res, next) => {
         success: true,
         message: 'Inicio de sesión exitoso',
         twoFactorEnabled: user.twoFactorEnabled,
+        token: token,
       });
     }
   })(req, res, next);

@@ -1,0 +1,27 @@
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.google-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  color: #000;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+  width: 100%;
+  text-align: center;
+
+  .google-icon{
+    margin-right: 1rem;
+  }
+
+  &:hover {
+    background-color: #f2f2f2;
+  }
+}
