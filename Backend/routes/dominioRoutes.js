@@ -5,174 +5,24 @@ import * as dominioController from '../controllers/dominioController.js';
 
 const router = Router();
 
-/**
- * @swagger
- * tags:
- *   name: Dominios
- *   description: Gestión de Dominios
- */
-
-/**
- * @swagger
- * /dominios:
- *   get:
- *     summary: Obtener todos los dominios
- *     tags: [Dominios]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Lista de dominios obtenida exitosamente
- *       401:
- *         description: No autorizado
- *       403:
- *         description: Permiso denegado
- *       500:
- *         description: Error interno del servidor
- */
+// Rutas de Dominios
 router.get('/', authMiddleware, dominioController.getDominios);
-
-/**
- * @swagger
- * /dominios:
- *   post:
- *     summary: Crear un nuevo dominio
- *     tags: [Dominios]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               id_servicio:
- *                 type: integer
- *               nombreDominio:
- *                 type: string
- *               fechaExpiracion:
- *                 type: string
- *                 format: date-time
- *               bloqueado:
- *                 type: boolean
- *               proteccionPrivacidad:
- *                 type: boolean
- *     responses:
- *       201:
- *         description: Dominio creado exitosamente
- *       400:
- *         description: Datos inválidos
- *       401:
- *         description: No autorizado
- *       403:
- *         description: Permiso denegado
- *       500:
- *         description: Error interno del servidor
- */
 router.post('/', authMiddleware, dominioController.createDominio);
 
-/**
- * @swagger
- * /dominios/{id_dominio}:
- *   get:
- *     summary: Obtener un dominio por su ID
- *     tags: [Dominios]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id_dominio
- *         schema:
- *           type: integer
- *         required: true
- *         description: ID del dominio
- *     responses:
- *       200:
- *         description: Dominio obtenido exitosamente
- *       401:
- *         description: No autorizado
- *       403:
- *         description: Permiso denegado
- *       404:
- *         description: Dominio no encontrado
- *       500:
- *         description: Error interno del servidor
- */
-router.get('/:id_dominio', authMiddleware, dominioController.getDominioById);
+// Restringimos :id_dominio a dígitos (\d+)
+router.get('/:id_dominio(\\d+)', authMiddleware, dominioController.getDominioById);
+router.put('/:id_dominio(\\d+)', authMiddleware, dominioController.updateDominio);
+router.delete('/:id_dominio(\\d+)', authMiddleware, dominioController.deleteDominio);
 
-/**
- * @swagger
- * /dominios/{id_dominio}:
- *   put:
- *     summary: Actualizar un dominio
- *     tags: [Dominios]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id_dominio
- *         schema:
- *           type: integer
- *         required: true
- *         description: ID del dominio a actualizar
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               nombreDominio:
- *                 type: string
- *               fechaExpiracion:
- *                 type: string
- *                 format: date-time
- *               bloqueado:
- *                 type: boolean
- *               proteccionPrivacidad:
- *                 type: boolean
- *     responses:
- *       200:
- *         description: Dominio actualizado exitosamente
- *       401:
- *         description: No autorizado
- *       403:
- *         description: Permiso denegado
- *       404:
- *         description: Dominio no encontrado
- *       500:
- *         description: Error interno del servidor
- */
-router.put('/:id_dominio', authMiddleware, dominioController.updateDominio);
+// Rutas específicas de integración con GoDaddy
+router.post('/check-availability', authMiddleware, dominioController.checkDomain);
+router.post('/registrar', authMiddleware, dominioController.registerDominio);
+router.post('/renovar', authMiddleware, dominioController.renewDominio);
+router.put('/:domain/records/:type', authMiddleware, dominioController.updateDNS);
+router.get('/:domain/info', authMiddleware, dominioController.getDomainInfo);
 
-/**
- * @swagger
- * /dominios/{id_dominio}:
- *   delete:
- *     summary: Eliminar un dominio
- *     tags: [Dominios]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id_dominio
- *         schema:
- *           type: integer
- *         required: true
- *         description: ID del dominio a eliminar
- *     responses:
- *       200:
- *         description: Dominio eliminado exitosamente
- *       401:
- *         description: No autorizado
- *       403:
- *         description: Permiso denegado
- *       404:
- *         description: Dominio no encontrado
- *       500:
- *         description: Error interno del servidor
- */
-router.delete('/:id_dominio', authMiddleware, dominioController.deleteDominio);
+// Rutas que usan cadenas no numéricas (por ejemplo "tlds" o "sugerir")
+router.post('/sugerir', authMiddleware, dominioController.suggestDomains);
+router.get('/tlds', authMiddleware, dominioController.getTLDs);
 
 export default router;

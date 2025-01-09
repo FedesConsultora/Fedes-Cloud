@@ -2,7 +2,8 @@
 import GoDaddyAdapter from '../adapters/godaddyAdapter.js';
 import GoDaddyService from '../services/godaddyService.js';
 
-const godaddyAdapter = new GoDaddyAdapter();
-const godaddyService = new GoDaddyService(godaddyAdapter);
+const goDaddyAdapter = new GoDaddyAdapter();
+const goDaddyService = new GoDaddyService(goDaddyAdapter);
 
-export default godaddyService;
+export default goDaddyService;
+

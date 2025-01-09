@@ -1,9 +1,8 @@
-// docs/schemas.js
-
 /**
  * @swagger
  * components:
  *   schemas:
+ * 
  *     User:
  *       type: object
  *       properties:
@@ -59,6 +58,7 @@
  *           format: date-time
  *           description: Fecha de actualización del usuario
  *           example: '2023-01-01T00:00:00Z'
+ *
  *     RegisterUser:
  *       type: object
  *       required:
@@ -88,6 +88,7 @@
  *         id_autenticacion:
  *           type: integer
  *           example: 1
+ *
  *     CreateUser:
  *       type: object
  *       required:
@@ -128,6 +129,7 @@
  *           type: integer
  *           description: ID del método de autenticación del usuario
  *           example: 1
+ *
  *     LoginUser:
  *       type: object
  *       required:
@@ -140,6 +142,7 @@
  *         password:
  *           type: string
  *           example: 'Admin@123'
+ *
  *     Role:
  *       type: object
  *       properties:
@@ -161,6 +164,7 @@
  *           format: date-time
  *           description: Fecha de actualización del rol
  *           example: '2023-01-01T00:00:00Z'
+ *
  *     CreateRole:
  *       type: object
  *       required:
@@ -169,12 +173,14 @@
  *         nombre:
  *           type: string
  *           example: 'Interno'
+ *
  *     UpdateRole:
  *       type: object
  *       properties:
  *         nombre:
  *           type: string
  *           example: 'Externo'
+ *
  *     Permiso:
  *       type: object
  *       properties:
@@ -200,6 +206,7 @@
  *           format: date-time
  *           description: Fecha de actualización del permiso
  *           example: '2023-01-01T00:00:00Z'
+ *
  *     CreatePermiso:
  *       type: object
  *       required:
@@ -214,6 +221,7 @@
  *           type: string
  *           description: Descripción del permiso
  *           example: 'Permiso para gestionar permisos'
+ *
  *     UpdatePermiso:
  *       type: object
  *       properties:
@@ -225,6 +233,7 @@
  *           type: string
  *           description: Descripción del permiso
  *           example: 'Permiso para gestionar roles'
+ *
  *     RequestPasswordReset:
  *       type: object
  *       required:
@@ -234,6 +243,7 @@
  *           type: string
  *           description: Correo electrónico del usuario que solicita el restablecimiento
  *           example: 'usuario@example.com'
+ *
  *     ResetPassword:
  *       type: object
  *       required:
@@ -248,6 +258,7 @@
  *           type: string
  *           description: Nueva contraseña del usuario
  *           example: 'NuevaP@ssw0rd'
+ *
  *     ConfirmEmailResponse:
  *       type: object
  *       properties:
@@ -257,6 +268,7 @@
  *         message:
  *           type: string
  *           example: 'Correo electrónico confirmado exitosamente'
+ *
  *     Service:
  *       type: object
  *       properties:
@@ -286,7 +298,7 @@
  *           format: date-time
  *           description: Fecha de actualización del servicio
  *           example: '2023-01-01T00:00:00Z'
-
+ *
  *     CreateService:
  *       type: object
  *       required:
@@ -305,5 +317,127 @@
  *         idUsuario:
  *           type: integer
  *           description: ID del usuario asociado al servicio
- *           example: 1 
+ *           example: 1
+ *
+ *     Domain:
+ *       type: object
+ *       properties:
+ *         id_dominio:
+ *           type: integer
+ *           description: ID interno autoincremental de la tabla Dominio
+ *           example: 10
+ *         id_servicio:
+ *           type: integer
+ *           description: Relación con la tabla Servicio
+ *           example: 123
+ *         nombreDominio:
+ *           type: string
+ *           description: Nombre de dominio (example.com)
+ *           example: 'example.com'
+ *         fechaExpiracion:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha estimada de expiración
+ *           example: '2024-12-31T23:59:59Z'
+ *         bloqueado:
+ *           type: boolean
+ *           description: Indica si el dominio está bloqueado (locked)
+ *           example: true
+ *         proteccionPrivacidad:
+ *           type: boolean
+ *           description: Indica si tiene WHOIS privacy activo
+ *           example: false
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha de creación en la BD local
+ *           example: '2023-01-01T00:00:00Z'
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha de última actualización en la BD
+ *           example: '2023-01-01T00:00:00Z'
+ *
+ *     RegisterDomainPayload:
+ *       type: object
+ *       required:
+ *         - domain
+ *         - id_servicio
+ *       properties:
+ *         domain:
+ *           type: string
+ *           description: Nombre del dominio a registrar
+ *           example: 'example.com'
+ *         id_servicio:
+ *           type: integer
+ *           description: ID del servicio al que se asocia este dominio
+ *           example: 123
+ *         period:
+ *           type: integer
+ *           description: Cantidad de años a registrar
+ *           example: 1
+ *         renewAuto:
+ *           type: boolean
+ *           description: Indica si se renueva automáticamente
+ *           example: true
+ *         privacy:
+ *           type: boolean
+ *           description: Indica si se adquiere WHOIS privacy
+ *           example: false
+ *         consent:
+ *           type: object
+ *           properties:
+ *             agreedAt:
+ *               type: string
+ *               format: date-time
+ *               example: "2024-12-01T12:00:00Z"
+ *             agreedBy:
+ *               type: string
+ *               example: "127.0.0.1"
+ *             agreementKeys:
+ *               type: array
+ *               items:
+ *                 type: string
+ *               example: ["DNRA"]
+ *         contactAdmin:
+ *           type: object
+ *           description: Datos de contacto Admin
+ *         contactRegistrant:
+ *           type: object
+ *           description: Datos de contacto Registrant
+ *         contactTech:
+ *           type: object
+ *           description: Datos de contacto Técnico
+ *         contactBilling:
+ *           type: object
+ *           description: Datos de contacto Billing
+ *
+ *     RenewDomainPayload:
+ *       type: object
+ *       required:
+ *         - domain
+ *         - period
+ *       properties:
+ *         domain:
+ *           type: string
+ *           description: Dominio a renovar
+ *           example: 'example.com'
+ *         period:
+ *           type: integer
+ *           description: Años a renovar
+ *           example: 1
+ *         renewAuto:
+ *           type: boolean
+ *           description: Activa o no la renovación automática
+ *           example: true
+ *
+ *     CheckAvailabilityPayload:
+ *       type: object
+ *       required:
+ *         - domain
+ *       properties:
+ *         domain:
+ *           type: string
+ *           description: Dominio a chequear disponibilidad
+ *           example: 'example.com'
  */
