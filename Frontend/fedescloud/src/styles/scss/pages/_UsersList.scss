@@ -1,0 +1,147 @@
+// src/styles/scss/pages/_UsersList.scss
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.admin-section {
+    background-color: mixins.theme(light-color);
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 0 5px mixins.theme(shadow-color);
+    width: 100%;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  
+    h3 {
+      font-size: 1.4rem;
+      color: mixins.theme(dark-blue-color);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+  
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+  
+      input[type="text"] {
+        flex: 1;
+        padding: 0.75rem;
+        border: 1px solid #c6c6c6;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+  
+        &:focus {
+          outline: none;
+          border-color: mixins.theme(primary-color);
+          box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+        }
+      }
+  
+      button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem;
+        background-color: mixins.theme(primary-color);
+        color: mixins.theme(light-color);
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 50px;
+        height: 50px;
+  
+        &:hover {
+          background-color: mixins.theme(primary-color-hover);
+        }
+  
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+  
+    .list-container {
+      max-height: 400px;
+      overflow-y: auto;
+  
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+  
+        thead {
+          tr {
+            background-color: mixins.theme(primary-color);
+            color: mixins.theme(light-color);
+          }
+          th {
+            padding: 0.75rem;
+            text-align: left;
+            &:first-child {
+              border-top-left-radius: 10px;
+            }
+            &:last-child {
+              border-top-right-radius: 10px;
+            }
+          }
+        }
+  
+        tbody {
+          tr {
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+  
+            &:hover {
+              background-color: #f7f9fc;
+            }
+  
+            td {
+              padding: 0.75rem;
+            }
+          }
+        }
+      }
+  
+      p {
+        text-align: center;
+        font-size: 1rem;
+        color: mixins.theme(dark-color);
+      }
+    }
+  
+    /* Estilos para botones de acción */
+    .action-button {
+      margin-right: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.3s ease;
+      margin-left: 0.5rem;
+  
+      &.edit-button {
+        background-color: #4CAF50; /* Verde */
+        color: white;
+  
+        &:hover {
+          background-color: #45a049;
+        }
+      }
+  
+      &.delete-button {
+        background-color: #f44336; /* Rojo */
+        color: white;
+  
+        &:hover {
+          background-color: #da190b;
+        }
+      }
+    }
+  }
+  

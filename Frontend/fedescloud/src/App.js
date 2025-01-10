@@ -11,11 +11,17 @@ import ConfirmEmail from './pages/ConfirmEmail.js';
 import MainLayout from './layouts/MainLayout.js'; 
 import ThemeToggle from './components/ThemeToggle.js';
 import PageTransition from './components/PageTransition.js';
-import Profile from './pages/Profile.js'; // Asume que creaste esta página
-import Settings from './pages/Settings.js'; // Página que crearemos
-import TwoFactorAuth from './pages/TwoFactorAuth.js'; // Página para 2FA
+import Profile from './pages/Profile.js'; 
+import Settings from './pages/Settings.js'; 
+import TwoFactorAuth from './pages/TwoFactorAuth.js';
 import DominiosPage from './pages/DominiosPage.js';
 import DominiosBusquedaPage from './pages/DominiosBusquedaPage.js';
+import AdminRoute from './components/AdminRoute.js';
+import UserDetail from './pages/UserDetail.js';
+import DomainDetail from './pages/DomainDetail.js';
+import AdminDashboard from './pages/AdminDashboard.js';
+import EditUserPage from './pages/EditUserPage.js';
+import EditDomainPage from './pages/EditDomainPage.js';
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -127,7 +133,69 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
-          
+          {/* Ruta para Admin Dashboard, protegida y solo para Admins */}
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <AdminDashboard />
+                  </PageTransition>
+                </MainLayout>
+              </AdminRoute>
+            }
+          />
+
+          {/* Rutas detalladas de Admin */}
+          <Route
+            path="/admin/users/:userId"
+            element={
+              <AdminRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <UserDetail />
+                  </PageTransition>
+                </MainLayout>
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/users/:userId/edit"
+            element={
+              <AdminRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <EditUserPage /> {/* Crea este componente */}
+                  </PageTransition>
+                </MainLayout>
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/domains/:domainId/edit"
+            element={
+              <AdminRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <EditDomainPage />
+                  </PageTransition>
+                </MainLayout>
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/domains/:domainId"
+            element={
+              <AdminRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <DomainDetail />
+                  </PageTransition>
+                </MainLayout>
+              </AdminRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </AnimatePresence>

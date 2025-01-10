@@ -1381,6 +1381,547 @@ main {
   text-align: center;
 }
 
+.admin-dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem;
+  min-height: 100vh;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.admin-dashboard h2 {
+  margin-bottom: 2rem;
+  color: var(--dark-color);
+  text-align: center;
+  font-weight: 600;
+  font-size: 2rem;
+}
+.admin-dashboard .dashboard-sections {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+}
+
+.domain-detail-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem;
+  min-height: 100vh;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.domain-detail-page h2 {
+  margin-bottom: 2rem;
+  color: var(--dark-color);
+  text-align: center;
+  font-weight: 600;
+  font-size: 2rem;
+}
+.domain-detail-page .detail-container {
+  width: 100%;
+  max-width: 600px;
+  background-color: var(--light-color);
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 0 5px var(--shadow-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.domain-detail-page .detail-container p {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+.domain-detail-page .detail-container h3 {
+  margin-top: 1.5rem;
+  font-size: 1.2rem;
+  color: var(--dark-blue-color);
+}
+.domain-detail-page .detail-container .button {
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+  width: 100%;
+  text-align: center;
+}
+.domain-detail-page .detail-container .button:hover {
+  background-color: var(--primary-color-hover);
+}
+
+.admin-section {
+  background-color: var(--light-color);
+  border-radius: 10px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 0 5px var(--shadow-color);
+  width: 100%;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* Estilos para botones de acción */
+}
+.admin-section h3 {
+  font-size: 1.4rem;
+  color: var(--dark-blue-color);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+.admin-section .search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.admin-section .search-bar input[type=text] {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #c6c6c6;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+.admin-section .search-bar input[type=text]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+}
+.admin-section .search-bar button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 50px;
+  height: 50px;
+}
+.admin-section .search-bar button:hover {
+  background-color: var(--primary-color-hover);
+}
+.admin-section .search-bar button svg {
+  width: 20px;
+  height: 20px;
+}
+.admin-section .list-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+.admin-section .list-container table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.admin-section .list-container table thead tr {
+  background-color: var(--primary-color);
+  color: var(--light-color);
+}
+.admin-section .list-container table thead th {
+  padding: 0.75rem;
+  text-align: left;
+}
+.admin-section .list-container table thead th:first-child {
+  border-top-left-radius: 10px;
+}
+.admin-section .list-container table thead th:last-child {
+  border-top-right-radius: 10px;
+}
+.admin-section .list-container table tbody tr {
+  border-bottom: 1px solid #ccc;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.admin-section .list-container table tbody tr:hover {
+  background-color: #f7f9fc;
+}
+.admin-section .list-container table tbody tr td {
+  padding: 0.75rem;
+}
+.admin-section .list-container p {
+  text-align: center;
+  font-size: 1rem;
+  color: var(--dark-color);
+}
+.admin-section .action-button {
+  margin-right: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+  margin-left: 0.5rem;
+}
+.admin-section .action-button.edit-button {
+  background-color: #4CAF50; /* Verde */
+  color: white;
+}
+.admin-section .action-button.edit-button:hover {
+  background-color: #45a049;
+}
+.admin-section .action-button.delete-button {
+  background-color: #f44336; /* Rojo */
+  color: white;
+}
+.admin-section .action-button.delete-button:hover {
+  background-color: #da190b;
+}
+
+.user-detail-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem;
+  min-height: 100vh;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.user-detail-page h2 {
+  margin-bottom: 2rem;
+  color: var(--dark-color);
+  text-align: center;
+  font-weight: 600;
+  font-size: 2rem;
+}
+.user-detail-page .detail-container {
+  width: 100%;
+  max-width: 600px;
+  background-color: var(--light-color);
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 0 5px var(--shadow-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.user-detail-page .detail-container p {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+.user-detail-page .detail-container h3 {
+  margin-top: 1.5rem;
+  font-size: 1.2rem;
+  color: var(--dark-blue-color);
+}
+.user-detail-page .detail-container .button {
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+  width: 100%;
+  text-align: center;
+}
+.user-detail-page .detail-container .button:hover {
+  background-color: var(--primary-color-hover);
+}
+
+.admin-section {
+  background-color: var(--light-color);
+  border-radius: 10px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 0 5px var(--shadow-color);
+  width: 100%;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* Estilos para botones de acción */
+}
+.admin-section h3 {
+  font-size: 1.4rem;
+  color: var(--dark-blue-color);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+.admin-section .search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.admin-section .search-bar input[type=text] {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #c6c6c6;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+.admin-section .search-bar input[type=text]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+}
+.admin-section .search-bar button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 50px;
+  height: 50px;
+}
+.admin-section .search-bar button:hover {
+  background-color: var(--primary-color-hover);
+}
+.admin-section .search-bar button svg {
+  width: 20px;
+  height: 20px;
+}
+.admin-section .list-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+.admin-section .list-container table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.admin-section .list-container table thead tr {
+  background-color: var(--primary-color);
+  color: var(--light-color);
+}
+.admin-section .list-container table thead th {
+  padding: 0.75rem;
+  text-align: left;
+}
+.admin-section .list-container table thead th:first-child {
+  border-top-left-radius: 10px;
+}
+.admin-section .list-container table thead th:last-child {
+  border-top-right-radius: 10px;
+}
+.admin-section .list-container table tbody tr {
+  border-bottom: 1px solid #ccc;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.admin-section .list-container table tbody tr:hover {
+  background-color: #f7f9fc;
+}
+.admin-section .list-container table tbody tr td {
+  padding: 0.75rem;
+}
+.admin-section .list-container p {
+  text-align: center;
+  font-size: 1rem;
+  color: var(--dark-color);
+}
+.admin-section .action-button {
+  margin-right: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+  margin-left: 0.5rem;
+}
+.admin-section .action-button.edit-button {
+  background-color: #4CAF50; /* Verde */
+  color: white;
+}
+.admin-section .action-button.edit-button:hover {
+  background-color: #45a049;
+}
+.admin-section .action-button.delete-button {
+  background-color: #f44336; /* Rojo */
+  color: white;
+}
+.admin-section .action-button.delete-button:hover {
+  background-color: #da190b;
+}
+
+.edit-user-page {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+  min-height: 100vh;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.edit-user-page .edit-user-container {
+  width: 100%;
+  max-width: 600px;
+  background-color: var(--light-color);
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 0 10px var(--shadow-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.edit-user-page .edit-user-container h2 {
+  margin-bottom: 2rem;
+  color: var(--dark-color);
+  text-align: center;
+  font-weight: 600;
+  font-size: 2rem;
+}
+.edit-user-page .edit-user-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.edit-user-page .edit-user-container form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+.edit-user-page .edit-user-container form .form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--dark-color);
+  font-size: 1rem;
+}
+.edit-user-page .edit-user-container form .form-group input,
+.edit-user-page .edit-user-container form .form-group select {
+  padding: 0.75rem;
+  border: 1px solid #c6c6c6;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+.edit-user-page .edit-user-container form .form-group input:focus,
+.edit-user-page .edit-user-container form .form-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+}
+.edit-user-page .edit-user-container form .form-group input[type=checkbox] {
+  width: auto;
+  margin-top: 0.5rem;
+}
+.edit-user-page .edit-user-container form .button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+.edit-user-page .edit-user-container form .button-group .button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  color: var(--light-color);
+}
+.edit-user-page .edit-user-container form .button-group .button.save-button {
+  background-color: var(--primary-color);
+}
+.edit-user-page .edit-user-container form .button-group .button.save-button:hover {
+  background-color: var(--primary-color-hover);
+}
+.edit-user-page .edit-user-container form .button-group .button.cancel-button {
+  background-color: #ccc;
+}
+.edit-user-page .edit-user-container form .button-group .button.cancel-button:hover {
+  background-color: #bbb;
+}
+
+.edit-domain-page {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+  min-height: 100vh;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.edit-domain-page .edit-domain-container {
+  width: 100%;
+  max-width: 600px;
+  background-color: var(--light-color);
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 0 10px var(--shadow-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.edit-domain-page .edit-domain-container h2 {
+  margin-bottom: 2rem;
+  color: var(--dark-color);
+  text-align: center;
+  font-weight: 600;
+  font-size: 2rem;
+}
+.edit-domain-page .edit-domain-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.edit-domain-page .edit-domain-container form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+.edit-domain-page .edit-domain-container form .form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--dark-color);
+  font-size: 1rem;
+}
+.edit-domain-page .edit-domain-container form .form-group input,
+.edit-domain-page .edit-domain-container form .form-group select {
+  padding: 0.75rem;
+  border: 1px solid #c6c6c6;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+.edit-domain-page .edit-domain-container form .form-group input:focus,
+.edit-domain-page .edit-domain-container form .form-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+}
+.edit-domain-page .edit-domain-container form .form-group input[type=checkbox] {
+  width: auto;
+  margin-top: 0.5rem;
+}
+.edit-domain-page .edit-domain-container form .button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+.edit-domain-page .edit-domain-container form .button-group .button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  color: var(--light-color);
+}
+.edit-domain-page .edit-domain-container form .button-group .button.save-button {
+  background-color: var(--primary-color);
+}
+.edit-domain-page .edit-domain-container form .button-group .button.save-button:hover {
+  background-color: var(--primary-color-hover);
+}
+.edit-domain-page .edit-domain-container form .button-group .button.cancel-button {
+  background-color: #ccc;
+}
+.edit-domain-page .edit-domain-container form .button-group .button.cancel-button:hover {
+  background-color: #bbb;
+}
+
 /* Aplicar el tema claro por defecto dentro de :root */
 :root {
   --primary-color: #0066FF;

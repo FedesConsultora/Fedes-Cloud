@@ -1,3 +1,5 @@
+// src/contexts/AuthContext.js
+
 import React, { createContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import config from '../config/config.js';
@@ -97,8 +99,11 @@ export function AuthProvider({ children }) {
 
   const updateUser = (updatedUserData) => setUser(updatedUserData);
 
+  // Determinar si el usuario es administrador
+  const isAdmin = user?.id_rol === 1;
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, updateUser, twoFactorRequired, completeTwoFactorAuth }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, updateUser, twoFactorRequired, completeTwoFactorAuth, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );

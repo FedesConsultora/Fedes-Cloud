@@ -1,13 +1,14 @@
 // src/components/Sidebar.js
+
 import React, { useContext } from 'react';
-import { FaHome, FaCog, FaGlobe } from 'react-icons/fa';
+import { FaHome, FaCog, FaGlobe, FaUserShield } from 'react-icons/fa'; // Importar FaUserShield para Admin
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext.js';
 import UserInfo from './UserInfo.js';
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  const { logout } = useContext(AuthContext);
+  const { logout, isAdmin } = useContext(AuthContext); // Obtener isAdmin del contexto
 
   const handleLogout = async () => {
     await logout();
@@ -32,12 +33,20 @@ const Sidebar = () => {
             <FaGlobe />
             <span>Dominios</span>
           </li>
+          {/* Enlace para Administrador, solo visible para admins */}
+          {isAdmin && (
+            <li onClick={() => navigate('/admin')}>
+              <FaUserShield />
+              <span>Administrador</span>
+            </li>
+          )}
         </ul>
       </nav>
-      {/* Aquí colocamos el componente UserInfo al final del sidebar */}
+      {/* Componente UserInfo al final del sidebar */}
       <UserInfo onLogout={handleLogout} />
     </aside>
   );
 };
 
 export default Sidebar;
+ 
