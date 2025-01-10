@@ -1,5 +1,6 @@
 // src/pages/Register.js
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -15,6 +16,7 @@ const Register = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
     setError, // Para asignar errores específicos
   } = useForm({
@@ -74,6 +76,32 @@ const Register = () => {
     }
   };
 
+  // Estado para manejar la visibilidad de la contraseña
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Estado para la validación en tiempo real
+  const [passwordValidations, setPasswordValidations] = useState({
+    min: false,
+    lowercase: false,
+    uppercase: false,
+    number: false,
+    specialChar: false,
+  });
+
+  const password = watch('password', '');
+
+  useEffect(() => {
+    // Actualizar las validaciones en tiempo real
+    setPasswordValidations({
+      min: password.length >= 8,
+      lowercase: /[a-z]/.test(password),
+      uppercase: /[A-Z]/.test(password),
+      number: /\d/.test(password),
+      specialChar: /[@$!%*?&]/.test(password),
+    });
+  }, [password]);
+
   return (
     <div className="register-page">
       <div className="register-container">
@@ -113,25 +141,81 @@ const Register = () => {
             {errors.email && <span className="error">{errors.email.message}</span>}
           </div>
 
-          <div className="form-group">
+          <div className="form-group password-group">
             <label htmlFor="password">Contraseña</label>
-            <input
-              type="password"
-              id="password"
-              {...register('password')}
-              placeholder="Ingresa tu contraseña"
-            />
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                {...register('password')}
+                placeholder="Ingresa tu contraseña"
+              />
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              >
+                <img
+                  src={
+                    showPassword
+                      ? `${process.env.PUBLIC_URL}/assets/icons/ojo-abierto.png`
+                      : `${process.env.PUBLIC_URL}/assets/icons/ojo-cerrado.png`
+                  }
+                  alt={showPassword ? 'Ojo abierto' : 'Ojo cerrado'}
+                  width="24"
+                  height="24"
+                />
+              </button>
+            </div>
             {errors.password && <span className="error">{errors.password.message}</span>}
+            {/* Validación en tiempo real */}
+            <ul className="password-validations">
+              <li className={passwordValidations.min ? 'valid' : ''}>
+                {passwordValidations.min ? '✔️' : '❌'} Al menos 8 caracteres
+              </li>
+              <li className={passwordValidations.lowercase ? 'valid' : ''}>
+                {passwordValidations.lowercase ? '✔️' : '❌'} Al menos una letra minúscula
+              </li>
+              <li className={passwordValidations.uppercase ? 'valid' : ''}>
+                {passwordValidations.uppercase ? '✔️' : '❌'} Al menos una letra mayúscula
+              </li>
+              <li className={passwordValidations.number ? 'valid' : ''}>
+                {passwordValidations.number ? '✔️' : '❌'} Al menos un número
+              </li>
+              <li className={passwordValidations.specialChar ? 'valid' : ''}>
+                {passwordValidations.specialChar ? '✔️' : '❌'} Al menos un carácter especial (@, $, !, %, *, ?, &)
+              </li>
+            </ul>
           </div>
 
-          <div className="form-group">
+          <div className="form-group password-group">
             <label htmlFor="confirmPassword">Confirmar Contraseña</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              {...register('confirmPassword')}
-              placeholder="Confirma tu contraseña"
-            />
+            <div className="password-wrapper">
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                id="confirmPassword"
+                {...register('confirmPassword')}
+                placeholder="Confirma tu contraseña"
+              />
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                aria-label={showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              >
+                <img
+                  src={
+                    showConfirmPassword
+                      ? `${process.env.PUBLIC_URL}/assets/icons/ojo-abierto.png`
+                      : `${process.env.PUBLIC_URL}/assets/icons/ojo-cerrado.png`
+                  }
+                  alt={showConfirmPassword ? 'Ojo abierto' : 'Ojo cerrado'}
+                  width="24"
+                  height="24"
+                />
+              </button>
+            </div>
             {errors.confirmPassword && <span className="error">{errors.confirmPassword.message}</span>}
           </div>
 
@@ -151,12 +235,22 @@ const Register = () => {
         </form>
         <div className="social-login">
           <p>O regístrate con:</p>
-          <button className="google-button" onClick={() => window.location.href = `${config.API_URL}/auth/google?clientURI=${encodeURIComponent(window.location.origin)}`}>
-            <img className='google-icon' src={`${process.env.PUBLIC_URL}/assets/icons/google-icon.svg`} alt="Google Icon" width="18" height="18" />
+          <button
+            className="google-button"
+            onClick={() =>
+              (window.location.href = `${config.API_URL}/auth/google?clientURI=${encodeURIComponent(
+                window.location.origin
+              )}`)
+            }
+          >
+            <img
+              className="google-icon"
+              src={`${process.env.PUBLIC_URL}/assets/icons/google-icon.svg`}
+              alt="Google Icon"
+              width="18"
+              height="18"
+            />
             <span>Continuar con Google</span>
-          </button>
-          <button className="facebook-button" onClick={() => window.location.href = `${config.API_URL}/auth/facebook`}>
-            Continuar con Facebook
           </button>
         </div>
         <div className="switch-auth">

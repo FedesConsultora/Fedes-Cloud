@@ -14,6 +14,8 @@ import PageTransition from './components/PageTransition.js';
 import Profile from './pages/Profile.js'; // Asume que creaste esta página
 import Settings from './pages/Settings.js'; // Página que crearemos
 import TwoFactorAuth from './pages/TwoFactorAuth.js'; // Página para 2FA
+import DominiosPage from './pages/DominiosPage.js';
+import DominiosBusquedaPage from './pages/DominiosBusquedaPage.js';
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -101,8 +103,31 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
-
-          {/* Redireccionar cualquier otra ruta a / */}
+          <Route
+            path="/dominios"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <DominiosPage />
+                  </PageTransition>
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dominios/busqueda"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <DominiosBusquedaPage />
+                  </PageTransition>
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </AnimatePresence>

@@ -1,6 +1,6 @@
 // src/components/Sidebar.js
 import React, { useContext } from 'react';
-import { FaHome, FaCog } from 'react-icons/fa';
+import { FaHome, FaCog, FaGlobe } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext.js';
 import UserInfo from './UserInfo.js';
@@ -27,6 +27,10 @@ const Sidebar = () => {
           <li onClick={() => navigate('/settings')}>
             <FaCog />
             <span>Configuración</span>
+          </li>
+          <li onClick={() => navigate('/dominios')}>
+            <FaGlobe />
+            <span>Dominios</span>
           </li>
         </ul>
       </nav>

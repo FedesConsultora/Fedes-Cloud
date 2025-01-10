@@ -3,10 +3,16 @@
 @use 'abstracts/variables' as vars;
 @use 'abstracts/mixins' as mixins;
 @use 'base/reset';
+
 @use 'components/button';
 @use 'components/form';
 @use 'components/themeToggle';
 @use 'components/sweetalert';
+@use 'components/sidebar';
+@use 'components/footer';
+@use 'components/logo';
+@use 'components/socialLogin';
+
 @use 'layouts/mainLayout';
 @use 'layouts/authLayout';
 @use 'pages/login';
@@ -17,10 +23,10 @@
 @use 'pages/settings';
 @use 'pages/home';
 @use 'pages/profile';
-@use 'components/sidebar';
-@use 'components/footer';
-@use 'components/logo';
-@use 'components/socialLogin';
+@use 'pages/dominios';
+@use 'pages/dominiosBusqueda';
+
+
 
 
 /* Aplicar el tema claro por defecto dentro de :root */
@@ -55,4 +61,89 @@ body {
   min-height: 100vh;
 }
 .motiondiv{
+}
+
+
+/* Estilos generales para mostrar/ocultar contraseñas y validaciones */
+
+.password-group {
+  position: relative;
+
+  .password-wrapper {
+    display: flex;
+    align-items: center;
+
+    input {
+      flex: 1;
+    }
+
+    .toggle-password {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+      position: absolute;
+      right: 0.5rem;
+      top: 55px;
+      transform: translateY(-50%);
+    }
+
+    .toggle-password img {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .password-validations {
+    list-style: none;
+    padding: 0;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+
+    li {
+      display: flex;
+      align-items: center;
+      color: mixins.theme(text-color);
+
+      &.valid {
+        color: green;
+      }
+
+      &::before {
+        content: '';
+        display: inline-block;
+        width: 1rem;
+      }
+    }
+  }
+}
+
+.error {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.resend-section {
+  margin-top: 1rem;
+  text-align: center;
+
+  .resend-button {
+    background-color: mixins.theme(primary-color);
+    color: mixins.theme(light-color);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: mixins.theme(primary-color-hover);
+    }
+
+    &:disabled {
+      background-color: mixins.theme(gray-color);
+      cursor: not-allowed;
+    }
+  }
 }

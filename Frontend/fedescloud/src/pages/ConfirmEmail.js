@@ -60,13 +60,7 @@ const ConfirmEmail = () => {
       }
     };
 
-    // Solo intentar confirmar si hay token y email
-    if (token && email) {
-      confirmEmail();
-    } else {
-      setStatus('error');
-      Swal.fire('Error', 'Token o email faltante en la URL', 'error').then(() => navigate('/auth/login'));
-    }
+    
   }, [location.search, navigate]);
 
   const handleResend = async () => {

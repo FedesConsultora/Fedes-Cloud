@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* Reset CSS */
 * {
   margin: 0;
@@ -174,6 +175,170 @@
 }
 .swal2-confirm-button:hover {
   background-color: var(--primary-color-hover);
+}
+
+.sidebar {
+  width: 280px;
+  background-color: var(--dark-color);
+  color: var(--light-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.sidebar .logo-container {
+  margin-bottom: 40px;
+  padding: 1rem;
+  width: 100%;
+  background-color: var(--primary-color);
+  display: flex;
+  justify-content: center;
+}
+.sidebar .logo-container .logo {
+  width: 190px;
+  transition: filter 0.3s ease;
+}
+.sidebar .navigation {
+  flex: 1;
+}
+.sidebar .navigation ul {
+  list-style: none;
+  width: 100%;
+  padding: 0;
+}
+.sidebar .navigation ul li {
+  width: 100%;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.sidebar .navigation ul li:hover {
+  background-color: var(--color-primary);
+}
+.sidebar .navigation ul li svg {
+  margin-right: 10px;
+}
+.sidebar .navigation ul li span {
+  font-size: 19px;
+}
+.sidebar .user-info {
+  padding: 1rem;
+  border-top: 1px solid #ccc;
+}
+.sidebar .user-info .user-details {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+.sidebar .user-info .user-details:hover {
+  text-decoration: underline;
+}
+.sidebar .user-info .user-details .user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 1000%;
+  margin-right: 0.5rem;
+}
+.sidebar .user-info .user-text p {
+  margin: 0;
+  line-height: 1.2;
+}
+.sidebar .user-info .user-text p strong {
+  -webkit-text-stroke: 0.3px;
+  -webkit-text-stroke-color: #333;
+}
+.sidebar .user-info .logout-button, .sidebar .user-info .profile-button {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  background-color: var(--gray-color);
+  border: none;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  color: #333;
+  border-radius: 10px;
+  margin-top: 0.5rem;
+  width: 100%;
+  justify-content: center;
+}
+.sidebar .user-info .logout-button:hover, .sidebar .user-info .profile-button:hover {
+  background-color: var(--primary-color-hover);
+  color: var(--light-color);
+}
+.sidebar .user-info .logout-button span, .sidebar .user-info .profile-button span {
+  margin-left: 0.25rem;
+}
+.sidebar .logout-button {
+  display: flex;
+  width: 60%;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.7);
+  border: none;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  margin-top: 1rem;
+  color: var(--light-color);
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+}
+.sidebar .logout-button:hover {
+  text-decoration: underline;
+}
+.sidebar .logout-button span {
+  margin-left: 0.9rem;
+}
+
+.footer {
+  background-color: var(--light-color);
+  padding: 10px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.logo a {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+.logo a img {
+  width: 75%;
+  margin-right: 15px;
+  transition: filter 0.3s ease;
+}
+.logo a .nube {
+  width: 20%;
+  margin: 0 !important;
+}
+
+.google-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  color: #000;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+  width: 100%;
+  text-align: center;
+}
+.google-button .google-icon {
+  margin-right: 1rem;
+}
+.google-button:hover {
+  background-color: #f2f2f2;
 }
 
 .main-layout {
@@ -998,168 +1163,222 @@ main {
     width: 120px;
   }
 }
-.sidebar {
-  width: 280px;
-  background-color: var(--dark-color);
-  color: var(--light-color);
+/**
+ * Página de Dominios
+ * - Contenedor principal
+ * - Barra de búsqueda con lupa
+ * - Lista de dominios locales
+ */
+.dominios-page {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 3rem;
+  min-height: 100vh;
+  background-color: var(--background-color);
+  color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
-.sidebar .logo-container {
-  margin-bottom: 40px;
-  padding: 1rem;
-  width: 100%;
-  background-color: var(--primary-color);
-  display: flex;
-  justify-content: center;
+.dominios-page .user-info {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  color: var(--dark-blue-color);
 }
-.sidebar .logo-container .logo {
-  width: 190px;
-  transition: filter 0.3s ease;
-}
-.sidebar .navigation {
-  flex: 1;
-}
-.sidebar .navigation ul {
-  list-style: none;
-  width: 100%;
-  padding: 0;
-}
-.sidebar .navigation ul li {
-  width: 100%;
-  padding: 15px 20px;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-.sidebar .navigation ul li:hover {
-  background-color: var(--color-primary);
-}
-.sidebar .navigation ul li svg {
-  margin-right: 10px;
-}
-.sidebar .navigation ul li span {
-  font-size: 19px;
-}
-.sidebar .user-info {
-  padding: 1rem;
-  border-top: 1px solid #ccc;
-}
-.sidebar .user-info .user-details {
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  cursor: pointer;
-}
-.sidebar .user-info .user-details:hover {
-  text-decoration: underline;
-}
-.sidebar .user-info .user-details .user-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 1000%;
-  margin-right: 0.5rem;
-}
-.sidebar .user-info .user-text p {
-  margin: 0;
-  line-height: 1.2;
-}
-.sidebar .user-info .user-text p strong {
-  -webkit-text-stroke: 0.3px;
-  -webkit-text-stroke-color: #333;
-}
-.sidebar .user-info .logout-button, .sidebar .user-info .profile-button {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  background-color: var(--gray-color);
-  border: none;
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
-  color: #333;
-  border-radius: 10px;
-  margin-top: 0.5rem;
-  width: 100%;
-  justify-content: center;
-}
-.sidebar .user-info .logout-button:hover, .sidebar .user-info .profile-button:hover {
-  background-color: var(--primary-color-hover);
-  color: var(--light-color);
-}
-.sidebar .user-info .logout-button span, .sidebar .user-info .profile-button span {
-  margin-left: 0.25rem;
-}
-.sidebar .logout-button {
-  display: flex;
-  width: 60%;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.7);
-  border: none;
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
-  margin-top: 1rem;
-  color: var(--light-color);
-  border-radius: 5px;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  -ms-border-radius: 5px;
-  -o-border-radius: 5px;
-}
-.sidebar .logout-button:hover {
-  text-decoration: underline;
-}
-.sidebar .logout-button span {
-  margin-left: 0.9rem;
-}
-
-.footer {
-  background-color: var(--light-color);
-  padding: 10px;
+.dominios-page h2 {
+  margin-bottom: 2rem;
+  color: var(--dark-color);
   text-align: center;
-  transition: background-color 0.3s ease;
+  font-weight: 600;
+  font-size: 2rem;
 }
-
-.logo a {
+.dominios-page .domain-checker {
   display: flex;
   align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+.dominios-page .domain-checker input[type=text] {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #c6c6c6;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+.dominios-page .domain-checker input[type=text]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+}
+.dominios-page .domain-checker button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 50px;
+  height: 50px;
+}
+.dominios-page .domain-checker button:hover {
+  background-color: var(--primary-color-hover);
+}
+.dominios-page .domain-checker button svg {
+  width: 20px;
+  height: 20px;
+}
+.dominios-page .local-domains {
+  width: 100%;
+  max-width: 800px;
+  background-color: var(--light-color);
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 0 5px var(--shadow-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.dominios-page .local-domains h3 {
+  font-size: 1.4rem;
+  color: var(--dark-blue-color);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+.dominios-page .local-domains table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.dominios-page .local-domains table thead tr {
+  background-color: var(--primary-color);
+  color: var(--light-color);
+}
+.dominios-page .local-domains table thead th {
+  padding: 0.75rem;
+  text-align: left;
+}
+.dominios-page .local-domains table thead th:first-child {
+  border-top-left-radius: 10px;
+}
+.dominios-page .local-domains table thead th:last-child {
+  border-top-right-radius: 10px;
+}
+.dominios-page .local-domains table tbody tr {
+  border-bottom: 1px solid #ccc;
+}
+.dominios-page .local-domains table tbody tr:hover {
+  background-color: #f7f9fc;
+}
+.dominios-page .local-domains table tbody tr td {
+  padding: 0.75rem;
+}
+
+/**
+ * Página de Búsqueda de Dominios
+ * - Contenedor principal
+ * - Resultado de disponibilidad
+ * - Sugerencias
+ */
+.dominios-busqueda-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem;
+  min-height: 100vh;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.dominios-busqueda-page .header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
   margin-bottom: 2rem;
 }
-.logo a img {
-  width: 75%;
-  margin-right: 15px;
-  transition: filter 0.3s ease;
-}
-.logo a .nube {
-  width: 20%;
-  margin: 0 !important;
-}
-
-.google-button {
-  display: inline-flex;
+.dominios-busqueda-page .header .back-button {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  background: #fff;
-  color: #000;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 0.5rem 1rem;
-  font-size: 0.95rem;
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: 1rem;
+  margin-right: 1rem;
+  transition: color 0.3s ease;
+}
+.dominios-busqueda-page .header .back-button:hover {
+  color: var(--primary-color-hover);
+}
+.dominios-busqueda-page .header .back-button svg {
+  margin-right: 0.5rem;
+  width: 16px;
+  height: 16px;
+}
+.dominios-busqueda-page .header h2 {
+  margin: 0;
+  color: var(--dark-color);
+  font-weight: 600;
+  font-size: 2rem;
+}
+.dominios-busqueda-page p {
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 1.1rem;
+}
+.dominios-busqueda-page .domain-check-result,
+.dominios-busqueda-page .domain-suggestions {
   width: 100%;
+  max-width: 600px;
+  background-color: var(--light-color);
+  border-radius: 10px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 0 5px var(--shadow-color);
+  margin-bottom: 2rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.dominios-busqueda-page .domain-check-result h3,
+.dominios-busqueda-page .domain-suggestions h3 {
+  font-size: 1.4rem;
+  color: var(--dark-blue-color);
+  margin-bottom: 1rem;
   text-align: center;
 }
-.google-button .google-icon {
-  margin-right: 1rem;
+.dominios-busqueda-page .domain-check-result p,
+.dominios-busqueda-page .domain-suggestions p {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
 }
-.google-button:hover {
-  background-color: #f2f2f2;
+.dominios-busqueda-page .domain-check-result p:last-child,
+.dominios-busqueda-page .domain-suggestions p:last-child {
+  margin-bottom: 0;
+}
+.dominios-busqueda-page .domain-check-result ul,
+.dominios-busqueda-page .domain-suggestions ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.dominios-busqueda-page .domain-check-result ul li,
+.dominios-busqueda-page .domain-suggestions ul li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ccc;
+}
+.dominios-busqueda-page .domain-check-result ul li:last-child,
+.dominios-busqueda-page .domain-suggestions ul li:last-child {
+  border-bottom: none;
+}
+.dominios-busqueda-page .no-results {
+  font-size: 1rem;
+  color: var(--dark-color);
+  text-align: center;
 }
 
 /* Aplicar el tema claro por defecto dentro de :root */
@@ -1223,6 +1442,78 @@ body {
   overflow-x: hidden;
   width: 100vw;
   min-height: 100vh;
+}
+
+/* Estilos generales para mostrar/ocultar contraseñas y validaciones */
+.password-group {
+  position: relative;
+}
+.password-group .password-wrapper {
+  display: flex;
+  align-items: center;
+}
+.password-group .password-wrapper input {
+  flex: 1;
+}
+.password-group .password-wrapper .toggle-password {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  position: absolute;
+  right: 0.5rem;
+  top: 55px;
+  transform: translateY(-50%);
+}
+.password-group .password-wrapper .toggle-password img {
+  width: 24px;
+  height: 24px;
+}
+.password-group .password-validations {
+  list-style: none;
+  padding: 0;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+.password-group .password-validations li {
+  display: flex;
+  align-items: center;
+  color: var(--text-color);
+}
+.password-group .password-validations li.valid {
+  color: green;
+}
+.password-group .password-validations li::before {
+  content: "";
+  display: inline-block;
+  width: 1rem;
+}
+
+.error {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.resend-section {
+  margin-top: 1rem;
+  text-align: center;
+}
+.resend-section .resend-button {
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.resend-section .resend-button:hover {
+  background-color: var(--primary-color-hover);
+}
+.resend-section .resend-button:disabled {
+  background-color: var(--gray-color);
+  cursor: not-allowed;
 }
 
 /*# sourceMappingURL=main.css.map */

@@ -1,4 +1,5 @@
 // src/pages/ResetPassword.js
+
 import React, { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -18,6 +19,7 @@ const ResetPassword = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(resetPasswordValidationSchema),
@@ -31,12 +33,33 @@ const ResetPassword = () => {
   const [isResending, setIsResending] = useState(false);
   const hasSubmittedRef = useRef(false); 
 
+  // Estados para manejar la visibilidad de las contraseñas
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Estados para la validación en tiempo real
+  const [passwordValidations, setPasswordValidations] = useState({
+    min: false,
+    lowercase: false,
+    uppercase: false,
+    number: false,
+    specialChar: false,
+  });
+
+  const password = watch('password', '');
+
   useEffect(() => {
-    if (!token || !email) {
-      setStatus('invalid');
-      Swal.fire('Error', 'Token o email faltante en la URL', 'error').then(() => navigate('/auth/login'));
-    }
-  }, [token, email, navigate]);
+    // Actualizar las validaciones en tiempo real
+    setPasswordValidations({
+      min: password.length >= 8,
+      lowercase: /[a-z]/.test(password),
+      uppercase: /[A-Z]/.test(password),
+      number: /\d/.test(password),
+      specialChar: /[@$!%*?&]/.test(password),
+    });
+  }, [password]);
+
+  
 
   const onSubmit = async (data) => {
     if (hasSubmittedRef.current) return;
@@ -134,26 +157,94 @@ const ResetPassword = () => {
           <input type="hidden" {...register('email')} value={email} />
 
           <div className="form-group">
-            <label htmlFor="password">Nueva Contraseña</label>
+            <label htmlFor="email">Correo Electrónico</label>
             <input
-              type="password"
-              id="password"
-              {...register('password')}
-              placeholder="Ingresa tu nueva contraseña"
-              disabled={isSubmitting || tokenExpired}
+              type="email"
+              id="email"
+              {...register('email')}
+              placeholder="Ingresa tu correo"
+              disabled
             />
-            {errors.password && <span className="error">{errors.password.message}</span>}
+            {errors.email && <span className="error">{errors.email.message}</span>}
           </div>
 
-          <div className="form-group">
+          <div className="form-group password-group">
+            <label htmlFor="password">Nueva Contraseña</label>
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                {...register('password')}
+                placeholder="Ingresa tu nueva contraseña"
+                disabled={isSubmitting || tokenExpired}
+              />
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              >
+                <img
+                  src={
+                    showPassword
+                      ? `${process.env.PUBLIC_URL}/assets/icons/ojo-abierto.png`
+                      : `${process.env.PUBLIC_URL}/assets/icons/ojo-cerrado.png`
+                  }
+                  alt={showPassword ? 'Ojo abierto' : 'Ojo cerrado'}
+                  width="24"
+                  height="24"
+                />
+              </button>
+            </div>
+            {errors.password && <span className="error">{errors.password.message}</span>}
+            {/* Validación en tiempo real */}
+            <ul className="password-validations">
+              <li className={passwordValidations.min ? 'valid' : ''}>
+                {passwordValidations.min ? '✔️' : '❌'} Al menos 8 caracteres
+              </li>
+              <li className={passwordValidations.lowercase ? 'valid' : ''}>
+                {passwordValidations.lowercase ? '✔️' : '❌'} Al menos una letra minúscula
+              </li>
+              <li className={passwordValidations.uppercase ? 'valid' : ''}>
+                {passwordValidations.uppercase ? '✔️' : '❌'} Al menos una letra mayúscula
+              </li>
+              <li className={passwordValidations.number ? 'valid' : ''}>
+                {passwordValidations.number ? '✔️' : '❌'} Al menos un número
+              </li>
+              <li className={passwordValidations.specialChar ? 'valid' : ''}>
+                {passwordValidations.specialChar ? '✔️' : '❌'} Al menos un carácter especial (@, $, !, %, *, ?, &)
+              </li>
+            </ul>
+          </div>
+
+          <div className="form-group password-group">
             <label htmlFor="confirmPassword">Confirmar Nueva Contraseña</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              {...register('confirmPassword')}
-              placeholder="Confirma tu nueva contraseña"
-              disabled={isSubmitting || tokenExpired}
-            />
+            <div className="password-wrapper">
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                id="confirmPassword"
+                {...register('confirmPassword')}
+                placeholder="Confirma tu nueva contraseña"
+                disabled={isSubmitting || tokenExpired}
+              />
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                aria-label={showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              >
+                <img
+                  src={
+                    showConfirmPassword
+                      ? `${process.env.PUBLIC_URL}/assets/icons/ojo-abierto.png`
+                      : `${process.env.PUBLIC_URL}/assets/icons/ojo-cerrado.png`
+                  }
+                  alt={showConfirmPassword ? 'Ojo abierto' : 'Ojo cerrado'}
+                  width="24"
+                  height="24"
+                />
+              </button>
+            </div>
             {errors.confirmPassword && <span className="error">{errors.confirmPassword.message}</span>}
           </div>
 

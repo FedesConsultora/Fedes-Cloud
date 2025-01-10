@@ -1,4 +1,6 @@
-import React, { useContext, useEffect } from 'react';
+// src/pages/Login.js
+
+import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext.js';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -27,9 +29,11 @@ const Login = () => {
     resolver: yupResolver(loginValidationSchema),
   });
 
+  // Estado para manejar la visibilidad de la contraseña
+  const [showPassword, setShowPassword] = useState(false);
+
   useEffect(() => {
     // Si venimos desde Google OAuth con twoFactorRequired=true en la URL
-    // Actualizamos el estado en el contexto:
     if (urlTwoFactorRequired && urlTempToken) {
       // El login del contexto hará que se muestre el 2FA sin llamar fetchUserProfile aún
       login({ twoFactorRequired: true, tempToken: urlTempToken });
@@ -85,13 +89,42 @@ const Login = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="form-group">
               <label htmlFor="email">Correo Electrónico</label>
-              <input type="email" id="email" {...register('email')} placeholder="Ingresa tu correo" />
+              <input
+                type="email"
+                id="email"
+                {...register('email')}
+                placeholder="Ingresa tu correo"
+              />
               {errors.email && <span className="error">{errors.email.message}</span>}
             </div>
 
-            <div className="form-group">
+            <div className="form-group password-group">
               <label htmlFor="password">Contraseña</label>
-              <input type="password" id="password" {...register('password')} placeholder="Ingresa tu contraseña" />
+              <div className="password-wrapper">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  {...register('password')}
+                  placeholder="Ingresa tu contraseña"
+                />
+                <button
+                  type="button"
+                  className="toggle-password"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                >
+                  <img
+                    src={
+                      showPassword
+                        ? `${process.env.PUBLIC_URL}/assets/icons/ojo-abierto.png`
+                        : `${process.env.PUBLIC_URL}/assets/icons/ojo-cerrado.png`
+                    }
+                    alt={showPassword ? 'Ojo abierto' : 'Ojo cerrado'}
+                    width="24"
+                    height="24"
+                  />
+                </button>
+              </div>
               {errors.password && <span className="error">{errors.password.message}</span>}
             </div>
 
@@ -104,8 +137,21 @@ const Login = () => {
         )}
         <div className="social-login">
           <p>O inicia sesión con:</p>
-          <button className="google-button" onClick={() => window.location.href = `${config.API_URL}/auth/google?clientURI=${encodeURIComponent(window.location.origin)}`}>
-            <img className='google-icon' src={`${process.env.PUBLIC_URL}/assets/icons/google-icon.svg`} alt="Google Icon" width="18" height="18" />
+          <button
+            className="google-button"
+            onClick={() =>
+              (window.location.href = `${config.API_URL}/auth/google?clientURI=${encodeURIComponent(
+                window.location.origin
+              )}`)
+            }
+          >
+            <img
+              className="google-icon"
+              src={`${process.env.PUBLIC_URL}/assets/icons/google-icon.svg`}
+              alt="Google Icon"
+              width="18"
+              height="18"
+            />
             <span>Continuar con Google</span>
           </button>
         </div>
