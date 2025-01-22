@@ -403,7 +403,6 @@ export const getProfile = async (req, res, next) => {
 
 export const enableTwoFactor = async (req, res, next) => {
   try {
-    console.log('entre')
     const user = await Usuario.findByPk(req.user.id_usuario);
 
     if (!user) {
@@ -545,3 +544,186 @@ export const disableTwoFactor = async (req, res, next) => {
     next(error);
   }
 };
+
+
+/**
+ * Actualizar el perfil del usuario autenticado.
+ */
+export const updateProfile = async (req, res, next) => {
+  try {
+    const { nombre, apellido, avatar } = req.body;
+    const { id_usuario } = req.user;
+
+    const user = await Usuario.findByPk(id_usuario);
+    if (!user) {
+      throw new ValidationError([{
+        msg: 'Usuario no encontrado.',
+        param: 'user',
+        location: 'body',
+      }]);
+    }
+
+    // Actualizar los campos permitidos
+    await user.update({
+      nombre: nombre || user.nombre,
+      apellido: apellido || user.apellido,
+      avatar: avatar || user.avatar,
+      // Puedes añadir más campos si es necesario
+    });
+
+    logger.info(`Perfil actualizado exitosamente para el usuario ID ${id_usuario}`);
+
+    // Aquí podrías implementar una notificación al usuario sobre la actualización
+
+    res.status(200).json({
+      success: true,
+      message: 'Perfil actualizado exitosamente',
+      data: {
+        id_usuario: user.id_usuario,
+        nombre: user.nombre,
+        apellido: user.apellido,
+        email: user.email,
+        avatar: user.avatar,
+        // Añade más campos si es necesario
+        updatedAt: user.updatedAt,
+      },
+    });
+  } catch (error) {
+    logger.error(`Error al actualizar perfil: ${error.message}`);
+    next(error);
+  }
+};
+
+/**
+ * Actualizar el email del usuario autenticado.
+ */
+export const updateEmail = async (req, res, next) => {
+  try {
+    const { newEmail, confirmationCode } = req.body;
+    const { id_usuario } = req.user;
+
+    const user = await Usuario.findByPk(id_usuario);
+    if (!user) {
+      throw new ValidationError([{
+        msg: 'Usuario no encontrado.',
+        param: 'user',
+        location: 'body',
+      }]);
+    }
+
+    if (newEmail === user.email) {
+      throw new ValidationError([{
+        msg: 'El nuevo email debe ser diferente al actual.',
+        param: 'newEmail',
+        location: 'body',
+      }]);
+    }
+
+    // Verificar si el nuevo email ya está registrado
+    const existingUser = await Usuario.findOne({ where: { email: newEmail } });
+    if (existingUser) {
+      throw new EmailAlreadyExistsError();
+    }
+
+    // Generar un token de confirmación
+    const emailToken = crypto.randomBytes(32).toString('hex');
+    const emailTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 horas
+
+    // Actualizar los campos relevantes
+    user.email = newEmail;
+    user.emailConfirmed = false;
+    user.emailToken = emailToken;
+    user.emailTokenExpires = emailTokenExpires;
+
+    await user.save();
+
+    // Enviar el correo de confirmación al nuevo email
+    const confirmURL = `${process.env.CLIENT_URI}/auth/confirm-email?token=${emailToken}&email=${newEmail}`;
+
+    await sendEmail({
+      to: newEmail,
+      subject: 'Confirma tu nuevo correo electrónico',
+      template: 'confirmEmail',
+      context: {
+        nombre: user.nombre,
+        confirmURL,
+      },
+    });
+
+    logger.info(`Se ha enviado un correo de confirmación a ${newEmail} para el usuario ID ${id_usuario}`);
+
+    res.status(200).json({
+      success: true,
+      message: 'Se ha enviado un correo de confirmación al nuevo email. Por favor, confirma el cambio.',
+    });
+  } catch (error) {
+    logger.error(`Error al actualizar email: ${error.message}`);
+    next(error);
+  }
+};
+
+
+/**
+ * Actualizar la contraseña del usuario autenticado.
+ */
+export const updatePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const { id_usuario } = req.user;
+
+    const user = await Usuario.findByPk(id_usuario);
+    if (!user) {
+      throw new ValidationError([{
+        msg: 'Usuario no encontrado.',
+        param: 'user',
+        location: 'body',
+      }]);
+    }
+
+    // Verificar que se proporcione la contraseña actual y la nueva contraseña
+    if (!currentPassword || !newPassword) {
+      throw new ValidationError([
+        {
+          msg: 'La contraseña actual es obligatoria.',
+          param: 'currentPassword',
+          location: 'body',
+        },
+        {
+          msg: 'La nueva contraseña es obligatoria.',
+          param: 'newPassword',
+          location: 'body',
+        },
+      ]);
+    }
+
+    // Verificar que la contraseña actual es correcta
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      throw new ValidationError([{
+        msg: 'La contraseña actual es incorrecta.',
+        param: 'currentPassword',
+        location: 'body',
+      }]);
+    }
+
+    // Validar la nueva contraseña (puedes reutilizar las validaciones del backend o implementarlas aquí)
+    // Por ejemplo, asegurarse de que cumple con los requisitos de complejidad
+
+    // Encriptar la nueva contraseña
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Actualizar la contraseña
+    user.password = hashedPassword;
+    await user.save();
+
+    logger.info(`Contraseña actualizada exitosamente para el usuario ID ${id_usuario}`);
+
+    res.status(200).json({
+      success: true,
+      message: 'Contraseña actualizada exitosamente.',
+    });
+  } catch (error) {
+    logger.error(`Error al actualizar contraseña: ${error.message}`);
+    next(error);
+  }
+};  

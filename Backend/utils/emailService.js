@@ -36,8 +36,8 @@ export const sendEmail = async (options) => {
     from: `"Fedes Cloud" <${process.env.EMAIL_FROM}>`,
     to: options.to,
     subject: options.subject,
-    template: options.template, // Nombre del archivo de plantilla (sin extensión)
-    context: options.context, // Contexto para la plantilla
+    template: options.template, 
+    context: options.context, 
   };
 
   await transporter.sendMail(mailOptions);

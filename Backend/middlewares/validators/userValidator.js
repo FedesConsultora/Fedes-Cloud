@@ -88,11 +88,7 @@ export const createUserValidation = [
  * Validación para actualizar un usuario (User Module).
  */
 export const updateUserValidation = [
-  // Validación para el parámetro 'id'
-  param('id')
-    .isInt({ gt: 0 })
-    .withMessage('El ID del usuario debe ser un número entero positivo'),
-
+ 
   // Validación para el campo 'nombre'
   body('nombre')
     .optional()
@@ -124,7 +120,7 @@ export const updateUserValidation = [
 
   // Validación para el campo 'contraseña'
   body('password')
-    .optional()
+    .optional({ checkFalsy: true })
     .isLength({ min: 8 })
     .withMessage('La contraseña debe tener al menos 8 caracteres')
     .matches(/[a-z]/)
@@ -145,7 +141,7 @@ export const updateUserValidation = [
     .custom((value) => {
       const today = new Date();
       const birthDate = new Date(value);
-      const age = today.getFullYear() - birthDate.getFullYear();
+      let age = today.getFullYear() - birthDate.getFullYear();
       const m = today.getMonth() - birthDate.getMonth();
       if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
         age--;

@@ -166,7 +166,7 @@ const AppRoutes = () => {
               <AdminRoute>
                 <MainLayout>
                   <PageTransition>
-                    <EditUserPage /> {/* Crea este componente */}
+                    <EditUserPage /> 
                   </PageTransition>
                 </MainLayout>
               </AdminRoute>

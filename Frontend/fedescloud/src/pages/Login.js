@@ -1,5 +1,3 @@
-// src/pages/Login.js
-
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContext.js';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
@@ -33,9 +31,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
-    // Si venimos desde Google OAuth con twoFactorRequired=true en la URL
     if (urlTwoFactorRequired && urlTempToken) {
-      // El login del contexto hará que se muestre el 2FA sin llamar fetchUserProfile aún
       login({ twoFactorRequired: true, tempToken: urlTempToken });
     }
   }, [urlTwoFactorRequired, urlTempToken, login]);
@@ -59,7 +55,6 @@ const Login = () => {
           Swal.fire('Éxito', result.message, 'success').then(() => navigate('/'));
         }
       } else {
-        // Manejo de errores del login sin 2FA
         if (result.errors && result.errors.length > 0) {
           const errorMessages = result.errors.map((err) => `Error: ${err.message}`).join('\n');
           Swal.fire('Errores', errorMessages, 'error');
@@ -84,7 +79,6 @@ const Login = () => {
       <div className="login-container">
         <Logo />
         <h2>Iniciar Sesión</h2>
-        {/* Si twoFactorRequired es true, mostramos TwoFactorAuth */}
         {!twoFactorRequired ? (
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="form-group">
@@ -94,6 +88,7 @@ const Login = () => {
                 id="email"
                 {...register('email')}
                 placeholder="Ingresa tu correo"
+                autoComplete="email"
               />
               {errors.email && <span className="error">{errors.email.message}</span>}
             </div>
@@ -106,6 +101,7 @@ const Login = () => {
                   id="password"
                   {...register('password')}
                   placeholder="Ingresa tu contraseña"
+                  autoComplete="current-password"
                 />
                 <button
                   type="button"

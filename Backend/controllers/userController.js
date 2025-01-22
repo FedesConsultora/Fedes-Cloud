@@ -8,6 +8,8 @@ import {
 } from '../utils/errors/UserErrors.js';
 import { PermissionDeniedError } from '../utils/errors/GeneralErrors.js';
 import logger from '../utils/logger.js';
+import crypto from 'crypto';
+import { sendEmail } from '../utils/emailService.js';
 
 /**
  * Registro de un nuevo usuario.
@@ -91,7 +93,7 @@ export const getUsers = async (req, res, next) => {
 
     const users = await Usuario.findAll({
       include: [Rol, Estado, Autenticacion],
-      attributes: { exclude: ['contraseña'] }, // Excluir la contraseña de la respuesta
+      attributes: { exclude: ['password'] }, // Excluir la contraseña de la respuesta
     });
 
     logger.info(`Usuarios obtenidos exitosamente por el usuario ID ${req.user.id}`);
@@ -122,7 +124,7 @@ export const getUserById = async (req, res, next) => {
 
     const user = await Usuario.findByPk(id, {
       include: [Rol, Estado, Autenticacion],
-      attributes: { exclude: ['contraseña'] }, // Excluir la contraseña de la respuesta
+      attributes: { exclude: ['password'] }, // Excluir la contraseña de la respuesta
     });
 
     if (!user) {
@@ -158,8 +160,11 @@ export const updateUser = async (req, res, next) => {
       id_rol,
       id_estado,
       id_autenticacion,
-      contraseña, // Asegúrate de permitir actualizar la contraseña si es necesario
+      password,
+      clientURI,
     } = req.body;
+    
+    logger.debug(`Actualizando usuario ID ${id} con los siguientes datos: ${JSON.stringify(req.body)}`);
 
     // Verificar permisos
     if (!req.user || !req.user.permisos.includes('manage_users')) {
@@ -173,33 +178,67 @@ export const updateUser = async (req, res, next) => {
       throw new UserNotFoundError();
     }
 
-    // Si el email está siendo actualizado, verificar si ya existe
-    if (email && email !== user.email) {
-      const existingUser = await Usuario.findOne({ where: { email } });
-      if (existingUser) {
-        logger.warn(`Actualización de usuario fallida: Email ${email} ya está registrado`);
-        throw new EmailAlreadyExistsError();
-      }
-    }
-
-    // Encriptar la nueva contraseña si se proporciona
-    let hashedPassword = user.contraseña;
-    if (contraseña) {
-      hashedPassword = await bcrypt.hash(contraseña, 10);
-    }
-
-    await user.update({
+    // Inicializar objeto con los campos a actualizar
+    const updateFields = {
       nombre: nombre || user.nombre,
       apellido: apellido || user.apellido,
-      email: email || user.email,
-      contraseña: hashedPassword,
       fechaNacimiento: fechaNacimiento || user.fechaNacimiento,
       preferenciasNotificaciones: preferenciasNotificaciones !== undefined ? preferenciasNotificaciones : user.preferenciasNotificaciones,
       id_rol: id_rol || user.id_rol,
       id_estado: id_estado || user.id_estado,
       id_autenticacion: id_autenticacion || user.id_autenticacion,
-    });
+    };
 
+    logger.debug(`Campos a actualizar: ${JSON.stringify(updateFields)}`);
+
+    // Manejar actualización de contraseña si se proporciona
+    if (password) {
+      logger.debug(`Hashing nueva contraseña para usuario ID ${id}`);
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateFields.password = hashedPassword;
+      logger.debug(`Contraseña encriptada: ${hashedPassword}`);
+    }
+
+    // Manejar actualización de email si se proporciona y es diferente al actual
+    if (email && email !== user.email) {
+      logger.debug(`Actualizando email para usuario ID ${id}`);
+      // Verificar si el nuevo email ya existe
+      const existingUser = await Usuario.findOne({ where: { email } });
+      if (existingUser) {
+        logger.warn(`Actualización de usuario fallida: Email ${email} ya está registrado`);
+        throw new EmailAlreadyExistsError();
+      }
+
+      // Generar token de confirmación de email
+      const emailToken = crypto.randomBytes(32).toString('hex');
+      const emailTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 horas
+
+      updateFields.email = email;
+      updateFields.emailConfirmed = false;
+      updateFields.emailToken = emailToken;
+      updateFields.emailTokenExpires = emailTokenExpires;
+
+      logger.debug(`Email Token: ${emailToken}, Expira en: ${new Date(emailTokenExpires)}`);
+
+      // Enviar correo de confirmación al nuevo email
+      const confirmURL = `${clientURI}/auth/confirm-email?token=${emailToken}&email=${email}`;
+      logger.debug(`Enviando correo de confirmación a ${email} con URL: ${confirmURL}`);
+
+      await sendEmail({
+        to: email,
+        subject: 'Confirma tu nuevo correo electrónico',
+        template: 'confirmEmail',
+        context: {
+          nombre: user.nombre,
+          confirmURL,
+        },
+      });
+
+      logger.info(`Se ha enviado un correo de confirmación a ${email} para actualizar el email del usuario ID ${id}`);
+    }
+
+    logger.debug(`Actualizando usuario ID ${id} en la base de datos`);
+    await user.update(updateFields);
     logger.info(`Usuario actualizado exitosamente: ID ${user.id_usuario} por el usuario ID ${req.user.id}`);
 
     res.status(200).json({
@@ -219,7 +258,7 @@ export const updateUser = async (req, res, next) => {
       },
     });
   } catch (error) {
-    logger.error(`Error al actualizar usuario ID ${req.params.id}: ${error.message}`);
+    logger.error(`Error al actualizar usuario ID ${req.params.id}: ${error.message}`, { stack: error.stack });
     next(error);
   }
 };
@@ -336,6 +375,36 @@ export const updatePassword = async (req, res, next) => {
     });
   } catch (error) {
     logger.error(`Error al actualizar contraseña: ${error.message}`);
+    next(error);
+  }
+};
+
+export const getRoles = async (req, res, next) => {
+  try {
+    const roles = await Rol.findAll({
+      attributes: ['id_rol', 'nombre'],
+    });
+    res.status(200).json({
+      success: true,
+      data: roles,
+    });
+  } catch (error) {
+    logger.error(`Error al obtener roles: ${error.message}`);
+    next(error);
+  }
+};
+
+export const getEstados = async (req, res, next) => {
+  try {
+    const estados = await Estado.findAll({
+      attributes: ['id_estado', 'nombre'],
+    });
+    res.status(200).json({
+      success: true,
+      data: estados,
+    });
+  } catch (error) {
+    logger.error(`Error al obtener estados: ${error.message}`);
     next(error);
   }
 };

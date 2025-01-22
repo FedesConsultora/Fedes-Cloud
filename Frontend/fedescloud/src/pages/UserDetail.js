@@ -10,15 +10,13 @@ const UserDetail = () => {
   const [userDetail, setUserDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
   useEffect(() => {
     fetchUserDetail();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const fetchUserDetail = async () => {
     try {
-      const response = await fetch(`${config.API_URL}/users/${userId}`, { // Removido /admin
+      const response = await fetch(`${config.API_URL}/users/${userId}`, { 
         method: 'GET',
         credentials: 'include',
       });
@@ -54,8 +52,8 @@ const UserDetail = () => {
       <div className="detail-container">
         <p><strong>Nombre:</strong> {`${userDetail.nombre} ${userDetail.apellido}`}</p>
         <p><strong>Email:</strong> {userDetail.email}</p>
-        <p><strong>Rol:</strong> {userDetail.rolNombre}</p>
-        <p><strong>Estado:</strong> {userDetail.estadoNombre}</p>
+        <p><strong>Rol:</strong> {userDetail.Rol.nombre}</p>
+        <p><strong>Estado:</strong> {userDetail.Estado.nombre}</p>
         <p><strong>Fecha de Creación:</strong> {new Date(userDetail.createdAt).toLocaleDateString()}</p>
         {/* Agrega más detalles según tu API */}
         <h3>Servicios Asociados</h3>

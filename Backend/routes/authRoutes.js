@@ -187,4 +187,8 @@ router.post('/enable-2fa', authMiddleware, authController.enableTwoFactor);
 router.post('/verify-2fa', authMiddleware, authController.verifyTwoFactor);
 router.post('/disable-2fa', authMiddleware, authController.disableTwoFactor);
 
+router.put('/update-profile', authMiddleware, authController.updateProfile);
+router.put('/update-email', authMiddleware, authController.updateEmail);
+router.put('/update-password', authMiddleware, authController.updatePassword);
+
 export default router;
