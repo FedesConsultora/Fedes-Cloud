@@ -1,29 +1,38 @@
 // src/components/admin/UsersList.js
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import config from '../config/config.js';
 import Swal from 'sweetalert2';
+import debounce from 'lodash.debounce';
 
 const UsersList = () => {
-  const [users, setUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]); // Lista completa de usuarios
+  const [displayedUsers, setDisplayedUsers] = useState([]); // Usuarios filtrados
   const [searchUser, setSearchUser] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Función para obtener usuarios del servidor
   const fetchUsers = async (query = '') => {
     try {
       const response = await fetch(`${config.API_URL}/users?search=${encodeURIComponent(query)}`, {
         method: 'GET',
         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // Ajusta según cómo manejes la autenticación
+        },
       });
       const data = await response.json();
       if (response.ok) {
-        setUsers(data.data || []);
+        setAllUsers(data.data || []);
+        setDisplayedUsers(data.data || []);
       } else {
         Swal.fire('Error', data.message || 'No se pudo obtener la lista de usuarios', 'error');
       }
@@ -33,32 +42,79 @@ const UsersList = () => {
     }
   };
 
-  const handleSearch = () => {
-    fetchUsers(searchUser.trim());
+  // Función para manejar el filtrado en tiempo real (Client-Side)
+  const handleClientSideFilter = useCallback(
+    debounce((query) => {
+      if (!query) {
+        setDisplayedUsers(allUsers);
+      } else {
+        const filtered = allUsers.filter((user) =>
+          `${user.nombre} ${user.apellido}`.toLowerCase().includes(query.toLowerCase()) ||
+          user.email.toLowerCase().includes(query.toLowerCase()) ||
+          (user.rol && user.rol.nombre.toLowerCase().includes(query.toLowerCase())) ||
+          (user.estado && user.estado.nombre.toLowerCase().includes(query.toLowerCase()))
+        );
+        setDisplayedUsers(filtered);
+      }
+    }, 300), // 300ms de debounce
+    [allUsers]
+  );
+
+  // useEffect para filtrar en tiempo real cuando cambia searchUser
+  useEffect(() => {
+    handleClientSideFilter(searchUser.trim());
+  }, [searchUser, handleClientSideFilter]);
+
+  // Función para manejar la búsqueda en el servidor (Server-Side)
+  const handleServerSideSearch = async () => {
+    const query = searchUser.trim();
+    if (!query) {
+      Swal.fire('Información', 'Por favor, ingresa un término de búsqueda.', 'info');
+      return;
+    }
+    await fetchUsers(query);
+  };
+
+  const handleSearchClick = () => {
+    handleServerSideSearch();
   };
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      handleSearch();
+      handleServerSideSearch();
     }
   };
 
   const handleUserClick = (userId) => {
-    navigate(`/admin/users/${userId}`); // Navegar a la ruta frontend correcta
+    navigate(`/admin/users/${userId}`);
   };
 
   const handleDelete = async (userId) => {
     try {
-      const response = await fetch(`${config.API_URL}/users/${userId}`, {
-        method: 'DELETE',
-        credentials: 'include',
+      const confirmResult = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: '¿Quieres eliminar este usuario?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
       });
-      const data = await response.json();
-      if (response.ok) {
-        Swal.fire('Eliminado!', data.message, 'success');
-        fetchUsers(); // Refrescar la lista
-      } else {
-        Swal.fire('Error', data.message || 'No se pudo eliminar el usuario', 'error');
+
+      if (confirmResult.isConfirmed) {
+        const response = await fetch(`${config.API_URL}/users/${userId}`, {
+          method: 'DELETE',
+          credentials: 'include',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Asegúrate de incluir el token si es necesario
+          },
+        });
+        const data = await response.json();
+        if (response.ok) {
+          Swal.fire('Eliminado!', data.message, 'success');
+          fetchUsers(searchUser.trim());
+        } else {
+          Swal.fire('Error', data.message || 'No se pudo eliminar el usuario', 'error');
+        }
       }
     } catch (error) {
       console.error(error);
@@ -81,12 +137,12 @@ const UsersList = () => {
           onChange={(e) => setSearchUser(e.target.value)}
           onKeyDown={handleKeyDown}
         />
-        <button onClick={handleSearch} aria-label="Buscar usuarios">
+        <button onClick={handleSearchClick} aria-label="Buscar usuarios">
           <FaSearch />
         </button>
       </div>
       <div className="list-container">
-        {users.length === 0 ? (
+        {displayedUsers.length === 0 ? (
           <p>No se encontraron usuarios.</p>
         ) : (
           <table>
@@ -100,12 +156,16 @@ const UsersList = () => {
               </tr>
             </thead>
             <tbody>
-              {users.map((usuario) => (
+              {displayedUsers.map((usuario) => (
                 <tr key={usuario.id_usuario} onClick={() => handleUserClick(usuario.id_usuario)}>
-                  <td>{`${usuario.nombre} ${usuario.apellido}`}</td><td>{usuario.email}</td><td>{usuario.Rol.nombre}</td><td>{usuario.Estado.nombre}</td><td>
+                  <td>{`${usuario.nombre} ${usuario.apellido}`}</td>
+                  <td>{usuario.email}</td>
+                  <td>{usuario.rol ? usuario.rol.nombre : 'N/A'}</td>
+                  <td>{usuario.estado ? usuario.estado.nombre : 'N/A'}</td>
+                  <td>
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // Evita que el clic en el botón active la fila
+                        e.stopPropagation();
                         handleEdit(usuario.id_usuario);
                       }}
                       className="action-button edit-button"

@@ -92,8 +92,12 @@ export const getUsers = async (req, res, next) => {
     }
 
     const users = await Usuario.findAll({
-      include: [Rol, Estado, Autenticacion],
-      attributes: { exclude: ['password'] }, // Excluir la contraseña de la respuesta
+      include: [
+        { model: Rol, as: 'rol' },
+        { model: Estado, as: 'estado' },
+        { model: Autenticacion, as: 'autenticacion' },
+      ],
+      attributes: { exclude: ['password'] }, 
     });
 
     logger.info(`Usuarios obtenidos exitosamente por el usuario ID ${req.user.id}`);
@@ -123,8 +127,12 @@ export const getUserById = async (req, res, next) => {
     }
 
     const user = await Usuario.findByPk(id, {
-      include: [Rol, Estado, Autenticacion],
-      attributes: { exclude: ['password'] }, // Excluir la contraseña de la respuesta
+      include: [
+        { model: Rol, as: 'rol' },
+        { model: Estado, as: 'estado' },
+        { model: Autenticacion, as: 'autenticacion' },
+      ],
+      attributes: { exclude: ['password'] }, 
     });
 
     if (!user) {

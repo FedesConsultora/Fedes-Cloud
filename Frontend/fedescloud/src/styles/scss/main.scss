@@ -12,6 +12,8 @@
 @use 'components/footer';
 @use 'components/logo';
 @use 'components/socialLogin';
+@use 'components/crearServicioModal';
+@use 'components/contactoModal';
 
 @use 'layouts/mainLayout';
 @use 'layouts/authLayout';
@@ -32,7 +34,7 @@
 @use 'pages/UsersList';
 @use 'pages/EditUserPage';
 @use 'pages/EditDomainPage';
-
+@use 'pages/comprarPage';
 
 
 

@@ -1,3 +1,5 @@
+// models/index.js
+
 import Sequelize from 'sequelize';
 import config from '../config/config.js';
 import usuarioModel from './usuario.js';
@@ -11,7 +13,8 @@ import certificadoModel from './certificado.js';
 import dnsModel from './dns.js';
 import dominioModel from './dominio.js';
 import servicioModel from './servicio.js';
-import dnsRegistroModel from './dnsregistro.js'; 
+import dnsRegistroModel from './dnsregistro.js';
+import usuarioContactoModel from './usuariocontacto.js'; 
 
 const env = process.env.NODE_ENV || 'development';
 const conf = config[env];
@@ -36,7 +39,8 @@ db.Certificado = certificadoModel(sequelize, Sequelize.DataTypes);
 db.DNS = dnsModel(sequelize, Sequelize.DataTypes);
 db.Dominio = dominioModel(sequelize, Sequelize.DataTypes);
 db.Servicio = servicioModel(sequelize, Sequelize.DataTypes);
-db.DNSRegistro = dnsRegistroModel(sequelize, Sequelize.DataTypes); 
+db.DNSRegistro = dnsRegistroModel(sequelize, Sequelize.DataTypes);
+db.UsuarioContacto = usuarioContactoModel(sequelize, Sequelize.DataTypes); 
 
 // Configurar asociaciones
 Object.keys(db).forEach((modelName) => {
@@ -61,6 +65,7 @@ export const Certificado = db.Certificado;
 export const DNS = db.DNS;
 export const Dominio = db.Dominio;
 export const Servicio = db.Servicio;
-export const DNSRegistro = db.DNSRegistro; 
+export const DNSRegistro = db.DNSRegistro;
+export const UsuarioContacto = db.UsuarioContacto; // Exportar UsuarioContacto
 
 export default db;

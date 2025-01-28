@@ -77,9 +77,9 @@ const DominiosPage = () => {
       </div>
 
       <div className="local-domains">
-        <h3>Mis Dominios Locales</h3>
+        <h3>Mis Dominios</h3>
         {localDominios.length === 0 ? (
-          <p>No tienes dominios registrados en la BD local.</p>
+          <p>No tienes dominios registrados.</p>
         ) : (
           <table>
             <thead>

@@ -11,12 +11,16 @@ export const createService = async (req, res, next) => {
       throw new PermissionDeniedError('No tienes permiso para crear servicios.');
     }
 
-    const { nombre, estado, idUsuario } = req.body;
+    const { nombre, estado } = req.body;
+
+    if (!nombre || !estado) {
+      throw new ValidationError('Los campos "nombre" y "estado" son obligatorios.');
+    }
 
     const newService = await Servicio.create({
       nombre,
       estado,
-      id_usuario: idUsuario,
+      id_usuario: req.user.id_usuario, // Obtener desde req.user
     });
 
     logger.info(`Servicio creado exitosamente: ${newService.id_servicio}`);
@@ -35,13 +39,14 @@ export const createService = async (req, res, next) => {
  */
 export const getServices = async (req, res, next) => {
   try {
-    console.log(req.user);
     if (!req.user || !req.user.permisos.includes('view_services')) {
       throw new PermissionDeniedError('No tienes permiso para ver servicios.');
     }
 
     const services = await Servicio.findAll({
+      where: { id_usuario: req.user.id_usuario }, // Filtrar por usuario
       include: [Dominio, Certificado, DNS],
+      attributes: ['id_servicio', 'nombre', 'estado'],
     });
 
     res.status(200).json({

@@ -19,7 +19,7 @@ export const createServiceValidation = [
     .trim()
     .notEmpty()
     .withMessage('El estado del servicio es obligatorio')
-    .isIn(['activo', 'inactivo', 'pendiente'])
+    .isIn(['Activo', 'Inactivo', 'Pendiente'])
     .withMessage('El estado debe ser activo, inactivo o pendiente'),
 
   // Validación para el campo 'id_usuario'

@@ -35,11 +35,11 @@ const UserDetail = () => {
   };
 
   const handleEdit = () => {
-    navigate(`/admin/users/${userId}/edit`); // Asegúrate de que esta ruta exista en App.js
+    navigate(`/admin/users/${userId}/edit`); 
   };
 
   if (loading) {
-    return <div>Cargando...</div>; // Puedes reemplazar con un spinner
+    return <div>Cargando...</div>; 
   }
 
   if (!userDetail) {
@@ -52,8 +52,8 @@ const UserDetail = () => {
       <div className="detail-container">
         <p><strong>Nombre:</strong> {`${userDetail.nombre} ${userDetail.apellido}`}</p>
         <p><strong>Email:</strong> {userDetail.email}</p>
-        <p><strong>Rol:</strong> {userDetail.Rol.nombre}</p>
-        <p><strong>Estado:</strong> {userDetail.Estado.nombre}</p>
+        <p><strong>Rol:</strong> {userDetail.rol.nombre}</p>
+        <p><strong>Estado:</strong> {userDetail.estado.nombre}</p>
         <p><strong>Fecha de Creación:</strong> {new Date(userDetail.createdAt).toLocaleDateString()}</p>
         {/* Agrega más detalles según tu API */}
         <h3>Servicios Asociados</h3>

@@ -5,9 +5,12 @@ import { Model } from 'sequelize';
 export default (sequelize, DataTypes) => {
   class Usuario extends Model {
     static associate(models) {
-      Usuario.belongsTo(models.Estado, { foreignKey: 'id_estado' });
-      Usuario.belongsTo(models.Rol, { foreignKey: 'id_rol' });
-      Usuario.belongsTo(models.Autenticacion, { foreignKey: 'id_autenticacion' });
+      Usuario.belongsTo(models.Estado, { foreignKey: 'id_estado', as: 'estado' });
+      Usuario.belongsTo(models.Rol, { foreignKey: 'id_rol', as: 'rol' });
+      Usuario.belongsTo(models.Autenticacion, { foreignKey: 'id_autenticacion', as: 'autenticacion' });
+
+      // Asociación con UsuarioContacto
+      Usuario.hasMany(models.UsuarioContacto, { foreignKey: 'id_usuario', as: 'contactos' });
     }
   }
 

@@ -13,7 +13,8 @@ export default class GoDaddyAdapter {
   /**
    * Verificar la disponibilidad de un dominio.
    * GET /v1/domains/available?domain=<dom>
-   */
+  */
+
   async checkDomainAvailability(domain) {
     try {
       const url = new URL(`/v1/domains/available`, this.baseURL);
@@ -28,7 +29,7 @@ export default class GoDaddyAdapter {
       const response = await fetch(url, { method: 'GET', headers });
       if (!response.ok) {
         const errorBody = await response.text();
-        throw new Error(`GoDaddy API error (checkDomain): ${response.status} - ${errorBody}`);
+        throw new Error(`GoDaddy API error (checkDomainAvailability): ${response.status} - ${errorBody}`);
       }
 
       return await response.json(); 
@@ -111,14 +112,14 @@ export default class GoDaddyAdapter {
       throw error;
     }
   }
-
-  /**
+ /**
    * Registrar (comprar) un dominio.
    * POST /v1/domains/purchase
    * @param {string} domain - e.g. "example.com"
    * @param {object} body  - Consent, contacts, period, renewAuto, etc.
+   * @param {string} shopperId - Identificador del shopper (opcional)
    */
-  async registerDomain(domain, body = {}) {
+ async registerDomain(domain, body = {}, shopperId = null) {
     try {
       const url = new URL(`/v1/domains/purchase`, this.baseURL);
 
@@ -128,7 +129,11 @@ export default class GoDaddyAdapter {
         'Accept': 'application/json',
       };
 
-      // Merges "domain" con el resto del payload
+      if (shopperId) {
+        headers['X-Shopper-Id'] = shopperId;
+      }
+
+      // Combinar "domain" con el resto del payload
       const payload = { domain, ...body };
 
       const response = await fetch(url, {

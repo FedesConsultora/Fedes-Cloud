@@ -8,6 +8,7 @@ import authRoutes from './authRoutes.js';
 import permisoRoutes from './permisoRoutes.js';
 import serviceRoutes from './serviceRoutes.js';
 import dominioRoutes from './dominioRoutes.js';
+import contactRoutes from './contactRoutes.js';
 
 /**
  * @swagger
@@ -31,5 +32,6 @@ router.use('/roles', roleRoutes);
 router.use('/permisos', permisoRoutes);
 router.use('/services', serviceRoutes)
 router.use('/dominios', dominioRoutes); 
+router.use('/user-contact', contactRoutes);
 
 export default router;

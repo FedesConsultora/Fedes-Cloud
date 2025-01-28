@@ -1,10 +1,11 @@
 // src/pages/DominiosBusquedaPage.js
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { FaArrowLeft } from 'react-icons/fa'; // Ícono para volver
+import { FaArrowLeft } from 'react-icons/fa';
 import config from '../config/config.js';
 import Swal from 'sweetalert2';
+import { AuthContext } from '../contexts/AuthContext.js'; // Asegúrate de tener un contexto de autenticación
 
 const DominiosBusquedaPage = () => {
   const [searchParams] = useSearchParams();
@@ -12,7 +13,7 @@ const DominiosBusquedaPage = () => {
   const [availabilityResult, setAvailabilityResult] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
   const navigate = useNavigate();
-
+  const { user } = useContext(AuthContext); 
   useEffect(() => {
     if (query.trim()) {
       fetchDomainData(query.trim());
@@ -39,6 +40,7 @@ const DominiosBusquedaPage = () => {
         body: JSON.stringify({ domain: dom }),
       });
       const data = await response.json();
+      console.log(data);
       if (response.ok) {
         setAvailabilityResult(data.data);
       } else {
@@ -53,11 +55,21 @@ const DominiosBusquedaPage = () => {
 
   const suggestDomains = async (rawQuery) => {
     try {
-      const response = await fetch(`${config.API_URL}/dominios/sugerir`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const params = new URLSearchParams({
+        query: rawQuery,
+        limit: 8,
+        country: 'AR', // Puedes ajustar o permitir que el usuario seleccione el país
+        // Añade otros parámetros según sea necesario
+      });
+
+      // Opcional: Añadir más parámetros desde el estado o props
+
+      const response = await fetch(`${config.API_URL}/dominios/sugerir?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         credentials: 'include',
-        body: JSON.stringify({ query: rawQuery, limit: 8, country: 'AR' }),
       });
       const data = await response.json();
       if (response.ok) {
@@ -70,6 +82,12 @@ const DominiosBusquedaPage = () => {
       console.error(error);
       Swal.fire('Error', 'Error interno del servidor', 'error');
     }
+  };
+
+  // Función para manejar la selección de un dominio sugerido
+  const handleSelectDomain = (domain) => {
+    // Redirigir a una página de compra o mostrar un modal con más detalles
+    navigate(`/dominios/comprar?domain=${encodeURIComponent(domain)}`);
   };
 
   return (
@@ -99,11 +117,26 @@ const DominiosBusquedaPage = () => {
       {suggestions.length > 0 && (
         <div className="domain-suggestions">
           <h3>Otras opciones similares</h3>
-          <ul>
-            {suggestions.map((sug, idx) => (
-              <li key={idx}>{sug.domain}</li>
-            ))}
-          </ul>
+          <table>
+            <thead>
+              <tr>
+                <th>Dominio</th>
+                <th>Precio</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {suggestions.map((sug, idx) => (
+                <tr key={idx}>
+                  <td>{sug.domain}</td>
+                  <td>{sug.price ? `${sug.price} ${sug.currency}` : 'N/A'}</td>
+                  <td>
+                    <button onClick={() => handleSelectDomain(sug.domain)}>Seleccionar</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 

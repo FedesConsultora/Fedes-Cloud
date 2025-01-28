@@ -22,6 +22,7 @@ import DomainDetail from './pages/DomainDetail.js';
 import AdminDashboard from './pages/AdminDashboard.js';
 import EditUserPage from './pages/EditUserPage.js';
 import EditDomainPage from './pages/EditDomainPage.js';
+import ComprarPage from './pages/ComprarPage.js';
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -128,6 +129,18 @@ const AppRoutes = () => {
                 <MainLayout>
                   <PageTransition>
                     <DominiosBusquedaPage />
+                  </PageTransition>
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dominios/comprar"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <ComprarPage />
                   </PageTransition>
                 </MainLayout>
               </ProtectedRoute>

@@ -1,0 +1,348 @@
+// src/pages/ComprarPage.scss
+
+@use '../abstracts/mixins' as mixins;
+@use '../abstracts/variables' as vars;
+
+/**
+ * Página de Compra de Dominio
+ */
+.comprar-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem;
+  min-height: 100vh;
+  background-color: mixins.theme('background-color');
+  color: mixins.theme('text-color');
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: mixins.theme('font');
+
+  .header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 2rem;
+
+    .back-button {
+      display: flex;
+      align-items: center;
+      background: none;
+      border: none;
+      color: mixins.theme('primary-color');
+      font-size: 1rem;
+      cursor: pointer;
+      margin-right: 1rem;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: mixins.theme('primary-color-hover');
+      }
+
+      svg {
+        margin-right: 0.5rem;
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    h2 {
+      margin: 0;
+      color: mixins.theme('dark-color');
+      font-weight: 600;
+      font-size: 2rem;
+    }
+  }
+
+  p {
+    margin-bottom: 2rem;
+    text-align: center;
+    font-size: 1.1rem;
+  }
+
+  .domain-info {
+    width: 100%;
+    max-width: 800px;
+    background-color: mixins.theme('light-color');
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 0 10px mixins.theme('shadow-color');
+    margin-bottom: 2rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+    h3 {
+      font-size: 1.6rem;
+      color: mixins.theme('dark-blue-color');
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      line-height: 1.5;
+
+      strong {
+        color: mixins.theme('primary-color');
+      }
+    }
+  }
+
+  .servicio-selection {
+    width: 100%;
+    max-width: 800px;
+    background-color: mixins.theme('light-color');
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 0 10px mixins.theme('shadow-color');
+    margin-bottom: 2rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+    h3 {
+      font-size: 1.6rem;
+      color: mixins.theme('dark-blue-color');
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .servicio-dropdown {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid mixins.theme('gray-color');
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+
+      &:focus {
+        outline: none;
+        border-color: mixins.theme('primary-color');
+        box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+      }
+
+      option {
+        padding: 0.5rem;
+      }
+    }
+  }
+
+  .no-servicios {
+    width: 100%;
+    max-width: 800px;
+    background-color: mixins.theme('light-color');
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 0 10px mixins.theme('shadow-color');
+    margin-bottom: 2rem;
+    text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+    p {
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .crear-servicio-button {
+      padding: 0.75rem 1.5rem;
+      background-color: mixins.theme('primary-color');
+      color: mixins.theme('light-color');
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+
+      &:hover {
+        background-color: mixins.theme('primary-color-hover');
+        transform: translateY(-2px);
+      }
+
+      &:active {
+        transform: translateY(0);
+        background-color: mixins.theme('primary-color-hover');
+      }
+
+      &:disabled {
+        background-color: mixins.theme('gray-color');
+        cursor: not-allowed;
+        transform: translateY(0);
+      }
+    }
+  }
+
+  .purchase-button {
+    padding: 0.75rem 1.5rem;
+    background-color: mixins.theme('primary-color');
+    color: mixins.theme('light-color');
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 102, 255, 0.2);
+    text-align: center;
+
+    &:hover {
+      background-color: mixins.theme('primary-color-hover');
+      transform: translateY(-2px);
+    }
+
+    &:active {
+      transform: translateY(0);
+      background-color: mixins.theme('primary-color-hover');
+    }
+
+    &:disabled {
+      background-color: mixins.theme('gray-color');
+      cursor: not-allowed;
+      transform: translateY(0);
+    }
+  }
+
+  .domain-suggestions {
+    width: 100%;
+    max-width: 800px;
+    background-color: mixins.theme('light-color');
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 0 10px mixins.theme('shadow-color');
+    margin-bottom: 2rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+    h3 {
+      font-size: 1.6rem;
+      color: mixins.theme('dark-blue-color');
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+
+      thead {
+        background-color: mixins.theme('primary-color');
+        color: mixins.theme('light-color');
+
+        tr {
+          th {
+            padding: 0.75rem;
+            text-align: left;
+            font-size: 1rem;
+            border-bottom: 2px solid mixins.theme('shadow-color');
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          &:hover {
+            background-color: mixins.theme('hover-light-color');
+          }
+
+          td {
+            padding: 0.75rem;
+            border-bottom: 1px solid mixins.theme('shadow-color');
+            font-size: 0.95rem;
+
+            &:last-child {
+              text-align: center;
+            }
+          }
+
+          button {
+            padding: 0.5rem 1rem;
+            background-color: mixins.theme('primary-color');
+            color: mixins.theme('light-color');
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+
+            &:hover {
+              background-color: mixins.theme('primary-color-hover');
+              transform: scale(1.05);
+            }
+
+            &:active {
+              transform: scale(0.95);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Mensaje de No Resultados
+  .no-results {
+    font-size: 1rem;
+    color: mixins.theme('dark-color');
+    text-align: center;
+    background-color: mixins.theme('light-color');
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 5px mixins.theme('shadow-color');
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  // Responsive Design
+  @media (max-width: 768px) {
+    padding: 2rem;
+
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .back-button {
+        margin-right: 0;
+        margin-bottom: 1rem;
+      }
+
+      h2 {
+        text-align: center;
+        width: 100%;
+      }
+    }
+
+    .domain-info,
+    .servicio-selection,
+    .no-servicios,
+    .domain-suggestions,
+    .purchase-button {
+      max-width: 100%;
+    }
+
+    .servicio-dropdown {
+      font-size: 0.9rem;
+    }
+
+    table {
+      font-size: 0.9rem;
+
+      thead {
+        tr {
+          th {
+            padding: 0.5rem;
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          td {
+            padding: 0.5rem;
+          }
+
+          button {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.9rem;
+          }
+        }
+      }
+    }
+
+    .purchase-button {
+      width: 100%;
+    }
+  }
+}
