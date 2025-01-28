@@ -5,15 +5,18 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import config from '../config/config.js';
 import Swal from 'sweetalert2';
-import { AuthContext } from '../contexts/AuthContext.js'; // Asegúrate de tener un contexto de autenticación
+import { AuthContext } from '../contexts/AuthContext.js';
+import { Player } from '@lottiefiles/react-lottie-player'; // Importar el Player de lottie-react
 
 const DominiosBusquedaPage = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('query') || '';
   const [availabilityResult, setAvailabilityResult] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false); // Estado para manejar la animación de carga
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext); 
+  const { user } = useContext(AuthContext);
+
   useEffect(() => {
     if (query.trim()) {
       fetchDomainData(query.trim());
@@ -23,12 +26,20 @@ const DominiosBusquedaPage = () => {
 
   // Función unificada para "check domain" + "suggest domains"
   const fetchDomainData = async (rawQuery) => {
-    // 1) Revisar si hay '.' -> check availability
-    if (rawQuery.includes('.')) {
-      await checkAvailability(rawQuery);
+    setIsLoading(true); // Iniciar animación de carga
+    try {
+      // 1) Revisar si hay '.' -> check availability
+      if (rawQuery.includes('.')) {
+        await checkAvailability(rawQuery);
+      }
+      // 2) En todo caso, sugerir
+      await suggestDomains(rawQuery);
+    } catch (error) {
+      console.error(error);
+      Swal.fire('Error', 'Error al obtener los datos del dominio', 'error');
+    } finally {
+      setIsLoading(false); // Finalizar animación de carga
     }
-    // 2) En todo caso, sugerir
-    await suggestDomains(rawQuery);
   };
 
   const checkAvailability = async (dom) => {
@@ -99,22 +110,49 @@ const DominiosBusquedaPage = () => {
         <h2>Resultados de Búsqueda</h2>
       </div>
 
-      <p>Buscaste: <strong>{query}</strong></p>
+      <p>
+        Buscaste: <strong>{query}</strong>
+      </p>
+
+      {/* Mostrar animación de carga mientras isLoading es true */}
+      {isLoading && (
+        <div className="loading-animation">
+          <Player
+            autoplay
+            loop
+            src="/assets/videos/animacionCarga.json" // Ruta relativa a la carpeta public
+            style={{ height: '300px', width: '300px' }}
+          >
+          </Player>
+        </div>
+      )}
 
       {/* Mostrar resultado de disponibilidad (si query tenía punto) */}
-      {availabilityResult && (
+      {!isLoading && availabilityResult && (
         <div className="domain-check-result">
           <h3>Disponibilidad</h3>
-          <p><strong>Dominio:</strong> {availabilityResult.domain}</p>
-          <p><strong>Disponible:</strong> {availabilityResult.available ? 'Sí' : 'No'}</p>
+          <p>
+            <strong>Dominio:</strong> {availabilityResult.domain}
+          </p>
           {typeof availabilityResult.price === 'number' && (
-            <p><strong>Precio:</strong> {availabilityResult.price} {availabilityResult.currency || 'USD'}</p>
+            <p>
+              <strong>Precio:</strong> {availabilityResult.price} {availabilityResult.currency || 'USD'}
+            </p>
+          )}
+          {availabilityResult.available && (
+            <button
+              onClick={() => handleSelectDomain(availabilityResult.domain)}
+              className="select-button"
+              aria-label={`Seleccionar dominio ${availabilityResult.domain}`}
+            >
+              Seleccionar
+            </button>
           )}
         </div>
       )}
 
-      {/* Mostrar sugerencias siempre */}
-      {suggestions.length > 0 && (
+      {/* Mostrar sugerencias siempre si no está cargando */}
+      {!isLoading && suggestions.length > 0 && (
         <div className="domain-suggestions">
           <h3>Otras opciones similares</h3>
           <table>
@@ -141,7 +179,7 @@ const DominiosBusquedaPage = () => {
       )}
 
       {/* Si no hay disponibilidadResult y no hay suggestions, puede ser que no se encontró nada */}
-      {(!availabilityResult && suggestions.length === 0) && (
+      {!isLoading && !availabilityResult && suggestions.length === 0 && (
         <p>No se encontraron datos para la búsqueda.</p>
       )}
     </div>

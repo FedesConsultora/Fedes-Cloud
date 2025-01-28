@@ -1,4 +1,4 @@
-// src/styles/scss/components/_sidebar.scss
+/* src/styles/scss/components/_sidebar.scss */
 
 @use 'sass:color';
 @use '../abstracts/mixins' as mixins;
@@ -22,54 +22,148 @@
     .logo {
       width: 190px;
       transition: filter 0.3s ease;
-      
     }
   }
 
   .navigation {
     flex: 1;
-
+    width: 100%;
     ul {
       list-style: none;
       width: 100%;
       padding: 0;
 
-      li {
+      .nav-item {
         width: 100%;
         padding: 15px 20px;
         display: flex;
         align-items: center;
         cursor: pointer;
         transition: background-color 0.3s ease;
+        position: relative; // Para posicionar el submenú
+        &.servicios.open{
+          padding-bottom: 0px;
+        }
+        .icon {
+          margin-right: 10px;
+          font-size: 1.2rem;
+          color: mixins.theme(primary-color);
+        }
+
+        .label {
+          font-size: 19px;
+          flex-grow: 1;
+        }
 
         &:hover {
           background-color: mixins.theme(color-primary);
         }
+      }
 
-        svg {
-          margin-right: 10px;
+      /* Estilos para el menú "Servicios" */
+      .servicios {
+        .servicios-header {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+
+          .icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+            color: mixins.theme(primary-color);
+          }
+
+          .label {
+            font-size: 19px;
+            flex-grow: 1;
+          }
+
+          .chevron-icon {
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+          }
+
+          &:hover {
+            background-color: mixins.theme(color-primary);
+          }
         }
 
-        span {
-          font-size: 19px;
+        /* Estado abierto del submenú */
+        &.open {
+          display: flex;
+          flex-direction: column;
+          .chevron-icon {
+            transform: rotate(180deg);
+          }
+
+          .submenu {
+            max-height: 500px; // Valor suficientemente grande para acomodar todos los submenús
+            opacity: 1;
+            visibility: visible;
+            transition: max-height 0.5s ease, opacity 0.5s ease;
+          }
         }
+
+        /* Estado cerrado del submenú */
+        .submenu {
+          max-height: 0;
+          opacity: 0;
+          visibility: hidden;
+          overflow: hidden;
+          transition: max-height 0.5s ease, opacity 0.5s ease;
+          background-color: mixins.theme(dark-color);
+          
+          .submenu-item {
+            width: 100%;
+            padding: 15px 40px; // Sangría para submenús
+            padding-right: 10px !important;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+
+            .icon {
+              margin-right: 10px;
+              font-size: 1rem;
+              color: mixins.theme(primary-color);
+            }
+
+            .label {
+              font-size: 17px;
+            }
+
+            &:hover {
+              background-color: mixins.theme(color-primary);
+            }
+          }
+        }
+      }
+
+      /* Enlaces para "Administrador" y "Configuración" */
+      .nav-item:not(.servicios) {
+        /* Ya está estilizado por defecto */
       }
     }
   }
+
+  /* Estilos para el componente UserInfo */
   .user-info {
     padding: 1rem;
     border-top: 1px solid #ccc;
-  
+    width: 100%;
+
     .user-details {
       display: flex;
       align-items: center;
       margin-bottom: 0.5rem;
       cursor: pointer;
-      
+
       &:hover {
         text-decoration: underline;
       }
-  
+
       .user-avatar {
         width: 40px;
         height: 40px;
@@ -77,7 +171,7 @@
         margin-right: 0.5rem;
       }
     }
-  
+
     .user-text p {
       margin: 0;
       line-height: 1.2;
@@ -86,7 +180,7 @@
         -webkit-text-stroke-color: #333;
       }
     }
-  
+
     .logout-button, .profile-button {
       display: flex;
       align-items: center;
@@ -100,21 +194,22 @@
       margin-top: 0.5rem;
       width: 100%;
       justify-content: center;
-  
+      transition: background-color 0.3s ease, color 0.3s ease;
+
       &:hover {
         background-color: mixins.theme(primary-color-hover);
         color: mixins.theme(light-color);
       }
-  
+
       span {
         margin-left: 0.25rem;
       }
     }
   }
-  
+
   .logout-button {
     display: flex;
-    width: 60%;
+    width: 100%;
     justify-content: center;
     align-items: center;
     cursor: pointer;
@@ -125,17 +220,16 @@
     margin-top: 1rem;
     color: mixins.theme(light-color);
     border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    -ms-border-radius: 5px;
-    -o-border-radius: 5px;
-}
-  
-  .logout-button:hover {
-    text-decoration: underline;
-  }
-  
-  .logout-button span {
-    margin-left: 0.9rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+    &:hover {
+      text-decoration: underline;
+      background-color: mixins.theme(primary-color-hover);
+      color: mixins.theme(light-color);
+    }
+
+    span {
+      margin-left: 0.9rem;
+    }
   }
 }

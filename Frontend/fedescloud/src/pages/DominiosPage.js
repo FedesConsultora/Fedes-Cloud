@@ -23,7 +23,7 @@ const DominiosPage = () => {
     try {
       const response = await fetch(`${config.API_URL}/dominios`, {
         method: 'GET',
-        credentials: 'include', // si tu API usa cookies JWT
+        credentials: 'include', 
       });
       const data = await response.json();
       if (response.ok) {
@@ -70,7 +70,6 @@ const DominiosPage = () => {
             }
           }}
         />
-        {/* Botón con ícono de lupa */}
         <button onClick={handleSearch} aria-label="Buscar dominios">
           <FaSearch />
         </button>

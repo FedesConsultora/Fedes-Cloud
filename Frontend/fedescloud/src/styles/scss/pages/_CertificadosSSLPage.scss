@@ -1,0 +1,26 @@
+/* src/pages/CertificadosSSLPage.scss */
+
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.certificados-ssl-page {
+  padding: 2rem;
+  min-height: 100vh;
+  background-color: mixins.theme(background-color);
+  color: mixins.theme(text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+
+  h2 {
+    font-size: 2rem;
+    color: mixins.theme(primary-color);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  p {
+    font-size: 1.1rem;
+    text-align: center;
+    color: mixins.theme(dark-color);
+  }
+
+}

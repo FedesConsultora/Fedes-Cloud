@@ -4,7 +4,7 @@
 @use '../abstracts/mixins' as mixins;
 
 .footer {
-  background-color: mixins.theme(light-color);
+  background-color: mixins.theme(gray-color);
   padding: 10px;
   text-align: center;
   transition: background-color 0.3s ease;

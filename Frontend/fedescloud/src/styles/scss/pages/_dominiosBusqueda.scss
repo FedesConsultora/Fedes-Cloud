@@ -71,7 +71,8 @@
     box-shadow: 0 0 10px mixins.theme(shadow-color);
     margin-bottom: 2rem;
     transition: background-color 0.3s ease, color 0.3s ease;
-
+    display: flex;
+    flex-direction: column;
     h3 {
       font-size: 1.6rem;
       color: mixins.theme(dark-blue-color);
@@ -89,7 +90,19 @@
         color: mixins.theme(primary-color);
       }
     }
-
+    button{
+      padding: 0.5rem 1rem;
+      background-color: mixins.theme(primary-color);
+      color: mixins.theme(light-color);
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      &:hover {
+        background-color: mixins.theme(primary-color-hover);
+        transform: scale(1.05);
+      }
+    }
     // Estilos para el Resultado de Disponibilidad
     &.domain-check-result {
       .availability-info {

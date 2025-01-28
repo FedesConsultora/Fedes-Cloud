@@ -9,7 +9,9 @@
   align-items: center;
   padding: 3rem;
   min-height: 100vh;
-  background-color: mixins.theme(background-color);
+  background-image: url('/public/assets/images/Home_Fondo.webp'); // Ajuste en la ruta
+  background-size: cover;
+  background-position: center;
   color: mixins.theme(text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
 
