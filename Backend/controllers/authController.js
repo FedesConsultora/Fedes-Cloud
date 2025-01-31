@@ -3,17 +3,167 @@
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { Op } from 'sequelize';
-import {
-  EmailAlreadyExistsError,
-} from '../utils/errors/UserErrors.js';
+import { EmailAlreadyExistsError } from '../utils/errors/UserErrors.js';
 import { ValidationError } from '../utils/errors/GeneralErrors.js';
 import logger from '../utils/logger.js';
 import { Usuario, Rol } from '../models/index.js';
 import { sendEmail } from '../utils/emailService.js';
 import speakeasy from 'speakeasy';
 import qrcode from 'qrcode';
+import passport, { generateJWT } from '../config/passport.js';
+import goDaddyService from '../factories/godaddyServiceFactory.js';
+import fs from 'fs';
+import path from 'path';
+
+/**
+ * Función para generar una contraseña segura para el shopper.
+ */
+const generateSecurePassword = () => {
+  return crypto.randomBytes(16).toString('hex'); // Genera una contraseña de 32 caracteres hexadecimales
+};
+
+/**
+ * Función para iniciar sesión y asignar shopperId si es necesario.
+ */
+export const login = async (req, res, next) => {
+  passport.authenticate('local', { session: false }, async (err, user, info) => {
+    try {
+      if (err) {
+        logger.error(`Error durante la autenticación: ${err.message}`);
+        return next(err);
+      }
+
+      if (!user) {
+        return res.status(401).json({ success: false, message: info?.message || 'Credenciales inválidas' });
+      }
+      
+      // Asignar shopperId si el usuario es Externo y shopperId es null
+      const externoRole = await Rol.findOne({ where: { nombre: 'Externo' } });
+      
+      if (user.id_rol === externoRole.id_rol && !user.shopperId) {
+        try {
+          const shopperData = {
+            email: user.email,
+            externalId: user.id_usuario,
+            marketId: 'en-US', // Ajusta según tu mercado objetivo
+            nameFirst: user.nombre,
+            nameLast: user.apellido,
+            password: crypto.randomBytes(16).toString('hex'), // Contraseña segura
+          };
+
+          // Crear shopper en GoDaddy
+          const createShopperResponse = await goDaddyService.createShopper(shopperData);
+          const { shopperId } = createShopperResponse;
+
+          // Asignar shopperId al usuario
+          user.shopperId = shopperId;
+          await user.save();
+
+          logger.info(`ShopperId asignado a usuario ${user.email}: ${shopperId}`);
+        } catch (shopperError) {
+          logger.error(`Error asignando shopperId a usuario ${user.email}: ${shopperError.message}`);
+          // Opcional: Puedes decidir si fallar el inicio de sesión aquí o continuar sin shopperId
+          // return next(shopperError);
+        }
+      }
+
+      if (user.twoFactorEnabled) {
+        const tempToken = crypto.randomBytes(32).toString('hex');
+        const tempTokenExpires = Date.now() + (10 * 60 * 1000); // 10 minutos
+        user.twoFactorTempToken = tempToken;
+        user.twoFactorTempExpires = tempTokenExpires;
+        await user.save();
+
+        return res.status(200).json({
+          success: true,
+          message: 'Se requiere autenticación de dos factores.',
+          twoFactorRequired: true,
+          tempToken,
+        });
+      } else {
+        const token = generateJWT(user);
+        const isProduction = process.env.NODE_ENV === 'production';
+        const cookieOptions = {
+          httpOnly: true,
+          secure: isProduction,
+          sameSite: isProduction ? 'None' : 'Lax',
+          maxAge: 60 * 60 * 1000, // 1 hora
+        };
+        res.cookie('token', token, cookieOptions);
+
+        return res.status(200).json({
+          success: true,
+          message: 'Inicio de sesión exitoso',
+          twoFactorEnabled: user.twoFactorEnabled,
+          token: token,
+        });
+      }
+    } catch (error) {
+      logger.error(`Error en el controlador de login: ${error.message}`);
+      next(error);
+    }
+  })(req, res, next);
+};
+
+export const loginTwoFactor = async (req, res, next) => {
+  try {
+    const { tempToken, twoFactorToken } = req.body;
+    if (!tempToken || !twoFactorToken) {
+      return res.status(400).json({ success: false, message: 'Token temporal y código de 2FA son obligatorios.' });
+    }
+
+    const user = await Usuario.findOne({
+      where: {
+        twoFactorTempToken: tempToken,
+        twoFactorTempExpires: { [Op.gt]: Date.now() },
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Token temporal inválido o expirado.' });
+    }
+
+    if (!user.twoFactorEnabled || !user.twoFactorSecret) {
+      return res.status(400).json({ success: false, message: '2FA no está habilitada para este usuario.' });
+    }
+
+    const verified = speakeasy.totp.verify({
+      secret: user.twoFactorSecret,
+      encoding: 'base32',
+      token: twoFactorToken,
+      window: 1,
+    });
+
+    if (verified) {
+      user.twoFactorTempToken = null;
+      user.twoFactorTempExpires = null;
+      await user.save();
+
+      const token = generateJWT(user);
+      const isProduction = process.env.NODE_ENV === 'production';
+      const cookieOptions = {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'None' : 'Lax',
+        maxAge: 60 * 60 * 1000,
+      };
+      res.cookie('token', token, cookieOptions);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Inicio de sesión exitoso con 2FA.',
+      });
+    } else {
+      return res.status(400).json({ success: false, message: 'Código de 2FA inválido.' });
+    }
+  } catch (error) {
+    logger.error(`Error en verificación de 2FA: ${error.message}`);
+    next(error);
+  }
+};
 
 export const register = async (req, res, next) => {
+  const transaction = await Usuario.sequelize.transaction(); // Iniciar una transacción
   try {
     const {
       nombre,
@@ -26,7 +176,7 @@ export const register = async (req, res, next) => {
 
     const id_autenticacion = 1; // Local
 
-    const existingUser = await Usuario.findOne({ where: { email } });
+    const existingUser = await Usuario.findOne({ where: { email }, transaction });
     if (existingUser) {
       logger.warn(`Registro fallido: Email ${email} ya está registrado`);
       throw new EmailAlreadyExistsError();
@@ -34,7 +184,7 @@ export const register = async (req, res, next) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const defaultRole = await Rol.findOne({ where: { nombre: 'Externo' } });
+    const defaultRole = await Rol.findOne({ where: { nombre: 'Externo' }, transaction });
     if (!defaultRole) {
       logger.error(`Rol predeterminado 'Externo' no encontrado`);
       throw new Error('Rol predeterminado no configurado');
@@ -46,6 +196,7 @@ export const register = async (req, res, next) => {
     const [day, month, year] = fechaNacimiento.split('/');
     const formattedDate = `${year}-${month}-${day}`;
 
+    // Crear el usuario en la base de datos
     const newUser = await Usuario.create({
       nombre,
       apellido,
@@ -59,8 +210,29 @@ export const register = async (req, res, next) => {
       emailToken,
       emailTokenExpires,
       emailConfirmed: false,
-    });
+    }, { transaction });
+    /*
+    // Si el rol es Externo, crear shopperId
+    if (defaultRole.nombre === 'Externo') {
+      const shopperData = {
+        email,
+        externalId: newUser.id_usuario,
+        marketId: 'en-US', // Ajusta según tu mercado objetivo
+        nameFirst: nombre,
+        nameLast: apellido,
+        password: generateSecurePassword(),
+      };
 
+      // Crear la subcuenta de shopper en GoDaddy
+      const createShopperResponse = await goDaddyService.createShopper(shopperData);
+      const { shopperId } = createShopperResponse;
+
+      // Asignar el shopperId al usuario
+      newUser.shopperId = shopperId;
+      await newUser.save({ transaction });
+    }
+    */
+    // Enviar el correo de confirmación
     const confirmURL = `${clientURI}/auth/confirm-email?token=${emailToken}&email=${newUser.email}`;
 
     await sendEmail({
@@ -75,12 +247,55 @@ export const register = async (req, res, next) => {
 
     logger.info(`Usuario registrado exitosamente: ID ${newUser.id_usuario}`);
 
+    await transaction.commit(); // Confirmar la transacción
+
     res.status(201).json({
       success: true,
       message: 'Usuario registrado exitosamente. Por favor, verifica tu correo electrónico.',
     });
   } catch (error) {
+    await transaction.rollback(); // Revertir la transacción en caso de error
     logger.error(`Error en registro de usuario: ${error.message}`);
+    next(error);
+  }
+};
+
+/**
+ * Registro de usuario a través de Google.
+ */
+export const googleRegister = async (req, res, next) => {
+  try {
+    // El usuario ya está autenticado y disponible en req.user gracias a Passport
+    const user = req.user;
+
+    // Verificar si el usuario necesita autenticación de dos factores
+    if (user.twoFactorEnabled) {
+      const tempToken = crypto.randomBytes(32).toString('hex');
+      const tempTokenExpires = Date.now() + (10 * 60 * 1000); // 10 minutos
+      user.twoFactorTempToken = tempToken;
+      user.twoFactorTempExpires = tempTokenExpires;
+      await user.save();
+
+      // Redirigir al frontend con los parámetros necesarios para 2FA
+      const clientURI = req.query.state ? decodeURIComponent(req.query.state) : 'http://localhost:3000';
+      return res.redirect(`${clientURI}/auth/login?twoFactorRequired=true&tempToken=${tempToken}`);
+    } else {
+      // Sin 2FA: generar JWT y asignar cookie
+      const token = generateJWT(user);
+      const isProduction = process.env.NODE_ENV === 'production';
+      const cookieOptions = {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'None' : 'Lax',
+        maxAge: 60 * 60 * 1000, // 1 hora
+      };
+      res.cookie('token', token, cookieOptions);
+      // Redirigir al frontend
+      const clientURI = req.query.state ? decodeURIComponent(req.query.state) : 'http://localhost:3000';
+      return res.redirect(clientURI);
+    }
+  } catch (error) {
+    logger.error(`Error en registro vía Google: ${error.message}`);
     next(error);
   }
 };
@@ -727,3 +942,57 @@ export const updatePassword = async (req, res, next) => {
     next(error);
   }
 };  
+
+/**
+ * Subir/Reemplazar avatar del usuario autenticado.
+ */
+export const uploadAvatar = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No se recibió ninguna imagen',
+      });
+    }
+
+    const { id_usuario } = req.user;
+    const user = await Usuario.findByPk(id_usuario);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuario no encontrado',
+      });
+    }
+
+    const newAvatarFilename = req.file.filename; 
+    const newAvatarPath = path.join('assets', 'usersProfile', newAvatarFilename);
+
+    // Eliminar avatar previo si lo deseas
+    if (user.avatar && user.avatar !== newAvatarPath) {
+      if (fs.existsSync(user.avatar)) {
+        fs.unlinkSync(user.avatar);
+      }
+    }
+
+    // Guardamos en la BD la ruta relativa
+    user.avatar = newAvatarPath;
+    await user.save();
+
+    // Construimos la URL completa
+    const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 4000}`;
+    // => e.g. "http://localhost:4000"
+    const publicURL = `${baseUrl}/assets/usersProfile/${newAvatarFilename}`;
+
+    return res.status(200).json({
+      success: true,
+      message: 'Avatar subido exitosamente',
+      url: publicURL, 
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error al subir el avatar',
+    });
+  }
+};

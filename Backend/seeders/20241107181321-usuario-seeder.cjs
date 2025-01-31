@@ -22,7 +22,7 @@ module.exports = {
 
     const localAuth = autenticacionesRows.find(auth => auth.tipoAutenticacion === 'Local');
 
-    // Hashear contraseñas
+    // Hashear passwords
     const adminPassword = await bcrypt.hash('Admin@123', 10);
     const internoPassword = await bcrypt.hash('Interno@123', 10);
     const externoPassword = await bcrypt.hash('Externo@123', 10);
@@ -39,6 +39,8 @@ module.exports = {
         id_estado: 1, // Asumiendo que 'Activo' tiene id_estado = 1
         id_rol: adminRole.id_rol,
         id_autenticacion: localAuth.id_autenticacion,
+        shopperId: null, // Inicialmente null
+        googleId: null,  // Inicialmente null
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -53,6 +55,8 @@ module.exports = {
         id_estado: 1,
         id_rol: internoRole.id_rol,
         id_autenticacion: localAuth.id_autenticacion,
+        shopperId: null, // Inicialmente null
+        googleId: null,  // Inicialmente null
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -67,6 +71,8 @@ module.exports = {
         id_estado: 1,
         id_rol: externoRole.id_rol,
         id_autenticacion: localAuth.id_autenticacion,
+        shopperId: null, // Inicialmente null
+        googleId: null,  // Inicialmente null
         createdAt: new Date(),
         updatedAt: new Date(),
       },

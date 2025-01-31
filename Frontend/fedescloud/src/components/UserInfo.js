@@ -14,7 +14,8 @@ const UserInfo = ({ onLogout }) => {
     <div className="user-info">
       <div className="user-details" onClick={() => navigate('/profile')}>
         <img
-          src={`${process.env.PUBLIC_URL}/assets/icons/user-placeholder2.png`}
+          // Si user.avatar está disponible, lo usa; sino, se muestra la imagen placeholder
+          src={user.avatar || `${process.env.PUBLIC_URL}/assets/icons/user-placeholder2.png`}
           alt="User Avatar"
           className="user-avatar"
         />

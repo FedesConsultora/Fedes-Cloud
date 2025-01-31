@@ -9,7 +9,7 @@ const AdminRoute = ({ children }) => {
   const { user, loading, isAdmin } = useContext(AuthContext);
 
   if (loading) {
-    return <div>Cargando...</div>; // Puedes reemplazar esto con un spinner o skeleton
+    return <div>Cargando...</div>; 
   }
 
   if (!user) {
@@ -17,7 +17,7 @@ const AdminRoute = ({ children }) => {
   }
 
   if (!isAdmin) {
-    return <Navigate to="/" replace />; // Redirigir a la página de inicio si no es admin
+    return <Navigate to="/" replace />; 
   }
 
   return children;

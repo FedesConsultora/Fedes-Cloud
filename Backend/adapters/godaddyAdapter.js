@@ -1,6 +1,7 @@
 // adapters/godaddyAdapter.js
 import fetch from 'node-fetch';  // O quita esto si Node >= 18 y fetch es global
 import 'dotenv/config';
+import logger from '../utils/logger.js';
 
 export default class GoDaddyAdapter {
   constructor() {
@@ -112,14 +113,14 @@ export default class GoDaddyAdapter {
       throw error;
     }
   }
- /**
-   * Registrar (comprar) un dominio.
+  /**
+   * Registrar (Comprar) un Dominio
    * POST /v1/domains/purchase
-   * @param {string} domain - e.g. "example.com"
-   * @param {object} body  - Consent, contacts, period, renewAuto, etc.
-   * @param {string} shopperId - Identificador del shopper (opcional)
+   * @param {string} domain - Dominio a registrar
+   * @param {object} body - Detalles de la compra
+   * @param {string} shopperId - (Opcional) ID del shopper
    */
- async registerDomain(domain, body = {}, shopperId = null) {
+  async registerDomain(domain, body = {}, shopperId = null) {
     try {
       const url = new URL(`/v1/domains/purchase`, this.baseURL);
 
@@ -136,6 +137,9 @@ export default class GoDaddyAdapter {
       // Combinar "domain" con el resto del payload
       const payload = { domain, ...body };
 
+      // Loggear la solicitud antes de enviarla
+      logger.info(`Enviando solicitud de registro de dominio: ${JSON.stringify(payload)}`);
+
       const response = await fetch(url, {
         method: 'POST',
         headers,
@@ -144,12 +148,16 @@ export default class GoDaddyAdapter {
 
       if (!response.ok) {
         const errorBody = await response.text();
+        logger.error(`GoDaddy API error (registerDomain): ${response.status} - ${errorBody}`);
         throw new Error(`GoDaddy API error (registerDomain): ${response.status} - ${errorBody}`);
       }
 
-      // Devuelve un objeto con currency, itemCount, orderId, total, ...
-      return await response.json();
+      const responseData = await response.json();
+      logger.info(`Respuesta exitosa de GoDaddy (registerDomain): ${JSON.stringify(responseData)}`);
+
+      return responseData;
     } catch (error) {
+      logger.error(`Error en registerDomain: ${error.message}`);
       throw error;
     }
   }
@@ -242,6 +250,180 @@ export default class GoDaddyAdapter {
       // Devuelve info de expiración, locked, autorenew, contacts, etc.
       return await response.json();
     } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Crear una subcuenta de shopper.
+   * POST /v1/shoppers/subaccount
+   * @param {object} shopperData - Datos del shopper
+   */
+  async createSubaccount(shopperData) {
+    try {
+      const url = new URL(`/v1/shoppers/subaccount`, this.baseURL);
+
+      const headers = {
+        'Authorization': `sso-key ${this.apiKey}:${this.apiSecret}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(shopperData),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        logger.error(`GoDaddy API error (createSubaccount): ${response.status} - ${errorBody}`);
+        throw new Error(`GoDaddy API error (createSubaccount): ${response.status} - ${errorBody}`);
+      }
+
+      return await response.json(); // { customerId, shopperId }
+    } catch (error) {
+      logger.error(`Error en createSubaccount: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtener detalles de un shopper.
+   * GET /v1/shoppers/{shopperId}
+   * @param {string} shopperId - ID del shopper
+   */
+  async getShopperDetails(shopperId) {
+    try {
+      const url = new URL(`/v1/shoppers/${shopperId}`, this.baseURL);
+
+      const headers = {
+        'Authorization': `sso-key ${this.apiKey}:${this.apiSecret}`,
+        'Accept': 'application/json',
+      };
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers,
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        logger.error(`GoDaddy API error (getShopperDetails): ${response.status} - ${errorBody}`);
+        throw new Error(`GoDaddy API error (getShopperDetails): ${response.status} - ${errorBody}`);
+      }
+
+      return await response.json(); // Detalles del shopper
+    } catch (error) {
+      logger.error(`Error en getShopperDetails: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Actualizar detalles de un shopper.
+   * POST /v1/shoppers/{shopperId}
+   * @param {string} shopperId - ID del shopper
+   * @param {object} shopperData - Datos a actualizar
+   */
+  async updateShopperDetails(shopperId, shopperData) {
+    try {
+      const url = new URL(`/v1/shoppers/${shopperId}`, this.baseURL);
+
+      const headers = {
+        'Authorization': `sso-key ${this.apiKey}:${this.apiSecret}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(shopperData),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        logger.error(`GoDaddy API error (updateShopperDetails): ${response.status} - ${errorBody}`);
+        throw new Error(`GoDaddy API error (updateShopperDetails): ${response.status} - ${errorBody}`);
+      }
+
+      return await response.json(); // { customerId, shopperId }
+    } catch (error) {
+      logger.error(`Error en updateShopperDetails: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Eliminar un shopper.
+   * DELETE /v1/shoppers/{shopperId}?auditClientIp=<IP>
+   * @param {string} shopperId - ID del shopper
+   * @param {string} auditClientIp - IP del cliente
+   */
+  async deleteShopper(shopperId, auditClientIp) {
+    try {
+      const url = new URL(`/v1/shoppers/${shopperId}`, this.baseURL);
+      url.searchParams.append('auditClientIp', auditClientIp);
+
+      const headers = {
+        'Authorization': `sso-key ${this.apiKey}:${this.apiSecret}`,
+        'Accept': 'application/json',
+      };
+
+      const response = await fetch(url, {
+        method: 'DELETE',
+        headers,
+      });
+
+      if (response.status !== 204) { // 204 No Content indica éxito
+        const errorBody = await response.text();
+        logger.error(`GoDaddy API error (deleteShopper): ${response.status} - ${errorBody}`);
+        throw new Error(`GoDaddy API error (deleteShopper): ${response.status} - ${errorBody}`);
+      }
+
+      return true;
+    } catch (error) {
+      logger.error(`Error en deleteShopper: ${error.message}`);
+      throw error;
+    }
+  }
+  /**
+   * Validar la Solicitud de Compra
+   * POST /v1/domains/purchase/validate
+   * @param {object} body - Payload de la compra
+   */
+  async validatePurchase(body = {}) {
+    try {
+      const url = new URL(`/v1/domains/purchase/validate`, this.baseURL);
+
+      const headers = {
+        'Authorization': `sso-key ${this.apiKey}:${this.apiSecret}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+
+      // Loggear la solicitud antes de enviarla
+      logger.info(`Enviando solicitud de validación de compra: ${JSON.stringify(body)}`);
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        logger.error(`GoDaddy API error (validatePurchase): ${response.status} - ${errorBody}`);
+        throw new Error(`GoDaddy API error (validatePurchase): ${response.status} - ${errorBody}`);
+      }
+
+      const responseData = await response.json();
+      logger.info(`Respuesta exitosa de GoDaddy (validatePurchase): ${JSON.stringify(responseData)}`);
+
+      return responseData;
+    } catch (error) {
+      logger.error(`Error en validatePurchase: ${error.message}`);
       throw error;
     }
   }

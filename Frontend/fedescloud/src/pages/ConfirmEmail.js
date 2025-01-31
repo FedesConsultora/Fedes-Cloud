@@ -16,11 +16,13 @@ const ConfirmEmail = () => {
     const query = new URLSearchParams(location.search);
     const token = query.get('token');
     const email = query.get('email');
-
+    
+    
     const confirmEmail = async () => {
-      if (hasConfirmedRef.current) return; // Evitar múltiples llamadas
+      console.log('entre');
+      if (hasConfirmedRef.current) return; 
       hasConfirmedRef.current = true;
-
+      
       try {
         const response = await fetch(
           `${config.API_URL}/auth/confirm-email?token=${token}&email=${email}`,
@@ -59,7 +61,7 @@ const ConfirmEmail = () => {
         console.error(error);
       }
     };
-
+    confirmEmail();
     
   }, [location.search, navigate]);
 

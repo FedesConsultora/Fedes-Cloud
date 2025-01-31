@@ -12,9 +12,17 @@ import crypto from 'crypto';
 import { sendEmail } from '../utils/emailService.js';
 
 /**
- * Registro de un nuevo usuario.
+ * Función para generar una contraseña segura para el shopper.
+ */
+const generateSecurePassword = () => {
+  return crypto.randomBytes(16).toString('hex'); // Genera una contraseña de 32 caracteres hexadecimales
+};
+
+/**
+ * Registro de un nuevo usuario por Administrador.
  */
 export const createUser = async (req, res, next) => {
+  const transaction = await Usuario.sequelize.transaction(); // Iniciar una transacción
   try {
     const {
       nombre,
@@ -24,6 +32,7 @@ export const createUser = async (req, res, next) => {
       fechaNacimiento,
       id_rol,
       id_autenticacion,
+      clientURI, // Asegúrate de que se envíe clientURI en el cuerpo de la solicitud
     } = req.body;
 
     // Verificar permisos
@@ -33,32 +42,89 @@ export const createUser = async (req, res, next) => {
     }
 
     // Verificar si el email ya existe
-    const existingUser = await Usuario.findOne({ where: { email } });
+    const existingUser = await Usuario.findOne({ where: { email }, transaction });
     if (existingUser) {
       logger.warn(`Creación de usuario fallida: Email ${email} ya está registrado`);
       throw new EmailAlreadyExistsError();
     }
 
     // Encriptar la contraseña
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
 
+    // Verificar el rol
+    const userRole = await Rol.findByPk(id_rol, { transaction });
+    if (!userRole) {
+      logger.error(`Rol especificado no encontrado: ID ${id_rol}`);
+      throw new ValidationError([{ msg: 'Rol especificado no válido.', param: 'id_rol', location: 'body' }]);
+    }
+
+    // Formatear la fecha de nacimiento si se proporciona
+    const [day, month, year] = fechaNacimiento ? fechaNacimiento.split('/') : [null, null, null];
+    const formattedDate = day && month && year ? `${year}-${month}-${day}` : null;
+
+    // Crear el usuario en la base de datos
     const newUser = await Usuario.create({
       nombre,
       apellido,
       email,
       password: hashedPassword,
-      fechaNacimiento,
+      fechaNacimiento: formattedDate,
       id_rol,
       id_estado: 1, // Estado activo por defecto
       preferenciasNotificaciones: true,
       id_autenticacion,
-    });
+    }, { transaction });
+
+    // Si el rol es Externo, crear shopperId
+    if (userRole.nombre === 'Externo') {
+      const shopperData = {
+        email,
+        externalId: newUser.id_usuario.toString(),
+        marketId: 'en-US', // Ajusta según tu mercado objetivo
+        nameFirst: nombre,
+        nameLast: apellido,
+        password: generateSecurePassword(),
+      };
+
+      // Crear la subcuenta de shopper en GoDaddy
+      const createShopperResponse = await godaddyService.createShopper(shopperData);
+      const { shopperId } = createShopperResponse;
+
+      // Asignar el shopperId al usuario
+      newUser.shopperId = shopperId;
+      await newUser.save({ transaction });
+    }
+
+    // Enviar el correo de confirmación si es necesario
+    if (clientURI) {
+      const emailToken = crypto.randomBytes(32).toString('hex');
+      const emailTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // 24h
+
+      newUser.emailToken = emailToken;
+      newUser.emailTokenExpires = emailTokenExpires;
+      newUser.emailConfirmed = false;
+      await newUser.save({ transaction });
+
+      const confirmURL = `${clientURI}/auth/confirm-email?token=${emailToken}&email=${newUser.email}`;
+
+      await sendEmail({
+        to: newUser.email,
+        subject: 'Confirma tu correo electrónico',
+        template: 'confirmEmail',
+        context: {
+          nombre: newUser.nombre,
+          confirmURL,
+        },
+      });
+    }
 
     logger.info(`Usuario creado exitosamente: ID ${newUser.id_usuario}`);
 
+    await transaction.commit(); // Confirmar la transacción
+
     res.status(201).json({
       success: true,
-      message: 'Usuario creado exitosamente',
+      message: 'Usuario creado exitosamente.',
       data: {
         id_usuario: newUser.id_usuario,
         nombre: newUser.nombre,
@@ -69,11 +135,13 @@ export const createUser = async (req, res, next) => {
         id_estado: newUser.id_estado,
         preferenciasNotificaciones: newUser.preferenciasNotificaciones,
         id_autenticacion: newUser.id_autenticacion,
+        shopperId: newUser.shopperId,
         createdAt: newUser.createdAt,
         updatedAt: newUser.updatedAt,
       },
     });
   } catch (error) {
+    await transaction.rollback(); // Revertir la transacción en caso de error
     logger.error(`Error al crear usuario: ${error.message}`);
     next(error);
   }
@@ -275,6 +343,7 @@ export const updateUser = async (req, res, next) => {
  * Eliminar un usuario.
  */
 export const deleteUser = async (req, res, next) => {
+  const transaction = await Usuario.sequelize.transaction(); // Iniciar una transacción
   try {
     const { id } = req.params;
 
@@ -284,15 +353,26 @@ export const deleteUser = async (req, res, next) => {
       throw new PermissionDeniedError();
     }
 
-    const user = await Usuario.findByPk(id);
+    const user = await Usuario.findByPk(id, { transaction });
     if (!user) {
       logger.warn(`Usuario no encontrado para eliminar: ID ${id}`);
       throw new UserNotFoundError();
     }
 
-    await user.destroy();
+    // Si el usuario tiene un shopperId, eliminar la subcuenta en GoDaddy
+    if (user.shopperId) {
+      // Obtener la IP del cliente para auditClientIp
+      const auditClientIp = req.ip || req.connection.remoteAddress;
+
+      await godaddyService.deleteShopper(user.shopperId, auditClientIp);
+      logger.info(`Subcuenta de shopper eliminada: SHOPPER_ID ${user.shopperId}`);
+    }
+
+    await user.destroy({ transaction });
 
     logger.info(`Usuario eliminado exitosamente: ID ${id} por el usuario ID ${req.user.id}`);
+
+    await transaction.commit(); // Confirmar la transacción
 
     res.status(200).json({
       success: true,
@@ -300,6 +380,7 @@ export const deleteUser = async (req, res, next) => {
       data: { id },
     });
   } catch (error) {
+    await transaction.rollback(); // Revertir la transacción en caso de error
     logger.error(`Error al eliminar usuario ID ${req.params.id}: ${error.message}`);
     next(error);
   }
@@ -359,6 +440,9 @@ export const updateEmail = async (req, res, next) => {
   }
 };
 
+/**
+ * Actualizar la contraseña del usuario autenticado.
+ */
 export const updatePassword = async (req, res, next) => {
   try {
     const { currentPassword, newPassword } = req.body;
@@ -369,20 +453,47 @@ export const updatePassword = async (req, res, next) => {
       throw new UserNotFoundError();
     }
 
-    const validPassword = await bcrypt.compare(currentPassword, user.password);
-    if (!validPassword) {
-      throw new ValidationError([{ msg: 'La contraseña actual es incorrecta', param: 'currentPassword' }]);
+    // Verificar que se proporcione la password actual y la nueva password
+    if (!currentPassword || !newPassword) {
+      throw new ValidationError([
+        {
+          msg: 'La password actual es obligatoria.',
+          param: 'currentPassword',
+          location: 'body',
+        },
+        {
+          msg: 'La nueva password es obligatoria.',
+          param: 'newPassword',
+          location: 'body',
+        },
+      ]);
     }
 
+    // Verificar que la password actual es correcta
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      throw new ValidationError([{
+        msg: 'La password actual es incorrecta.',
+        param: 'currentPassword',
+        location: 'body',
+      }]);
+    }
+
+    // Encriptar la nueva password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await user.update({ password: hashedPassword });
+
+    // Actualizar la password
+    user.password = hashedPassword;
+    await user.save();
+
+    logger.info(`Password actualizada exitosamente para el usuario ID ${id_usuario}`);
 
     res.status(200).json({
       success: true,
-      message: 'Contraseña actualizada exitosamente',
+      message: 'Password actualizada exitosamente.',
     });
   } catch (error) {
-    logger.error(`Error al actualizar contraseña: ${error.message}`);
+    logger.error(`Error al actualizar password: ${error.message}`);
     next(error);
   }
 };

@@ -7,13 +7,13 @@
 @use 'components/button';
 @use 'components/form';
 @use 'components/themeToggle';
-@use 'components/sweetalert';
 @use 'components/sidebar';
 @use 'components/footer';
 @use 'components/logo';
 @use 'components/socialLogin';
 @use 'components/crearServicioModal';
 @use 'components/contactoModal';
+@use 'components/sweetalert2_custom';
 
 @use 'layouts/mainLayout';
 @use 'layouts/authLayout';

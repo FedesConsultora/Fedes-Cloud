@@ -1,0 +1,35 @@
+// src/styles/scss/components/_sweetalert2_custom.scss
+
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+@import '~sweetalert2/dist/sweetalert2.min.css';
+
+// Sobrescribe clases y/o añade clases personalizadas
+.swal2-popup {
+  background-color: mixins.theme(light-color);
+  color: mixins.theme(text-color);
+  font-family: mixins.theme(font);
+
+
+
+  // Botones de SweetAlert2
+  .swal2-actions button {
+    background-color: mixins.theme(primary-color);
+    color: mixins.theme(light-color);
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    padding: 0.75rem 1rem;
+
+    &:hover {
+      background-color: mixins.theme(primary-color-hover);
+    }
+
+    &.swal2-cancel {
+      background-color: mixins.theme(delete-color);
+      &:hover {
+        background-color: mixins.theme(delete-color-hover);
+      }
+    }
+  }
+}

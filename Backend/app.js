@@ -12,11 +12,16 @@ import errorHandler from './middlewares/errorHandler.js';
 import { swaggerUi, swaggerDocs } from './docs/swagger.js';
 import logger from './utils/logger.js';
 import passport from './config/passport.js';
+import path from 'path';
 
 const app = express();
 
 // Middleware de Seguridad HTTP
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  })
+);
 
 // Configurar CORS
 const corsOptions = {
@@ -38,6 +43,8 @@ const apiLimiter = rateLimit({
 app.use('/api/', apiLimiter);
 
 // Parseo de cuerpo y sanitización
+app.use('/assets', express.static(path.join(process.cwd(), 'assets')));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(xss());

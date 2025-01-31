@@ -243,6 +243,7 @@ export const getTLDs = async (req, res, next) => {
 export const suggestDomains = async (req, res, next) => {
   try {
     // Verificar permisos
+    console.log(req.user)
     if (!req.user || !req.user.permisos.includes('suggest_domains')) {
       throw new PermissionDeniedError('No tienes permiso para sugerir dominios.');
     }
@@ -348,9 +349,9 @@ export const suggestDomains = async (req, res, next) => {
   }
 };
 
-/** 
- * Registrar un dominio usando la API de GoDaddy (y guardar en BD).
- * POST /dominios/registrar
+/**
+ * Registrar (Comprar) un Dominio
+ * POST /v1/domains/registrar
  */
 export const registerDominio = async (req, res, next) => {
   const transaction = await sequelize.transaction(); // Iniciar una transacción
@@ -360,81 +361,79 @@ export const registerDominio = async (req, res, next) => {
       throw new PermissionDeniedError('No tienes permiso para registrar dominios en GoDaddy.');
     }
 
-    const { domain, period, privacy, renewAuto, ...contactData } = req.body;
+    const {
+      domain,
+      period = 1,
+      privacy = false,
+      renewAuto = true,
+      consent,
+      contactAdmin,
+      contactBilling,
+      contactRegistrant,
+      contactTech,
+      nameServers = [],
+    } = req.body;
+
     if (!domain) {
       throw new ValidationError('El dominio es requerido para el registro.');
     }
 
+    // **Paso 1: Validar la Solicitud de Compra**
+    const purchasePayload = {
+      consent,
+      contactAdmin,
+      contactBilling,
+      contactRegistrant,
+      contactTech,
+      domain,
+      nameServers,
+      period,
+      privacy,
+      renewAuto,
+    };
+
+    const validationResponse = await godaddyService.validatePurchase(purchasePayload);
+
+    // **Paso 2: Realizar la Compra del Dominio**
+
+    // Determinar si se usa reseller
+    const isReseller = process.env.GODADDY_IS_RESELLER === 'true';
+    let shopperId = null;
+
+    if (isReseller) {
+      shopperId = process.env.GODADDY_SHOPPER_ID;
+      if (!shopperId) {
+        throw new ValidationError('SHOPPER_ID no está configurado en las variables de entorno.');
+      }
+    }
+
+    // Registrar el dominio utilizando el adaptador de GoDaddy
+    const registrationResponse = await godaddyService.registerDomain(domain, purchasePayload, shopperId);
+
+    // Calcular la fecha de expiración
+    const expiracionEstimada = new Date();
+    expiracionEstimada.setFullYear(expiracionEstimada.getFullYear() + period);
+
     // Determinar el rol del usuario
     const isAdminOrInternal = ['admin', 'internal'].includes(req.user.rol); // Ajusta según tu modelo de roles
 
-    // Buscar servicios existentes del usuario
+    // Buscar o crear servicios existentes del usuario
     let servicio = await Servicio.findOne({
       where: { id_usuario: req.user.id_usuario },
       transaction,
     });
 
     if (!servicio) {
-      if (isAdminOrInternal) {
-        // Crear un nuevo servicio para usuarios internos o admin
-        servicio = await Servicio.create(
-          {
-            nombre: `${req.user.nombre} Servicio Predeterminado`,
-            estado: 'Activo',
-            id_usuario: req.user.id_usuario,
-          },
-          { transaction }
-        );
-        logger.info(`Servicio creado automáticamente para usuario ${req.user.id_usuario}: ID ${servicio.id_servicio}`);
-      } else {
-        // Para usuarios externos, crear un servicio automáticamente sin exponerlo
-        servicio = await Servicio.create(
-          {
-            nombre: `${req.user.nombre} Servicio`,
-            estado: 'Activo',
-            id_usuario: req.user.id_usuario,
-          },
-          { transaction }
-        );
-        logger.info(`Servicio creado automáticamente para usuario externo ${req.user.id_usuario}: ID ${servicio.id_servicio}`);
-      }
+      servicio = await Servicio.create(
+        {
+          nombre: `${req.user.nombre} Servicio`,
+          estado: 'Activo',
+          id_usuario: req.user.id_usuario,
+        },
+        { transaction }
+      );
+      logger.info(`Servicio creado automáticamente para usuario ${req.user.id_usuario}: ID ${servicio.id_servicio}`);
     }
-
-    // Validar campos de contacto y consentimiento
-    const requiredContacts = ['contactAdmin', 'contactBilling', 'contactRegistrant', 'contactTech', 'consent'];
-    for (const field of requiredContacts) {
-      if (!contactData[field]) {
-        throw new ValidationError(`El campo "${field}" es obligatorio.`);
-      }
-    }
-
-    // Validar consentimiento
-    if (
-      !contactData.consent.agreedAt ||
-      !contactData.consent.agreedBy ||
-      !Array.isArray(contactData.consent.agreementKeys) ||
-      contactData.consent.agreementKeys.length === 0
-    ) {
-      throw new ValidationError('Información de consentimiento incompleta.');
-    }
-
-    // Registrar el dominio utilizando el adaptador de GoDaddy
-    const SHOPPER_ID = process.env.GODADDY_SHOPPER_ID; // Definir en variables de entorno
-    const registrationResponse = await godaddyService.registerDomain(domain, {
-      consent: contactData.consent,
-      contactAdmin: contactData.contactAdmin,
-      contactBilling: contactData.contactBilling,
-      contactRegistrant: contactData.contactRegistrant,
-      contactTech: contactData.contactTech,
-      nameServers: contactData.nameServers || [], // Opcional
-      period: period || 1,
-      privacy: !!privacy,
-      renewAuto: !!renewAuto,
-    }, SHOPPER_ID); // Incluir el Shopper ID
-
-    // Calcular la fecha de expiración
-    const expiracionEstimada = new Date();
-    expiracionEstimada.setFullYear(expiracionEstimada.getFullYear() + (period || 1));
 
     // Guardar la información del dominio en la base de datos
     const nuevoDominio = await Dominio.create(
@@ -443,7 +442,7 @@ export const registerDominio = async (req, res, next) => {
         nombreDominio: domain,
         fechaExpiracion: expiracionEstimada,
         bloqueado: true,
-        proteccionPrivacidad: !!privacy,
+        proteccionPrivacidad: privacy,
       },
       { transaction }
     );
@@ -454,17 +453,87 @@ export const registerDominio = async (req, res, next) => {
 
     return res.status(201).json({
       success: true,
-      message: 'Dominio en proceso de registro',
+      message: 'Dominio en proceso de registro.',
       data: {
         goDaddyOrder: registrationResponse,
         dominioLocal: nuevoDominio,
-        id_servicio: servicio.id_servicio, // Incluir el servicio asociado
+        id_servicio: servicio.id_servicio,
       },
     });
   } catch (error) {
     await transaction.rollback(); // Revertir la transacción en caso de error
     logger.error(`Error al registrar dominio: ${error.message}`);
-    next(error);
+
+    // Manejar errores específicos de GoDaddy
+    if (error.message.includes('422')) {
+      let errorDetails = {};
+      try {
+        const errorBody = error.message.split(' - ')[1];
+        errorDetails = JSON.parse(errorBody);
+      } catch (parseError) {
+        logger.error('Error al parsear el cuerpo del error 422');
+      }
+      return res.status(422).json({
+        success: false,
+        message: errorDetails.message || 'Errores en la compra del dominio.',
+        errors: errorDetails.fields || [],
+      });
+    }
+
+    if (error.message.includes('400')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Solicitud malformada a GoDaddy (400).',
+        errors: [],
+      });
+    }
+
+    if (error.message.includes('401')) {
+      return res.status(401).json({
+        success: false,
+        message: 'Información de autenticación inválida (401).',
+        errors: [],
+      });
+    }
+
+    if (error.message.includes('403')) {
+      return res.status(403).json({
+        success: false,
+        message: 'Usuario no autorizado para esta acción (403).',
+        errors: [],
+      });
+    }
+
+    if (error.message.includes('404')) {
+      return res.status(404).json({
+        success: false,
+        message: 'Recurso no encontrado (404).',
+        errors: [],
+      });
+    }
+
+    if (error.message.includes('429')) {
+      return res.status(429).json({
+        success: false,
+        message: 'Demasiadas solicitudes en un intervalo de tiempo (429).',
+        errors: [],
+      });
+    }
+
+    if (error.message.includes('500')) {
+      return res.status(500).json({
+        success: false,
+        message: 'Error interno del servidor (500).',
+        errors: [],
+      });
+    }
+
+    // Error interno del servidor
+    return res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor.',
+      errors: [],
+    });
   }
 };
 
@@ -594,5 +663,109 @@ export const getDomainInfo = async (req, res, next) => {
   } catch (error) {
     logger.error(`Error al obtener info del dominio: ${error.message}`);
     next(error);
+  }
+};
+
+/**
+ * Validar la Solicitud de Compra
+ * POST /v1/domains/validar-compra
+ */
+export const validateCompra = async (req, res, next) => {
+  try {
+    // Verificar permisos
+    if (!req.user || !req.user.permisos.includes('validate_purchase')) {
+      throw new PermissionDeniedError('No tienes permiso para validar compras de dominios en GoDaddy.');
+    }
+
+    const {
+      domain,
+      period = 1,
+      privacy = false,
+      renewAuto = true,
+      consent,
+      contactAdmin,
+      contactBilling,
+      contactRegistrant,
+      contactTech,
+      nameServers = [],
+    } = req.body;
+
+    if (!domain) {
+      throw new ValidationError('El dominio es requerido para la validación.');
+    }
+
+    // Construir el payload según la documentación
+    const purchasePayload = {
+      consent,
+      contactAdmin,
+      contactBilling,
+      contactRegistrant,
+      contactTech,
+      domain,
+      nameServers,
+      period,
+      privacy,
+      renewAuto,
+    };
+
+    // Validar la solicitud de compra
+    const validationResponse = await godaddyService.validatePurchase(purchasePayload);
+
+    // Responder con la validación exitosa
+    res.status(200).json({
+      success: true,
+      message: 'La solicitud de compra es válida.',
+      data: validationResponse,
+    });
+  } catch (error) {
+    logger.error(`Error al validar compra de dominio: ${error.message}`);
+
+    // Manejar errores de validación de GoDaddy
+    if (error.message.includes('422')) {
+      let errorDetails = {};
+      try {
+        const errorBody = error.message.split(' - ')[1];
+        errorDetails = JSON.parse(errorBody);
+      } catch (parseError) {
+        logger.error('Error al parsear el cuerpo del error 422');
+      }
+      return res.status(422).json({
+        success: false,
+        message: errorDetails.message || 'Errores en la validación de la solicitud.',
+        errors: errorDetails.fields || [],
+      });
+    }
+
+    // Manejar otros errores específicos
+    if (error.message.includes('400')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Solicitud malformada a GoDaddy (400)',
+        errors: [],
+      });
+    }
+
+    if (error.message.includes('401')) {
+      return res.status(401).json({
+        success: false,
+        message: 'Información de autenticación inválida (401)',
+        errors: [],
+      });
+    }
+
+    if (error.message.includes('403')) {
+      return res.status(403).json({
+        success: false,
+        message: 'Usuario no autorizado para esta acción (403)',
+        errors: [],
+      });
+    }
+
+    // Error interno del servidor
+    return res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor',
+      errors: [],
+    });
   }
 };

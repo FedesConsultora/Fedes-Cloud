@@ -104,6 +104,15 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      shopperId: { 
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      googleId: { 
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true,
+      },
     },
     {
       sequelize,
