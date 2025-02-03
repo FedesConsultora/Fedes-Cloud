@@ -1583,6 +1583,7 @@ main {
 }
 .profile-page .profile-container .profile-info .profile-field {
   display: flex;
+  justify-content: center;
   align-items: center;
   margin-bottom: 1.5rem;
   position: relative;
@@ -2893,24 +2894,382 @@ main {
   }
 }
 
-/* src/pages/CertificadosSSLPage.scss */
 .certificados-ssl-page {
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem;
   min-height: 100vh;
   background-color: var(--background-color);
   color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
+  /* Step 1: Tarjetas de selección de certificado */
+  /* Step 2: Seleccionar Plan */
+  /* Step 3: Formulario */
+  /* Orden Pendiente */
+  /* Sección de certificados existentes */
 }
 .certificados-ssl-page h2 {
+  margin-bottom: 2rem;
   font-size: 2rem;
-  color: var(--primary-color);
-  margin-bottom: 1.5rem;
+  color: var(--dark-color);
   text-align: center;
 }
-.certificados-ssl-page p {
-  font-size: 1.1rem;
+.certificados-ssl-page .tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.certificados-ssl-page .tabs button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  transition: background-color 0.3s ease;
+}
+.certificados-ssl-page .tabs button:hover {
+  background-color: var(--primary-color-hover);
+}
+.certificados-ssl-page .tabs button.active {
+  background-color: var(--dark-blue-color);
+}
+.certificados-ssl-page .new-certificate,
+.certificados-ssl-page .existing-certificates {
+  width: 100%;
+  max-width: 900px;
+  background-color: var(--light-color);
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 0 5px var(--shadow-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin-bottom: 2rem;
+}
+.certificados-ssl-page .certificate-cards {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+.certificados-ssl-page .certificate-cards .certificate-card {
+  background-color: var(--light-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 10px;
+  padding: 1rem;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 5px var(--shadow-color);
   text-align: center;
+  position: relative;
+}
+.certificados-ssl-page .certificate-cards .certificate-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
   color: var(--dark-color);
+}
+.certificados-ssl-page .certificate-cards .certificate-card h4 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary-color);
+}
+.certificados-ssl-page .certificate-cards .certificate-card .features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  font-size: 0.85rem;
+}
+.certificados-ssl-page .certificate-cards .certificate-card .features li {
+  margin-bottom: 0.25rem;
+}
+.certificados-ssl-page .certificate-cards .certificate-card .prices {
+  margin-bottom: 1rem;
+}
+.certificados-ssl-page .certificate-cards .certificate-card .prices .regular-price {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--dark-color);
+}
+.certificados-ssl-page .certificate-cards .certificate-card .prices .discount-price {
+  font-size: 1rem;
+  color: var(--primary-color);
+}
+.certificados-ssl-page .certificate-cards .certificate-card .prices .discount-price span {
+  font-size: 0.8rem;
+  margin-left: 0.3rem;
+  color: var(--dark-color);
+}
+.certificados-ssl-page .certificate-cards .certificate-card .prices .note {
+  font-size: 0.75rem;
+  color: var(--gray-color);
+}
+.certificados-ssl-page .certificate-cards .certificate-card .select-btn {
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+.certificados-ssl-page .certificate-cards .certificate-card .select-btn:hover {
+  background-color: var(--primary-color-hover);
+}
+.certificados-ssl-page .certificate-cards .certificate-card .badge {
+  position: absolute;
+  top: -17px;
+  right: -10px;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  padding: 0.3rem 0.5rem;
+  border-radius: 9%;
+  font-size: 0.75rem;
+  -webkit-border-radius: 9%;
+  -moz-border-radius: 9%;
+  -ms-border-radius: 9%;
+  -o-border-radius: 9%;
+}
+.certificados-ssl-page .plan-selection {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+.certificados-ssl-page .plan-selection h3 {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  color: var(--dark-color);
+}
+.certificados-ssl-page .plan-selection p {
+  margin-bottom: 1rem;
+}
+.certificados-ssl-page .plan-selection .horizontal-plans {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.certificados-ssl-page .plan-selection .horizontal-plans .plan-card {
+  background-color: var(--light-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 8px;
+  padding: 1rem;
+  width: 200px;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.certificados-ssl-page .plan-selection .horizontal-plans .plan-card:hover {
+  background-color: #f9f9f9;
+}
+.certificados-ssl-page .plan-selection .horizontal-plans .plan-card h4 {
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+.certificados-ssl-page .plan-selection .horizontal-plans .plan-card .discounted-price {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--dark-color);
+}
+.certificados-ssl-page .plan-selection .horizontal-plans .plan-card .original-price {
+  font-size: 0.85rem;
+  text-decoration: line-through;
+  color: var(--gray-color);
+}
+.certificados-ssl-page .plan-selection .horizontal-plans .plan-card .discount-note {
+  font-size: 0.8rem;
+  color: var(--primary-color);
+}
+.certificados-ssl-page .plan-selection .plan-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+.certificados-ssl-page .plan-selection .plan-buttons .back-btn {
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+.certificados-ssl-page .plan-selection .plan-buttons .back-btn:hover {
+  background-color: var(--primary-color-hover);
+}
+.certificados-ssl-page .certificate-request-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.certificados-ssl-page .certificate-request-form .form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.certificados-ssl-page .certificate-request-form .form-header h3 {
+  margin: 0;
+  color: var(--dark-color);
+}
+.certificados-ssl-page .certificate-request-form .form-header .back-btn {
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+.certificados-ssl-page .certificate-request-form .form-header .back-btn:hover {
+  background-color: var(--primary-color-hover);
+}
+.certificados-ssl-page .certificate-request-form .summary-box {
+  background-color: #f9f9f9;
+  padding: 0.75rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+.certificados-ssl-page .certificate-request-form .summary-box p {
+  margin: 0.25rem 0;
+}
+.certificados-ssl-page .certificate-request-form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+.certificados-ssl-page .certificate-request-form .form-group label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+.certificados-ssl-page .certificate-request-form .form-group input,
+.certificados-ssl-page .certificate-request-form .form-group select {
+  padding: 0.75rem;
+  border: 1px solid #c6c6c6;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+.certificados-ssl-page .certificate-request-form .form-group input:focus,
+.certificados-ssl-page .certificate-request-form .form-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+}
+.certificados-ssl-page .certificate-request-form .request-btn {
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.certificados-ssl-page .certificate-request-form .request-btn:hover {
+  background-color: var(--primary-color-hover);
+}
+.certificados-ssl-page .order-summary h3 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: var(--dark-color);
+}
+.certificados-ssl-page .order-summary p {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+.certificados-ssl-page .order-summary .order-message {
+  font-style: italic;
+  color: var(--dark-blue-color);
+}
+.certificados-ssl-page .certificate-checker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+.certificados-ssl-page .certificate-checker input[type=text] {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #c6c6c6;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+.certificados-ssl-page .certificate-checker input[type=text]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+}
+.certificados-ssl-page .certificate-checker button {
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.certificados-ssl-page .certificate-checker button:hover {
+  background-color: var(--primary-color-hover);
+}
+.certificados-ssl-page .certificates-list table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.certificados-ssl-page .certificates-list table thead tr {
+  background-color: var(--primary-color);
+  color: var(--light-color);
+}
+.certificados-ssl-page .certificates-list table thead th {
+  padding: 0.75rem;
+  text-align: left;
+}
+.certificados-ssl-page .certificates-list table thead th:first-child {
+  border-top-left-radius: 10px;
+}
+.certificados-ssl-page .certificates-list table thead th:last-child {
+  border-top-right-radius: 10px;
+}
+.certificados-ssl-page .certificates-list table tbody tr {
+  border-bottom: 1px solid #ccc;
+}
+.certificados-ssl-page .certificates-list table tbody tr:hover {
+  background-color: #f7f9fc;
+}
+.certificados-ssl-page .certificates-list table tbody tr td {
+  padding: 0.75rem;
+}
+.certificados-ssl-page .detail-btn {
+  padding: 0.5rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.certificados-ssl-page .detail-btn:hover {
+  background-color: var(--primary-color-hover);
+}
+.certificados-ssl-page .info-text {
+  margin-top: 1rem;
+  font-size: 1rem;
+  text-align: center;
 }
 
 /* Aplicar el tema claro por defecto dentro de :root */

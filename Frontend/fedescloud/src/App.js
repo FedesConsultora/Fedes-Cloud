@@ -16,6 +16,7 @@ import Settings from './pages/Settings.js';
 import TwoFactorAuth from './pages/TwoFactorAuth.js';
 import DominiosPage from './pages/DominiosPage.js';
 import DominiosBusquedaPage from './pages/DominiosBusquedaPage.js';
+import CertificadosSSLPage from './pages/CertificadosSSLPage.js';  // <-- Importa la nueva página
 import AdminRoute from './components/AdminRoute.js';
 import UserDetail from './pages/UserDetail.js';
 import DomainDetail from './pages/DomainDetail.js';
@@ -31,7 +32,7 @@ const AppRoutes = () => {
     <div className="transition-container">
       <AnimatePresence mode='wait'>
         <Routes location={location} key={location.pathname}>
-          {/* Rutas públicas: si estás logueado, te manda a / */}
+          {/* Rutas públicas */}
           <Route
             path="/auth/*"
             element={
@@ -59,6 +60,7 @@ const AppRoutes = () => {
             }
           />
 
+          {/* Rutas protegidas */}
           <Route
             path="/"
             element={
@@ -110,6 +112,7 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/dominios"
             element={
@@ -122,6 +125,7 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/dominios/busqueda"
             element={
@@ -134,6 +138,7 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/dominios/comprar"
             element={
@@ -146,7 +151,22 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
-          {/* Ruta para Admin Dashboard, protegida y solo para Admins */}
+
+          {/* Nueva ruta para Certificados SSL */}
+          <Route
+            path="/certificados-ssl"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <CertificadosSSLPage />
+                  </PageTransition>
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Rutas para Admin */}
           <Route
             path="/admin"
             element={
@@ -160,7 +180,6 @@ const AppRoutes = () => {
             }
           />
 
-          {/* Rutas detalladas de Admin */}
           <Route
             path="/admin/users/:userId"
             element={
@@ -173,6 +192,7 @@ const AppRoutes = () => {
               </AdminRoute>
             }
           />
+
           <Route
             path="/admin/users/:userId/edit"
             element={
@@ -185,6 +205,7 @@ const AppRoutes = () => {
               </AdminRoute>
             }
           />
+
           <Route
             path="/admin/domains/:domainId/edit"
             element={
@@ -197,6 +218,7 @@ const AppRoutes = () => {
               </AdminRoute>
             }
           />
+
           <Route
             path="/admin/domains/:domainId"
             element={
@@ -209,6 +231,7 @@ const AppRoutes = () => {
               </AdminRoute>
             }
           />
+
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </AnimatePresence>

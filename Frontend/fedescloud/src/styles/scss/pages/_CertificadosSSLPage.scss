@@ -1,26 +1,426 @@
-/* src/pages/CertificadosSSLPage.scss */
-
 @use 'sass:color';
 @use '../abstracts/mixins' as mixins;
 
 .certificados-ssl-page {
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem;
   min-height: 100vh;
   background-color: mixins.theme(background-color);
   color: mixins.theme(text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
 
   h2 {
+    margin-bottom: 2rem;
     font-size: 2rem;
-    color: mixins.theme(primary-color);
-    margin-bottom: 1.5rem;
-    text-align: center;
-  }
-
-  p {
-    font-size: 1.1rem;
-    text-align: center;
     color: mixins.theme(dark-color);
+    text-align: center;
   }
 
+  .tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      background-color: mixins.theme(primary-color);
+      color: mixins.theme(light-color);
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: mixins.theme(primary-color-hover);
+      }
+
+      &.active {
+        background-color: mixins.theme(dark-blue-color);
+      }
+    }
+  }
+
+  .new-certificate,
+  .existing-certificates {
+    width: 100%;
+    max-width: 900px;
+    background-color: mixins.theme(light-color);
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 0 5px mixins.theme(shadow-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin-bottom: 2rem;
+  }
+
+  /* Step 1: Tarjetas de selección de certificado */
+  .certificate-cards {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 2rem;
+
+    .certificate-card {
+      background-color: mixins.theme(light-color);
+      border: 1px solid mixins.theme(primary-color);
+      border-radius: 10px;
+      padding: 1rem;
+      width: 250px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 5px mixins.theme(shadow-color);
+      text-align: center;
+      position: relative;
+      
+      h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: mixins.theme(dark-color);
+      }
+      
+      h4 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        color: mixins.theme(primary-color);
+      }
+      
+      .features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1rem 0;
+        font-size: 0.85rem;
+        li {
+          margin-bottom: 0.25rem;
+        }
+      }
+      
+      .prices {
+        margin-bottom: 1rem;
+        .regular-price {
+          font-size: 1.1rem;
+          font-weight: bold;
+          color: mixins.theme(dark-color);
+        }
+        .discount-price {
+          font-size: 1rem;
+          color: mixins.theme(primary-color);
+          span {
+            font-size: 0.8rem;
+            margin-left: 0.3rem;
+            color: mixins.theme(dark-color);
+          }
+        }
+        .note {
+          font-size: 0.75rem;
+          color: mixins.theme(gray-color);
+        }
+      }
+      
+      .select-btn {
+        padding: 0.75rem;
+        background-color: mixins.theme(primary-color);
+        color: mixins.theme(light-color);
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 100%;
+        &:hover {
+          background-color: mixins.theme(primary-color-hover);
+        }
+      }
+      
+      .badge {
+        position: absolute;
+        top: -17px;
+        right: -10px;
+        background-color: mixins.theme(primary-color);
+        color: mixins.theme(light-color);
+        padding: 0.3rem 0.5rem;
+        border-radius: 9%;
+        font-size: 0.75rem;
+        -webkit-border-radius: 9%;
+        -moz-border-radius: 9%;
+        -ms-border-radius: 9%;
+        -o-border-radius: 9%;
+      }
+    }
+  }
+
+  /* Step 2: Seleccionar Plan */
+  .plan-selection {
+    margin-bottom: 2rem;
+    text-align: center;
+
+    h3 {
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+      color: mixins.theme(dark-color);
+    }
+    p {
+      margin-bottom: 1rem;
+    }
+
+    .horizontal-plans {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 1rem;
+
+      .plan-card {
+        background-color: mixins.theme(light-color);
+        border: 1px solid mixins.theme(primary-color);
+        border-radius: 8px;
+        padding: 1rem;
+        width: 200px;
+        box-shadow: 0 2px 5px mixins.theme(shadow-color);
+        text-align: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: #f9f9f9;
+        }
+
+        h4 {
+          font-size: 1.2rem;
+          color: mixins.theme(primary-color);
+          margin-bottom: 0.5rem;
+        }
+        .discounted-price {
+          font-size: 1rem;
+          font-weight: bold;
+          color: mixins.theme(dark-color);
+        }
+        .original-price {
+          font-size: 0.85rem;
+          text-decoration: line-through;
+          color: mixins.theme(gray-color);
+        }
+        .discount-note {
+          font-size: 0.8rem;
+          color: mixins.theme(primary-color);
+        }
+      }
+    }
+
+    .plan-buttons {
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
+
+      .back-btn {
+        padding: 0.5rem 1rem;
+        background-color: mixins.theme(primary-color);
+        color: mixins.theme(light-color);
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background-color 0.3s ease;
+        &:hover {
+          background-color: mixins.theme(primary-color-hover);
+        }
+      }
+    }
+  }
+
+  /* Step 3: Formulario */
+  .certificate-request-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .form-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      h3 {
+        margin: 0;
+        color: mixins.theme(dark-color);
+      }
+      .back-btn {
+        padding: 0.5rem 1rem;
+        background-color: mixins.theme(primary-color);
+        color: mixins.theme(light-color);
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background-color 0.3s ease;
+        &:hover {
+          background-color: mixins.theme(primary-color-hover);
+        }
+      }
+    }
+
+    .summary-box {
+      background-color: #f9f9f9;
+      padding: 0.75rem;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      p {
+        margin: 0.25rem 0;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+
+      label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+      }
+
+      input,
+      select {
+        padding: 0.75rem;
+        border: 1px solid #c6c6c6;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+
+        &:focus {
+          outline: none;
+          border-color: mixins.theme(primary-color);
+          box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+        }
+      }
+    }
+
+    .request-btn {
+      padding: 0.75rem;
+      background-color: mixins.theme(primary-color);
+      color: mixins.theme(light-color);
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      &:hover {
+        background-color: mixins.theme(primary-color-hover);
+      }
+    }
+  }
+
+  /* Orden Pendiente */
+  .order-summary {
+    h3 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      color: mixins.theme(dark-color);
+    }
+    p {
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+    .order-message {
+      font-style: italic;
+      color: mixins.theme(dark-blue-color);
+    }
+  }
+
+  /* Sección de certificados existentes */
+  .certificate-checker {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    margin-bottom: 1.5rem;
+
+    input[type="text"] {
+      flex: 1;
+      padding: 0.75rem;
+      border: 1px solid #c6c6c6;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+      &:focus {
+        outline: none;
+        border-color: mixins.theme(primary-color);
+        box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+      }
+    }
+    button {
+      padding: 0.75rem;
+      background-color: mixins.theme(primary-color);
+      color: mixins.theme(light-color);
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      &:hover {
+        background-color: mixins.theme(primary-color-hover);
+      }
+    }
+  }
+
+  .certificates-list {
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+
+      thead {
+        tr {
+          background-color: mixins.theme(primary-color);
+          color: mixins.theme(light-color);
+        }
+        th {
+          padding: 0.75rem;
+          text-align: left;
+          &:first-child {
+            border-top-left-radius: 10px;
+          }
+          &:last-child {
+            border-top-right-radius: 10px;
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          border-bottom: 1px solid #ccc;
+          &:hover {
+            background-color: #f7f9fc;
+          }
+          td {
+            padding: 0.75rem;
+          }
+        }
+      }
+    }
+  }
+
+  .detail-btn {
+    padding: 0.5rem;
+    background-color: mixins.theme(primary-color);
+    color: mixins.theme(light-color);
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    &:hover {
+      background-color: mixins.theme(primary-color-hover);
+    }
+  }
+
+  .info-text {
+    margin-top: 1rem;
+    font-size: 1rem;
+    text-align: center;
+  }
 }
