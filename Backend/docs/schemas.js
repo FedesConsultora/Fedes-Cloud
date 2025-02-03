@@ -440,4 +440,70 @@
  *           type: string
  *           description: Dominio a chequear disponibilidad
  *           example: 'example.com'
+ *
+ *     Certificate:
+ *       type: object
+ *       properties:
+ *         id_certificado:
+ *           type: integer
+ *           description: ID interno autoincremental de la tabla Certificado
+ *           example: 1
+ *         id_servicio:
+ *           type: integer
+ *           description: Relación con la tabla Servicio
+ *           example: 10
+ *         goDaddyCertificateId:
+ *           type: string
+ *           description: ID del certificado en GoDaddy (opcional, si es emitido en GoDaddy)
+ *           example: "ABC123XYZ"
+ *         productType:
+ *           type: string
+ *           description: Tipo de certificado (DV_SSL, OV_SSL, EV_SSL, etc.)
+ *           example: "DV_SSL"
+ *         commonName:
+ *           type: string
+ *           description: Dominio principal (commonName) para el certificado
+ *           example: "misitio.com"
+ *         subjectAlternativeNames:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Lista de SAN (Subject Alt Names)
+ *           example: ["www.misitio.com"]
+ *         period:
+ *           type: integer
+ *           description: Años de validez (1, 2, 3, etc.)
+ *           example: 1
+ *         csr:
+ *           type: string
+ *           description: CSR del certificado (si el usuario gestiona externamente la llave)
+ *           example: "-----BEGIN CERTIFICATE REQUEST-----\nMIIB..."
+ *         estadoCertificado:
+ *           type: string
+ *           description: Estado local del certificado (Pendiente, Emitido, Revocado, etc.)
+ *           example: "Pendiente"
+ *         fechaEmision:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha en que el certificado fue emitido
+ *           example: "2023-05-01T12:00:00Z"
+ *         fechaExpiracion:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha de expiración del certificado
+ *           example: "2024-05-01T12:00:00Z"
+ *         callbackUrl:
+ *           type: string
+ *           description: URL para WebHook (callback) si se usa notificaciones
+ *           example: "https://miapp.com/certificados/callback"
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha de creación en la BD local
+ *           example: "2023-01-01T00:00:00Z"
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Fecha de última actualización
+ *           example: "2023-01-02T15:00:00Z"
  */

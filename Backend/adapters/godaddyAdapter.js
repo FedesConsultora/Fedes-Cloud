@@ -427,4 +427,308 @@ export default class GoDaddyAdapter {
       throw error;
     }
   }
+  /**
+   * Crear orden de certificado (POST /v1/certificates)
+   */
+  async createCertificateOrder(certificateCreatePayload) {
+    try {
+      const url = new URL('/v1/certificates', this.baseURL);
+
+      const headers = {
+        Authorization: `sso-key ${this.apiKey}:${this.apiSecret}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      };
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(certificateCreatePayload),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        logger.error(`GoDaddy API error (createCertificateOrder): ${response.status} - ${errorBody}`);
+        throw new Error(`GoDaddy API error (createCertificateOrder): ${response.status} - ${errorBody}`);
+      }
+
+      const data = await response.json(); // { certificateId: "123456" }
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Validar la orden de certificado (POST /v1/certificates/validate)
+   */
+  async validateCertificateOrder(certificateCreatePayload) {
+    try {
+      const url = new URL('/v1/certificates/validate', this.baseURL);
+
+      const headers = {
+        Authorization: `sso-key ${this.apiKey}:${this.apiSecret}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      };
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(certificateCreatePayload),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        logger.error(`GoDaddy API error (validateCertificateOrder): ${response.status} - ${errorBody}`);
+        throw new Error(`GoDaddy API error (validateCertificateOrder): ${response.status} - ${errorBody}`);
+      }
+
+      // 204 => "Request validated successfully", 
+      // Pero si da 204, no hay JSON. 
+      // Podrías retornar un object que indique "validado"
+      if (response.status === 204) {
+        return { message: 'Validated', code: 204 };
+      }
+      // O si la API retorna algo en 200, devuélvelo
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Obtener detalle de un certificado (GET /v1/certificates/{certificateId})
+   */
+  async getCertificateInfo(certificateId) {
+    try {
+      const url = new URL(`/v1/certificates/${certificateId}`, this.baseURL);
+
+      const headers = {
+        Authorization: `sso-key ${this.apiKey}:${this.apiSecret}`,
+        Accept: 'application/json',
+      };
+
+      const response = await fetch(url, { method: 'GET', headers });
+      if (!response.ok) {
+        const errorBody = await response.text();
+        logger.error(`GoDaddy API error (getCertificateInfo): ${response.status} - ${errorBody}`);
+        throw new Error(`GoDaddy API error (getCertificateInfo): ${response.status} - ${errorBody}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Obtener acciones (GET /v1/certificates/{certificateId}/actions)
+   */
+  async getCertificateActions(certificateId) {
+    try {
+      const url = new URL(`/v1/certificates/${certificateId}/actions`, this.baseURL);
+
+      const headers = {
+        Authorization: `sso-key ${this.apiKey}:${this.apiSecret}`,
+        Accept: 'application/json',
+      };
+
+      const response = await fetch(url, { method: 'GET', headers });
+      if (!response.ok) {
+        const errorBody = await response.text();
+        logger.error(`GoDaddy API error (getCertificateActions): ${response.status} - ${errorBody}`);
+        throw new Error(`GoDaddy API error (getCertificateActions): ${response.status} - ${errorBody}`);
+      }
+
+      return await response.json(); // un array con acciones
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Cancelar certificado pendiente (POST /v1/certificates/{certificateId}/cancel)
+   */
+  async cancelCertificate(certificateId) {
+    try {
+      const url = new URL(`/v1/certificates/${certificateId}/cancel`, this.baseURL);
+
+      const headers = {
+        Authorization: `sso-key ${this.apiKey}:${this.apiSecret}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      };
+
+      const response = await fetch(url, { method: 'POST', headers });
+      if (!response.ok) {
+        const errorBody = await response.text();
+        logger.error(`GoDaddy API error (cancelCertificate): ${response.status} - ${errorBody}`);
+        throw new Error(`GoDaddy API error (cancelCertificate): ${response.status} - ${errorBody}`);
+      }
+
+      // 204 => "Certificate order has been canceled" 
+      // o 200 => no documentado? Probablemente 204
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Descargar certificado (GET /v1/certificates/{certificateId}/download)
+   */
+  async downloadCertificate(certificateId) {
+    try {
+      const url = new URL(`/v1/certificates/${certificateId}/download`, this.baseURL);
+
+      const headers = {
+        Authorization: `sso-key ${this.apiKey}:${this.apiSecret}`,
+        Accept: 'application/json',
+      };
+
+      const response = await fetch(url, { method: 'GET', headers });
+      if (!response.ok) {
+        const errorBody = await response.text();
+        logger.error(`GoDaddy API error (downloadCertificate): ${response.status} - ${errorBody}`);
+        throw new Error(`GoDaddy API error (downloadCertificate): ${response.status} - ${errorBody}`);
+      }
+
+      // Retorna { pems: { certificate, cross, intermediate, root }, serialNumber }
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Reemisión (reissue) (POST /v1/certificates/{certificateId}/reissue)
+   */
+  async reissueCertificate(certificateId, payload) {
+    try {
+      const url = new URL(`/v1/certificates/${certificateId}/reissue`, this.baseURL);
+
+      const headers = {
+        Authorization: `sso-key ${this.apiKey}:${this.apiSecret}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      };
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        logger.error(`GoDaddy API error (reissueCertificate): ${response.status} - ${errorBody}`);
+        throw new Error(`GoDaddy API error (reissueCertificate): ${response.status} - ${errorBody}`);
+      }
+
+      // 202 => Reissue request created
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Renovar (renew) (POST /v1/certificates/{certificateId}/renew)
+   */
+  async renewCertificate(certificateId, payload) {
+    try {
+      const url = new URL(`/v1/certificates/${certificateId}/renew`, this.baseURL);
+
+      const headers = {
+        Authorization: `sso-key ${this.apiKey}:${this.apiSecret}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      };
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        logger.error(`GoDaddy API error (renewCertificate): ${response.status} - ${errorBody}`);
+        throw new Error(`GoDaddy API error (renewCertificate): ${response.status} - ${errorBody}`);
+      }
+
+      // 202 => Renew request created
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Revocar (revoke) (POST /v1/certificates/{certificateId}/revoke)
+   */
+  async revokeCertificate(certificateId, payload) {
+    try {
+      const url = new URL(`/v1/certificates/${certificateId}/revoke`, this.baseURL);
+
+      const headers = {
+        Authorization: `sso-key ${this.apiKey}:${this.apiSecret}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      };
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload), // { reason: "AFFILIATION_CHANGED" | "KEY_COMPROMISE" ... }
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        logger.error(`GoDaddy API error (revokeCertificate): ${response.status} - ${errorBody}`);
+        throw new Error(`GoDaddy API error (revokeCertificate): ${response.status} - ${errorBody}`);
+      }
+
+      // 204 => Certificate Revoked
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Obtener Site Seal (GET /v1/certificates/{certificateId}/siteSeal)
+   */
+  async getSiteSeal(certificateId, { theme = 'LIGHT', locale = 'en' }) {
+    try {
+      const url = new URL(`/v1/certificates/${certificateId}/siteSeal`, this.baseURL);
+
+      // theme => 'DARK' | 'LIGHT'
+      // locale => 'en', 'es', etc.
+      if (theme) {
+        url.searchParams.set('theme', theme);
+      }
+      if (locale) {
+        url.searchParams.set('locale', locale);
+      }
+
+      const headers = {
+        Authorization: `sso-key ${this.apiKey}:${this.apiSecret}`,
+        Accept: 'application/json',
+      };
+
+      const response = await fetch(url, { method: 'GET', headers });
+      if (!response.ok) {
+        const errorBody = await response.text();
+        logger.error(`GoDaddy API error (getSiteSeal): ${response.status} - ${errorBody}`);
+        throw new Error(`GoDaddy API error (getSiteSeal): ${response.status} - ${errorBody}`);
+      }
+
+      // { html: "<script>...</script>" }
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
+  }
 }
