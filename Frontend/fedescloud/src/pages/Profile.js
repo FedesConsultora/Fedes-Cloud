@@ -55,7 +55,6 @@ const Profile = () => {
         body: formDataImage,
       });
       const result = await response.json();
-      console.log('resultado', result);
       if (response.ok) {
         // Actualiza el estado local con la nueva URL
         setFormData({ ...formData, avatar: result.url });

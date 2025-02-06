@@ -1,5 +1,3 @@
-// src/routes/userContactRoutes.js
-
 import { Router } from 'express';
 import authMiddleware from '../middlewares/authMiddleware.js';
 import * as userContactController from '../controllers/userContactController.js';
@@ -44,8 +42,6 @@ const router = Router();
  *                     type: string
  *                   phone:
  *                     type: string
- *                   fax:
- *                     type: string
  *                   jobTitle:
  *                     type: string
  *                   organization:
@@ -65,7 +61,7 @@ const router = Router();
  *                         type: string
  *                       country:
  *                         type: string
- *                         enum: [US, MX, ES] // Agrega más según necesidad
+ *                         enum: [US, MX, ES]
  *     responses:
  *       201:
  *         description: Contacto creado exitosamente
@@ -94,7 +90,7 @@ router.post('/', authMiddleware, userContactController.createContact);
  *       500:
  *         description: Error interno del servidor
  */
-router.get('/', authMiddleware, userContactController.getContacts);
+router.get('/', authMiddleware, userContactController.getContact);
 
 /**
  * @swagger
@@ -134,8 +130,6 @@ router.get('/', authMiddleware, userContactController.getContacts);
  *                     type: string
  *                   phone:
  *                     type: string
- *                   fax:
- *                     type: string
  *                   jobTitle:
  *                     type: string
  *                   organization:
@@ -155,7 +149,7 @@ router.get('/', authMiddleware, userContactController.getContacts);
  *                         type: string
  *                       country:
  *                         type: string
- *                         enum: [US, MX, ES] // Agrega más según necesidad
+ *                         enum: [US, MX, ES]
  *     responses:
  *       200:
  *         description: Contacto actualizado exitosamente

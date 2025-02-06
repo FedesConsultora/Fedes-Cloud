@@ -1,5 +1,4 @@
 // models/usuarioContacto.js
-
 import { Model } from 'sequelize';
 
 export default (sequelize, DataTypes) => {
@@ -21,71 +20,35 @@ export default (sequelize, DataTypes) => {
       id_usuario: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
-        references: {
-          model: 'Usuario', // Asegúrate de que el nombre de la tabla coincide
-          key: 'id_usuario',
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
       },
       tipo_contacto: {
-        type: DataTypes.ENUM('Admin', 'Billing', 'Registrant', 'Tech'),
+        type: DataTypes.ENUM(
+          'No configurado',
+          'Administrador',
+          'Facturación',
+          'Registrante',
+          'Técnico'
+        ),
         allowNull: false,
-      },
-      address1: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      address2: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      city: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      state: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      postalCode: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      country: {
-        type: DataTypes.STRING(2),
-        allowNull: false,
-        defaultValue: 'US',
+        defaultValue: 'No configurado'
       },
       phone: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      fax: {
         type: DataTypes.STRING,
         allowNull: true,
       },
       jobTitle: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
-      organization: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      nameFirst: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      nameMiddle: {
+      fax: {
         type: DataTypes.STRING,
         allowNull: true,
       },
-      nameLast: {
+      organization: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
-      createdAt: { // Timestamps
+      createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,

@@ -2,23 +2,22 @@
 import { Certificado, Servicio } from '../models/index.js';
 import { PermissionDeniedError, ValidationError } from '../utils/errors/GeneralErrors.js';
 import logger from '../utils/logger.js';
-import godaddySSLService from '../factories/godaddySSLService.js'; 
-// ^ Este "godaddySSLService" es un adaptador o clase similar a "godaddyService" pero enfocado a endpoints SSL.
+import goDaddyService from '../factories/godaddyServiceFactory.js'; 
+import { generateCSR } from '../utils/csrGenerator.js';
 
 // ***** CRUD LOCAL *****
 
 /**
  * Obtener todos los certificados locales. 
-*/
+ */
 export const getCertificates = async (req, res, next) => {
   try {
+    // Ajustado: Requiere 'view_services' para ver la lista de certificados
     if (!req.user || !req.user.permisos.includes('view_services')) {
       throw new PermissionDeniedError('No tienes permiso para ver certificados.');
     }
 
-    const certificados = await Certificado.findAll({
-      include: [Servicio],
-    });
+    const certificados = await Certificado.findAll({ include: [Servicio] });
     return res.status(200).json({
       success: true,
       message: 'Certificados obtenidos exitosamente',
@@ -32,6 +31,7 @@ export const getCertificates = async (req, res, next) => {
 
 /**
  * Crear un nuevo registro de Certificado en la BD (sin llamar a GoDaddy).
+ * Mantengo 'manage_services' porque es el que venías usando para crear elementos locales.
  */
 export const createCertificate = async (req, res, next) => {
   try {
@@ -41,7 +41,7 @@ export const createCertificate = async (req, res, next) => {
 
     const {
       id_servicio,
-      productType, // DV_SSL, OV_SSL, etc.
+      productType, 
       commonName,
       subjectAlternativeNames,
       period,
@@ -86,6 +86,7 @@ export const createCertificate = async (req, res, next) => {
  */
 export const getCertificateById = async (req, res, next) => {
   try {
+    // Se mantiene 'view_services' para leer detalles locales
     if (!req.user || !req.user.permisos.includes('view_services')) {
       throw new PermissionDeniedError('No tienes permiso para ver certificados.');
     }
@@ -114,6 +115,7 @@ export const getCertificateById = async (req, res, next) => {
  */
 export const updateCertificate = async (req, res, next) => {
   try {
+    // Se mantiene 'manage_services' para actualizar registro local
     if (!req.user || !req.user.permisos.includes('manage_services')) {
       throw new PermissionDeniedError('No tienes permiso para actualizar certificados locales.');
     }
@@ -141,7 +143,9 @@ export const updateCertificate = async (req, res, next) => {
 
     if (productType !== undefined) cert.productType = productType;
     if (commonName !== undefined) cert.commonName = commonName;
-    if (subjectAlternativeNames !== undefined) cert.subjectAlternativeNames = subjectAlternativeNames;
+    if (subjectAlternativeNames !== undefined) {
+      cert.subjectAlternativeNames = subjectAlternativeNames;
+    }
     if (period !== undefined) cert.period = period;
     if (csr !== undefined) cert.csr = csr;
     if (fechaEmision !== undefined) cert.fechaEmision = fechaEmision;
@@ -168,6 +172,7 @@ export const updateCertificate = async (req, res, next) => {
  */
 export const deleteCertificate = async (req, res, next) => {
   try {
+    // Se mantiene 'manage_services' para eliminación local
     if (!req.user || !req.user.permisos.includes('manage_services')) {
       throw new PermissionDeniedError('No tienes permiso para eliminar certificados locales.');
     }
@@ -196,16 +201,15 @@ export const deleteCertificate = async (req, res, next) => {
 // ***** INTEGRACIÓN CON GODADDY *****
 
 /**
- * Crear una orden de certificado en GoDaddy (POST /v1/certificates)
- * - Recibir datos: productType, period, commonName, CSR, contact, etc.
- * - Llamar al adapter godaddySSLService para crear la orden.
- * - Guardar en la BD (goDaddyCertificateId) si es necesario.
+ * Crear una orden de certificado en GoDaddy y guardarla localmente.
+ * POST /certificados/create-order
  */
 export const createCertificateOrder = async (req, res, next) => {
   try {
-    if (!req.user || !req.user.permisos.includes('manage_ssl')) {
+    if (!req.user || !req.user.permisos.includes('install_ssl_cert')) {
       throw new PermissionDeniedError('No tienes permiso para crear certificados en GoDaddy.');
     }
+
     const {
       productType,
       commonName,
@@ -217,32 +221,68 @@ export const createCertificateOrder = async (req, res, next) => {
       callbackUrl,
     } = req.body;
 
+    let finalCSR = csr;
+    // Si no se envía un CSR, generarlo (se requiere commonName)
+    if (!finalCSR) {
+      if (!commonName) {
+        throw new ValidationError('El campo commonName es requerido para generar el CSR.');
+      }
+      const { csr: generatedCSR, privateKey } = await generateCSR(commonName);
+      logger.info('CSR generado automáticamente.');
+      finalCSR = generatedCSR;
+      // Aquí se recomienda guardar el privateKey de forma segura.
+    }
+
     // Construir payload para la API de GoDaddy
     const certificateCreatePayload = {
       productType: productType || 'DV_SSL',
       commonName,
-      csr,
+      csr: finalCSR,
       period,
-      contact, // { email, jobTitle, nameFirst, nameLast, phone, etc. }
-      organization, // { address, name, phone... } - opcional DV
+      contact,
+      organization,
       subjectAlternativeNames,
-      callbackUrl, // si deseas registrar callback
-      // Otros campos: rootType, intelVPro, slotSize, etc. si aplica
+      callbackUrl,
     };
 
-    // Llamar a tu servicio o adapter
-    const result = await godaddySSLService.createCertificateOrder(certificateCreatePayload);
-    // result: { certificateId: "123456" }
+    logger.info(`Payload para crear certificado: ${JSON.stringify(certificateCreatePayload)}`);
 
-    // Podrías crear un registro local de Certificado con goDaddyCertificateId
-    // o actualizar uno existente si tenías un "pendiente".
-    // Ejemplo rápido:
-    // const nuevoCert = await Certificado.create({ ... })
+    // Llamar al servicio/adapter para crear la orden en GoDaddy
+    const result = await goDaddyService.createCertificateOrder(certificateCreatePayload);
+    logger.info(`Orden de certificado creada en GoDaddy: ${JSON.stringify(result)}`);
+
+    // --- CREAR/OBTENER EL SERVICIO DEL USUARIO ---
+    // Buscamos un servicio existente para el usuario
+    let servicio = await Servicio.findOne({ where: { id_usuario: req.user.id_usuario } });
+    if (!servicio) {
+      // Si no existe, lo creamos (puedes ajustar el nombre y estado según convenga)
+      servicio = await Servicio.create({
+        id_usuario: req.user.id_usuario,
+        nombre: `${req.user.nombre} - Servicio SSL`,
+        estado: 'Activo',
+      });
+      logger.info(`Servicio creado automáticamente para el usuario ${req.user.id_usuario}: ID ${servicio.id_servicio}`);
+    }
+
+    // --- GUARDAR EL CERTIFICADO LOCALMENTE ---
+    const nuevoCertificado = await Certificado.create({
+      id_servicio: servicio.id_servicio,
+      goDaddyCertificateId: result.certificateId,
+      productType: certificateCreatePayload.productType,
+      commonName: certificateCreatePayload.commonName,
+      subjectAlternativeNames: certificateCreatePayload.subjectAlternativeNames,
+      period: certificateCreatePayload.period,
+      csr: certificateCreatePayload.csr,
+      estadoCertificado: 'Pendiente',
+      callbackUrl: certificateCreatePayload.callbackUrl || null,
+      // fechaEmision y fechaExpiracion quedarán null hasta que se emita el certificado
+    });
+    logger.info(`Certificado guardado localmente: ID ${nuevoCertificado.id_certificado}`);
 
     return res.status(202).json({
       success: true,
-      message: 'Orden de certificado creada en GoDaddy (pendiente).',
-      data: result, 
+      message: 'Orden de certificado creada en GoDaddy (pendiente) y almacenada localmente.',
+      data: nuevoCertificado,
     });
   } catch (error) {
     logger.error(`Error al crear orden de certificado GoDaddy: ${error.message}`);
@@ -255,12 +295,13 @@ export const createCertificateOrder = async (req, res, next) => {
  */
 export const validateCertificateOrder = async (req, res, next) => {
   try {
-    if (!req.user || !req.user.permisos.includes('manage_ssl')) {
+    // También 'install_ssl_cert' para validar la orden antes de comprar
+    if (!req.user || !req.user.permisos.includes('install_ssl_cert')) {
       throw new PermissionDeniedError('No tienes permiso para validar órdenes de certificado en GoDaddy.');
     }
-    const payload = req.body; // Mismo formato que /create-order (sin domain, etc.)
+    const payload = req.body; // Mismo formato que /create-order
 
-    const validation = await godaddySSLService.validateCertificateOrder(payload);
+    const validation = await goDaddyService.validateCertificateOrder(payload);
 
     return res.status(200).json({
       success: true,
@@ -274,23 +315,64 @@ export const validateCertificateOrder = async (req, res, next) => {
 };
 
 /**
- * Obtener detalles de un certificado en GoDaddy (GET /v1/certificates/{certificateId})
+ * Obtener detalles de un certificado en GoDaddy y sincronizar con la BD local.
+ * GET /certificados/{goDaddyCertId}/info
  */
 export const getGoDaddyCertificateInfo = async (req, res, next) => {
   try {
-    if (!req.user || !req.user.permisos.includes('view_ssl')) {
+    if (!req.user || !req.user.permisos.includes('view_services')) {
       throw new PermissionDeniedError('No tienes permiso para ver certificados en GoDaddy.');
     }
 
     const { goDaddyCertId } = req.params;
-    const details = await godaddySSLService.getCertificateInfo(goDaddyCertId);
 
-    // Podrías, opcionalmente, sincronizar algunos campos en tu BD local
-    // Ej. fechaEmision, fechaExpiracion, status, subjectAlternativeNames, etc.
+    // Llamar al servicio para obtener detalles de GoDaddy
+    const details = await goDaddyService.getCertificateInfo(goDaddyCertId);
+    logger.info(`Detalles obtenidos desde GoDaddy: ${JSON.stringify(details)}`);
+
+    // --- OBTENER O CREAR EL SERVICIO DEL USUARIO ---
+    let servicio = await Servicio.findOne({ where: { id_usuario: req.user.id_usuario } });
+    if (!servicio) {
+      servicio = await Servicio.create({
+        id_usuario: req.user.id_usuario,
+        nombre: `${req.user.nombre} - Servicio SSL`,
+        estado: 'Activo',
+      });
+      logger.info(`Servicio creado automáticamente para el usuario ${req.user.id_usuario}: ID ${servicio.id_servicio}`);
+    }
+
+    // Buscar el certificado local usando el goDaddyCertificateId
+    let certificadoLocal = await Certificado.findOne({ where: { goDaddyCertificateId: goDaddyCertId } });
+
+    // Si ya existe, actualizar campos; si no, crearlo
+    if (certificadoLocal) {
+      certificadoLocal.commonName = details.commonName || certificadoLocal.commonName;
+      certificadoLocal.estadoCertificado = details.status || certificadoLocal.estadoCertificado;
+      certificadoLocal.fechaEmision = details.validStart ? new Date(details.validStart) : certificadoLocal.fechaEmision;
+      certificadoLocal.fechaExpiracion = details.validEnd ? new Date(details.validEnd) : certificadoLocal.fechaExpiracion;
+      // Actualiza otros campos relevantes si lo necesitas
+      await certificadoLocal.save();
+    } else {
+      certificadoLocal = await Certificado.create({
+        id_servicio: servicio.id_servicio,
+        goDaddyCertificateId: details.certificateId,
+        productType: details.productType,
+        commonName: details.commonName,
+        subjectAlternativeNames: details.subjectAlternativeNames,
+        period: details.period,
+        csr: '', // O el valor que corresponda
+        estadoCertificado: details.status,
+        fechaEmision: details.validStart ? new Date(details.validStart) : null,
+        fechaExpiracion: details.validEnd ? new Date(details.validEnd) : null,
+        // callbackUrl puede dejarse null o actualizarlo si es necesario
+      });
+      logger.info(`Certificado creado localmente a partir de detalles de GoDaddy: ID ${certificadoLocal.id_certificado}`);
+    }
 
     return res.status(200).json({
       success: true,
-      data: details,
+      message: 'Detalles del certificado obtenidos y sincronizados.',
+      data: certificadoLocal,
     });
   } catch (error) {
     logger.error(`Error al obtener detalle de certificado: ${error.message}`);
@@ -303,12 +385,13 @@ export const getGoDaddyCertificateInfo = async (req, res, next) => {
  */
 export const getGoDaddyCertificateActions = async (req, res, next) => {
   try {
-    if (!req.user || !req.user.permisos.includes('view_ssl')) {
+    // Igual que antes: 'view_services'
+    if (!req.user || !req.user.permisos.includes('view_services')) {
       throw new PermissionDeniedError('No tienes permiso para ver certificados en GoDaddy.');
     }
 
     const { goDaddyCertId } = req.params;
-    const actions = await godaddySSLService.getCertificateActions(goDaddyCertId);
+    const actions = await goDaddyService.getCertificateActions(goDaddyCertId);
 
     return res.status(200).json({
       success: true,
@@ -325,15 +408,13 @@ export const getGoDaddyCertificateActions = async (req, res, next) => {
  */
 export const cancelCertificate = async (req, res, next) => {
   try {
-    if (!req.user || !req.user.permisos.includes('manage_ssl')) {
+    // Asimilar "cancelar un pedido" con "revocar" en cierto sentido => 'revoke_ssl_cert'
+    if (!req.user || !req.user.permisos.includes('revoke_ssl_cert')) {
       throw new PermissionDeniedError('No tienes permiso para cancelar certificados en GoDaddy.');
     }
 
     const { goDaddyCertId } = req.params;
-    await godaddySSLService.cancelCertificate(goDaddyCertId);
-
-    // Opcionalmente, actualizar la BD local estadoCertificado = 'Cancelado'
-    // ...
+    await goDaddyService.cancelCertificate(goDaddyCertId);
 
     return res.status(204).json({
       success: true,
@@ -350,13 +431,13 @@ export const cancelCertificate = async (req, res, next) => {
  */
 export const downloadCertificate = async (req, res, next) => {
   try {
-    if (!req.user || !req.user.permisos.includes('view_ssl')) {
+    // Lectura => 'view_services'
+    if (!req.user || !req.user.permisos.includes('view_services')) {
       throw new PermissionDeniedError('No tienes permiso para descargar certificados en GoDaddy.');
     }
 
     const { goDaddyCertId } = req.params;
-    const downloadData = await godaddySSLService.downloadCertificate(goDaddyCertId);
-    // Normalmente, downloadData = { pems: { certificate, cross, intermediate, root }, serialNumber }
+    const downloadData = await goDaddyService.downloadCertificate(goDaddyCertId);
 
     return res.status(200).json({
       success: true,
@@ -373,13 +454,14 @@ export const downloadCertificate = async (req, res, next) => {
  */
 export const reissueCertificate = async (req, res, next) => {
   try {
-    if (!req.user || !req.user.permisos.includes('manage_ssl')) {
+    // Reemisión => se puede interpretar como "renovar" la configuración => 'renew_ssl_cert'
+    if (!req.user || !req.user.permisos.includes('renew_ssl_cert')) {
       throw new PermissionDeniedError('No tienes permiso para reemitir certificados en GoDaddy.');
     }
     const { goDaddyCertId } = req.params;
-    const payload = req.body; // { callbackUrl, commonName, csr, delayExistingRevoke, rootType, subjectAlternativeNames... }
+    const payload = req.body;
 
-    const reissueResponse = await godaddySSLService.reissueCertificate(goDaddyCertId, payload);
+    const reissueResponse = await goDaddyService.reissueCertificate(goDaddyCertId, payload);
 
     return res.status(202).json({
       success: true,
@@ -397,13 +479,14 @@ export const reissueCertificate = async (req, res, next) => {
  */
 export const renewCertificate = async (req, res, next) => {
   try {
-    if (!req.user || !req.user.permisos.includes('manage_ssl')) {
+    // Renovar => 'renew_ssl_cert'
+    if (!req.user || !req.user.permisos.includes('renew_ssl_cert')) {
       throw new PermissionDeniedError('No tienes permiso para renovar certificados en GoDaddy.');
     }
     const { goDaddyCertId } = req.params;
-    const payload = req.body; // { callbackUrl, commonName, csr, period, rootType, subjectAlternativeNames, ... }
+    const payload = req.body;
 
-    const renewResp = await godaddySSLService.renewCertificate(goDaddyCertId, payload);
+    const renewResp = await goDaddyService.renewCertificate(goDaddyCertId, payload);
     return res.status(202).json({
       success: true,
       message: 'Renovación solicitada.',
@@ -420,16 +503,14 @@ export const renewCertificate = async (req, res, next) => {
  */
 export const revokeCertificate = async (req, res, next) => {
   try {
-    if (!req.user || !req.user.permisos.includes('manage_ssl')) {
+    // Revocar => 'revoke_ssl_cert'
+    if (!req.user || !req.user.permisos.includes('revoke_ssl_cert')) {
       throw new PermissionDeniedError('No tienes permiso para revocar certificados en GoDaddy.');
     }
     const { goDaddyCertId } = req.params;
-    const { reason } = req.body; // { reason: "KEY_COMPROMISE" | "AFFILIATION_CHANGED" | etc. }
+    const { reason } = req.body; // { reason: "KEY_COMPROMISE", ... }
 
-    await godaddySSLService.revokeCertificate(goDaddyCertId, { reason });
-
-    // Actualizar BD local si corresponde => estadoCertificado = 'Revocado'
-    // ...
+    await goDaddyService.revokeCertificate(goDaddyCertId, { reason });
 
     return res.status(204).json({
       success: true,
@@ -446,15 +527,14 @@ export const revokeCertificate = async (req, res, next) => {
  */
 export const getCertificateSiteSeal = async (req, res, next) => {
   try {
-    if (!req.user || !req.user.permisos.includes('view_ssl')) {
+    // Lectura => 'view_services'
+    if (!req.user || !req.user.permisos.includes('view_services')) {
       throw new PermissionDeniedError('No tienes permiso para ver el site seal de un certificado.');
     }
     const { goDaddyCertId } = req.params;
-    const { theme = 'LIGHT', locale = 'en' } = req.query; // Ejemplo de params
+    const { theme = 'LIGHT', locale = 'en' } = req.query;
 
-    const sealData = await godaddySSLService.getSiteSeal(goDaddyCertId, { theme, locale });
-    // sealData typically => { html: "<script>...</script>" }
-
+    const sealData = await goDaddyService.getSiteSeal(goDaddyCertId, { theme, locale });
     return res.status(200).json({
       success: true,
       data: sealData,

@@ -24,6 +24,11 @@ import AdminDashboard from './pages/AdminDashboard.js';
 import EditUserPage from './pages/EditUserPage.js';
 import EditDomainPage from './pages/EditDomainPage.js';
 import ComprarPage from './pages/ComprarPage.js';
+import UserPage from './pages/UserPage.js';
+import BillingDetails from './pages/BillingDetails.js';
+import ContactDetails from './pages/ContactDetails.js';
+import UserManagement from './pages/UserManagement.js';
+import AcceptInvitation from './pages/AcceptInvitation.js';
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -59,6 +64,12 @@ const AppRoutes = () => {
               </PageTransition>
             }
           />
+          <Route path="/invite/accept" element={
+              <PageTransition>
+                <AcceptInvitation />
+              </PageTransition>
+            } 
+          />
 
           {/* Rutas protegidas */}
           <Route
@@ -74,18 +85,16 @@ const AppRoutes = () => {
             }
           />
           
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <MainLayout>
-                  <PageTransition>
-                    <Profile />
-                  </PageTransition>
-                </MainLayout>
-              </ProtectedRoute>
-            }
-          />
+          {/* Rutas de Usuario (con rutas absolutas) */}
+          <Route path="/user" element={<ProtectedRoute><MainLayout><PageTransition><UserPage /></PageTransition></MainLayout></ProtectedRoute>}>
+            {/* Rutas hijas */}
+            <Route path="profile" element={<Profile />} />
+            <Route path="contact" element={<ContactDetails />} />
+            <Route path="billing" element={<BillingDetails />} />
+            <Route path="management" element={<UserManagement />} />
+            {/* Si la ruta no coincide, redirige a profile */}
+            <Route path="*" element={<Navigate to="/user/profile" replace />} />
+          </Route>
 
           <Route
             path="/settings"

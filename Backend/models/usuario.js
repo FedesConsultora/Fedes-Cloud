@@ -1,16 +1,18 @@
 // models/usuario.js
-
 import { Model } from 'sequelize';
 
 export default (sequelize, DataTypes) => {
   class Usuario extends Model {
     static associate(models) {
+      // Asociaciones existentes
       Usuario.belongsTo(models.Estado, { foreignKey: 'id_estado', as: 'estado' });
       Usuario.belongsTo(models.Rol, { foreignKey: 'id_rol', as: 'rol' });
       Usuario.belongsTo(models.Autenticacion, { foreignKey: 'id_autenticacion', as: 'autenticacion' });
-
-      // Asociación con UsuarioContacto
       Usuario.hasMany(models.UsuarioContacto, { foreignKey: 'id_usuario', as: 'contactos' });
+      
+      // Asociación auto-referencial para usuarios compuestos
+      Usuario.hasMany(models.Usuario, { foreignKey: 'id_usuario_padre', as: 'subusuarios' });
+      Usuario.belongsTo(models.Usuario, { foreignKey: 'id_usuario_padre', as: 'padre' });
     }
   }
 
@@ -112,6 +114,25 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
         unique: true,
+      },
+      // Nuevo campo para relacionar al usuario invitante
+      id_usuario_padre: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: true,
+      },
+      // Nuevo campo para especificar la función interna del subusuario
+      subRol: {
+        type: DataTypes.ENUM('No configurado', 'Administrador', 'Facturación', 'Registrante', 'Técnico'),
+        allowNull: true,
+        defaultValue: 'No configurado',
+      },
+      invitationToken: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      invitationTokenExpires: {
+        type: DataTypes.DATE,
+        allowNull: true,
       },
     },
     {

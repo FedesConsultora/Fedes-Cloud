@@ -12,7 +12,7 @@ const UserInfo = ({ onLogout }) => {
 
   return (
     <div className="user-info">
-      <div className="user-details" onClick={() => navigate('/profile')}>
+      <div className="user-details" onClick={() => navigate('/user/profile')}>
         <img
           // Si user.avatar está disponible, lo usa; sino, se muestra la imagen placeholder
           src={user.avatar || `${process.env.PUBLIC_URL}/assets/icons/user-placeholder2.png`}
@@ -28,7 +28,7 @@ const UserInfo = ({ onLogout }) => {
         <FaSignOutAlt />
         <span>Logout</span>
       </button>
-      <button className="profile-button" onClick={() => navigate('/profile')}>
+      <button className="profile-button" onClick={() => navigate('/user/profile')}>
         <FaUser />
         <span>Perfil</span>
       </button>

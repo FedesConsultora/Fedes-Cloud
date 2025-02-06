@@ -3271,6 +3271,499 @@ main {
   font-size: 1rem;
   text-align: center;
 }
+.certificados-ssl-page .existing-certificates .certificate-checker {
+  margin-bottom: 1rem;
+}
+.certificados-ssl-page .existing-certificates .certificate-filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.certificados-ssl-page .existing-certificates .certificate-filters select,
+.certificados-ssl-page .existing-certificates .certificate-filters input[type=date] {
+  padding: 0.5rem;
+  border: 1px solid #c6c6c6;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+.certificados-ssl-page .existing-certificates .certificates-list table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.certificados-ssl-page .existing-certificates .certificates-list table th, .certificados-ssl-page .existing-certificates .certificates-list table td {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+}
+.certificados-ssl-page .existing-certificates .certificates-list table th {
+  background-color: var(--primary-color);
+  color: var(--light-color);
+}
+
+.user-page {
+  padding: 2rem;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+.user-page h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: var(--dark-color);
+}
+.user-page .user-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.user-page .user-tabs .tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+.user-page .user-tabs .tab .icon {
+  font-size: 1.2rem;
+}
+.user-page .user-tabs .tab.active {
+  background-color: var(--dark-blue-color);
+}
+.user-page .user-tabs .tab:hover:not(.active) {
+  background-color: #eee;
+  color: var(--dark-blue-color);
+}
+.user-page .user-content {
+  background-color: var(--light-color);
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 0 10px var(--shadow-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.contact-page {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.contact-page .contact-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.contact-page .contact-container h3 {
+  margin-bottom: 2rem;
+  color: var(--dark-color);
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.8rem;
+}
+.contact-page .contact-container .contact-info {
+  background-color: var(--light-color);
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 0 10px var(--shadow-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.contact-page .contact-container .contact-info .form-group {
+  margin-bottom: 1.5rem;
+}
+.contact-page .contact-container .contact-info .form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+.contact-page .contact-container .contact-info .form-group input,
+.contact-page .contact-container .contact-info .form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #c6c6c6;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+.contact-page .contact-container .contact-info .form-group input:focus,
+.contact-page .contact-container .contact-info .form-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+}
+.contact-page .contact-container .contact-info button.button {
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+  width: 100%;
+  text-align: center;
+}
+.contact-page .contact-container .contact-info button.button:hover {
+  background-color: var(--primary-color-hover);
+}
+
+.billing-page {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.billing-page .billing-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.billing-page .billing-container h3 {
+  margin-bottom: 2rem;
+  color: var(--dark-color);
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.8rem;
+}
+.billing-page .billing-container .billing-info {
+  background-color: var(--light-color);
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 0 10px var(--shadow-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.billing-page .billing-container .billing-info .form-group {
+  margin-bottom: 1.5rem;
+}
+.billing-page .billing-container .billing-info .form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+.billing-page .billing-container .billing-info .form-group input,
+.billing-page .billing-container .billing-info .form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #c6c6c6;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+.billing-page .billing-container .billing-info .form-group input:focus,
+.billing-page .billing-container .billing-info .form-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+}
+.billing-page .billing-container .billing-info button.button {
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+  width: 100%;
+  text-align: center;
+}
+.billing-page .billing-container .billing-info button.button:hover {
+  background-color: var(--primary-color-hover);
+}
+
+.user-management {
+  padding: 2rem;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+.user-management h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: var(--dark-color);
+}
+.user-management p {
+  text-align: center;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+.user-management .management-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.user-management .management-tabs button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.user-management .management-tabs button.active {
+  background-color: var(--dark-blue-color);
+}
+.user-management .management-tabs button:hover:not(.active) {
+  background-color: #eee;
+  color: var(--dark-blue-color);
+}
+.user-management .management-content {
+  background-color: var(--light-color);
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 0 10px var(--shadow-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.user-management .subusers-list,
+.user-management .invitaciones-list,
+.user-management .parents-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.user-management .subusers-list li,
+.user-management .invitaciones-list li,
+.user-management .parents-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-bottom: 1px solid #ccc;
+}
+.user-management .subusers-list li button,
+.user-management .invitaciones-list li button,
+.user-management .parents-list li button {
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: 4px;
+  color: var(--light-color);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.user-management .subusers-list li button:hover,
+.user-management .invitaciones-list li button:hover,
+.user-management .parents-list li button:hover {
+  background-color: var(--primary-color-hover);
+}
+.user-management .button {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+.user-management .button:hover {
+  background-color: var(--primary-color-hover);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background-color: var(--light-color);
+  border-radius: 10px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 0 10px var(--shadow-color);
+}
+
+.invite-user {
+  background-color: var(--light-color);
+  border-radius: 10px;
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.invite-user h3 {
+  text-align: center;
+  color: var(--dark-blue-color);
+  margin-bottom: 1rem;
+}
+.invite-user .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+.invite-user .form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.invite-user .form-group input,
+.invite-user .form-group select {
+  padding: 0.75rem;
+  border: 1px solid #c6c6c6;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+.invite-user .form-group input:focus,
+.invite-user .form-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+}
+.invite-user .form-group .info-text {
+  font-size: 0.9rem;
+  color: var(--dark-blue-color);
+  margin-top: 0.5rem;
+}
+.invite-user .summary {
+  background-color: #f7f7f7;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.invite-user .summary p {
+  margin: 0.5rem 0;
+}
+.invite-user .summary-details {
+  background-color: #f1f1f1;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.invite-user .summary-details p {
+  margin: 0.3rem 0;
+  font-size: 1rem;
+}
+.invite-user .buttons-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.invite-user .buttons-group button {
+  flex: 1;
+}
+.invite-user .button {
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: center;
+}
+.invite-user .button:hover {
+  background-color: var(--primary-color-hover);
+}
+
+.accept-invitation {
+  max-width: 600px;
+  margin: 2rem auto;
+  background-color: var(--light-color);
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 0 10px var(--shadow-color);
+  text-align: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.accept-invitation h2 {
+  margin-bottom: 1rem;
+  color: var(--dark-blue-color);
+}
+.accept-invitation p {
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+.accept-invitation form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.accept-invitation form .form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.accept-invitation form .form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.accept-invitation form .form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #c6c6c6;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+.accept-invitation form .form-group input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+}
+.accept-invitation form .form-group .password-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.accept-invitation form .form-group .password-wrapper input {
+  flex: 1;
+}
+.accept-invitation form .form-group .password-wrapper .toggle-password {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.accept-invitation form .form-group .error {
+  color: red;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+.accept-invitation form .button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.accept-invitation form .button:hover {
+  background-color: var(--primary-color-hover);
+}
 
 /* Aplicar el tema claro por defecto dentro de :root */
 :root {

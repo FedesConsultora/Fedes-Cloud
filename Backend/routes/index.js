@@ -1,4 +1,3 @@
-// routes/index.js
 import { Router } from 'express';
 const router = Router();
 
@@ -8,7 +7,10 @@ import authRoutes from './authRoutes.js';
 import permisoRoutes from './permisoRoutes.js';
 import serviceRoutes from './serviceRoutes.js';
 import dominioRoutes from './dominioRoutes.js';
-import contactRoutes from './contactRoutes.js';
+import contactRoutes from './userContactRoutes.js';
+import billingRoutes from './userBillingRoutes.js';
+import certificadoRoutes from './certificadoRoutes.js';
+import userCompositeRoutes from './userCompositeRoutes.js';
 
 /**
  * @swagger
@@ -16,22 +18,23 @@ import contactRoutes from './contactRoutes.js';
  *   name: Base
  *   description: Ruta base de la API
  */
- 
-// Nota: La documentación de la ruta base está ahora en `docs/baseDocs.js`
 
 router.get('/', (req, res) => {
   res.send('¡Bienvenido a la API de Fedes Cloud!');
 });
 
-// Ruta de autenticación (no protegida)
+// Rutas de autenticación (no protegidas)
 router.use('/auth', authRoutes);
 
-// Rutas protegidas (requieren autenticación)
+// Rutas protegidas
 router.use('/users', userRoutes);
 router.use('/roles', roleRoutes);
 router.use('/permisos', permisoRoutes);
-router.use('/services', serviceRoutes)
-router.use('/dominios', dominioRoutes); 
+router.use('/services', serviceRoutes);
+router.use('/dominios', dominioRoutes);
+router.use('/user-billing', billingRoutes);
 router.use('/user-contact', contactRoutes);
+router.use('/user-composite', userCompositeRoutes);
+router.use('/certificados', certificadoRoutes);
 
 export default router;

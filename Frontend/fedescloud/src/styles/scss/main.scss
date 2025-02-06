@@ -36,7 +36,12 @@
 @use 'pages/EditDomainPage';
 @use 'pages/comprarPage';
 @use 'pages/CertificadosSSLPage';
-
+@use 'pages/userPage';
+@use 'pages/contactDetails';
+@use 'pages/billingDetails';
+@use 'pages/userManagment';
+@use 'pages/InviteUser';
+@use 'pages/AcceptInvitation';
 
 /* Aplicar el tema claro por defecto dentro de :root */
 :root {

@@ -182,3 +182,40 @@ export const deleteRole = async (req, res, next) => {
     next(error);
   }
 };
+
+// Obtener un rol por su nombre
+export const getRoleByName = async (req, res, next) => {
+  try {
+    const { name } = req.params;
+
+    if (!req.user || !req.user.permisos.includes('manage_roles')) {
+      logger.warn(`Permiso denegado para obtener rol por nombre: Usuario ID ${req.user ? req.user.id : 'Desconocido'}`);
+      throw new PermissionDeniedError();
+    }
+
+    const role = await Rol.findOne({
+      where: { nombre: name },
+      include: [
+        {
+          model: Permiso,
+          as: 'permisos',
+          through: { attributes: [] },
+        },
+      ],
+    });
+
+    if (!role) {
+      throw new ValidationError(`El rol con nombre '${name}' no existe`);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Rol obtenido exitosamente',
+      data: role,
+    });
+  } catch (error) {
+    logger.error(`Error al obtener rol por nombre: ${error.message}`);
+    next(error);
+  }
+};
+

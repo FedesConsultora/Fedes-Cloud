@@ -23,7 +23,7 @@ const Home = () => {
     {
       title: 'Perfil',
       icon: <FaUser />,
-      onClick: () => navigate('/profile'),
+      onClick: () => navigate('/user/profile'),
     },
     {
       title: 'Mis Pagos',

@@ -15,6 +15,9 @@ router.get('/', authMiddleware, roleController.getRoles);
 // Obtener un rol por ID
 router.get('/:id', authMiddleware, getRoleByIdValidation, roleController.getRoleById);
 
+// Obtener un rol por nombre
+router.get('/name/:name', authMiddleware, roleController.getRoleByName);
+
 // Actualizar un rol existente
 router.put('/:id', authMiddleware, updateRoleValidation, roleController.updateRole);
 

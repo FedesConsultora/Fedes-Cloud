@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .container { padding: 20px; font-family: Arial, sans-serif; background-color: #E0E0E0; color: #000; }
+    .header { text-align: center; padding: 10px 0; }
+    .header h1 { color: #0D254D; }
+    .content { background-color: #fff; padding: 20px; border-radius: 8px; }
+    .btn { display: inline-block; background-color: #0066FF; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+    .btn:hover { background-color: #0056cc; }
+    p { font-size: 16px; }
+    .footer { margin-top: 20px; text-align: center; font-size: 12px; color: #555; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>¡Te han invitado a formar parte de un equipo en Fedes Cloud!</h1>
+    </div>
+    <div class="content">
+      <p>Hola,</p>
+      <p>{{invitanteNombre}} te ha invitado a unirte a su grupo de trabajo en Fedes Cloud usando tu correo <strong>{{email}}</strong>.</p>
+      <p>Al aceptar la invitación, se creará automáticamente una cuenta en Fedes Cloud para ti.</p>
+      <p><strong>Tu usuario es:</strong> {{email}}</p>
+      <p><strong>Tu contraseña temporal es:</strong> {{passwordTemporal}}</p>
+      <p>Te recomendamos cambiar tu contraseña por una más segura una vez que inicies sesión.</p>
+      <p>Únete al equipo como <strong>{{subRol}}</strong> para comenzar a trabajar.</p>
+      <p style="text-align: center;">
+        <a class="btn" href="{{invitationLink}}">UNIRME AL EQUIPO</a>
+      </p>
+      <p>¿Qué significa esto? Al aceptar esta invitación, podrás acceder a herramientas y recursos compartidos con tu equipo. Colabora en proyectos, comparte archivos y mucho más.</p>
+      <p>Conoce más sobre la gestión <a href="{{managementLink}}">aquí</a>.</p>
+      <p>Si no deseas aceptar la invitación, simplemente ignora este correo.</p>
+    </div>
+    <div class="footer">
+      &copy; 2023 Fedes Cloud. Todos los derechos reservados.
+    </div>
+  </div>
+</body>
+</html>

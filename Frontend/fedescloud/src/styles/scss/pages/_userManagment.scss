@@ -1,0 +1,119 @@
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.user-management {
+  padding: 2rem;
+  background-color: mixins.theme(background-color);
+  color: mixins.theme(text-color);
+
+  h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    color: mixins.theme(dark-color);
+  }
+
+  p {
+    text-align: center;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .management-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 5px;
+      background-color: mixins.theme(primary-color);
+      color: mixins.theme(light-color);
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      &.active {
+        background-color: mixins.theme(dark-blue-color);
+      }
+      &:hover:not(.active) {
+        background-color: #eee;
+        color: mixins.theme(dark-blue-color);
+      }
+    }
+  }
+
+  .management-content {
+    background-color: mixins.theme(light-color);
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 0 10px mixins.theme(shadow-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .subusers-list,
+  .invitaciones-list,
+  .parents-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem;
+      border-bottom: 1px solid #ccc;
+      button {
+        padding: 0.5rem 1rem;
+        background-color: mixins.theme(primary-color);
+        border: none;
+        border-radius: 4px;
+        color: mixins.theme(light-color);
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        &:hover {
+          background-color: mixins.theme(primary-color-hover);
+        }
+      }
+    }
+  }
+
+  .button {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    background-color: mixins.theme(primary-color);
+    color: mixins.theme(light-color);
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    margin-top: 1rem;
+    &:hover {
+      background-color: mixins.theme(primary-color-hover);
+    }
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background-color: mixins.theme(light-color);
+  border-radius: 10px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 0 10px mixins.theme(shadow-color);
+}

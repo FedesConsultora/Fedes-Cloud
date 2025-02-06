@@ -1,3 +1,5 @@
+import logger from "../utils/logger.js";
+
 // services/godaddyService.js
 export default class GoDaddyService {
   constructor(adapter) {

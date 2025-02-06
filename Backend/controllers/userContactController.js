@@ -1,37 +1,32 @@
 // src/controllers/userContactController.js
-
-import UsuarioContacto from '../models/UsuarioContacto.js';
+import { UsuarioContacto } from '../models/index.js';
 import logger from '../utils/logger.js';
 import { ValidationError, PermissionDeniedError } from '../utils/errors/GeneralErrors.js';
 
 /**
- * Crear un nuevo contacto de usuario
+ * Crear un nuevo contacto de usuario.
  */
 export const createContact = async (req, res, next) => {
-  const { contacto } = req.body;
-  const { id_usuario, permisos } = req.user; // Asumiendo que 'permisos' es un array en el objeto user
-
   try {
-    // Verificar permisos
-    if (!permisos.includes('manage_user_contacts')) {
+    const { contacto } = req.body;
+    const { id_usuario, permisos } = req.user;
+
+    if (!permisos.includes('update_contact_details')) {
       throw new PermissionDeniedError('No tienes permiso para crear contactos de usuario.');
     }
-
-    // Validar existencia de contacto y tipo_contacto
     if (!contacto || !contacto.tipo_contacto) {
       throw new ValidationError('Datos de contacto inválidos.');
     }
 
-    // Crear el contacto
+    // Crear el contacto usando solo los campos necesarios para dirección y datos de contacto
     const nuevoContacto = await UsuarioContacto.create({
       id_usuario,
-      tipo_contacto: contacto.tipo_contacto,
+      tipo_contacto: contacto.tipo_contacto, // por ejemplo, 'Admin' o 'Tech'
       nameFirst: contacto.nameFirst,
       nameMiddle: contacto.nameMiddle || '',
       nameLast: contacto.nameLast,
       email: contacto.email,
       phone: contacto.phone,
-      fax: contacto.fax || '',
       jobTitle: contacto.jobTitle,
       organization: contacto.organization,
       address1: contacto.addressMailing.address1,
@@ -55,48 +50,63 @@ export const createContact = async (req, res, next) => {
 };
 
 /**
- * Obtener todos los contactos del usuario autenticado
+ * Obtener todos los contactos del usuario autenticado.
+ * Si no existen, se crea un registro vacío y se retorna.
  */
-export const getContacts = async (req, res, next) => {
-  const { id_usuario, permisos } = req.user;
-
+export const getContact = async (req, res, next) => {
   try {
-    // Verificar permisos
-    if (!permisos.includes('view_user_contacts')) {
+    const { id_usuario, permisos } = req.user;
+
+    if (!permisos.includes('update_contact_details')) {
       throw new PermissionDeniedError('No tienes permiso para ver contactos de usuario.');
     }
 
-    const contactos = await UsuarioContacto.findAll({
+    // Usar findOne para obtener un único registro de contacto
+    let contacto = await UsuarioContacto.findOne({
       where: { id_usuario },
-      attributes: { exclude: ['id_usuario'] }, // Opcional: excluir campos si es necesario
+      // Si utilizas asociaciones o quieres excluir ciertos campos, puedes configurar aquí.
     });
+
+    // Si no existe, crea un registro vacío para el usuario
+    if (!contacto) {
+      contacto = await UsuarioContacto.create({
+        id_usuario,
+        tipo_contacto: 'Admin',  // Valor por defecto
+        nameFirst: '',
+        nameMiddle: '',
+        nameLast: '',
+        email: '',       // Asegúrate de que este campo exista en el modelo si lo necesitas
+        phone: '',
+        jobTitle: '',
+        organization: '',
+        // Si en el futuro agregas campos de dirección, inclúyelos aquí.
+      });
+    }
 
     res.status(200).json({
       success: true,
-      message: 'Contactos obtenidos exitosamente.',
-      data: contactos,
+      message: 'Contacto obtenido exitosamente.',
+      data: contacto,
     });
   } catch (error) {
-    logger.error(`Error al obtener contactos: ${error.message}`);
+    logger.error(`Error al obtener contacto: ${error.message}`);
     next(error);
   }
 };
 
 /**
- * Actualizar un contacto de usuario específico
+ * Actualizar un contacto de usuario específico.
  */
 export const updateContact = async (req, res, next) => {
-  const { id_contacto } = req.params;
-  const { contacto } = req.body;
-  const { id_usuario, permisos } = req.user;
-
   try {
-    // Verificar permisos
-    if (!permisos.includes('manage_user_contacts')) {
+    const { id_contacto } = req.params;
+    const { contacto } = req.body;
+    const { id_usuario, permisos } = req.user;
+
+    if (!permisos.includes('update_contact_details')) {
       throw new PermissionDeniedError('No tienes permiso para actualizar contactos de usuario.');
     }
 
-    // Validar existencia de contacto
     const existingContacto = await UsuarioContacto.findOne({
       where: { id_contacto, id_usuario },
     });
@@ -116,7 +126,6 @@ export const updateContact = async (req, res, next) => {
       'nameLast',
       'email',
       'phone',
-      'fax',
       'jobTitle',
       'organization',
       'address1',
@@ -148,19 +157,17 @@ export const updateContact = async (req, res, next) => {
 };
 
 /**
- * Eliminar un contacto de usuario específico
+ * Eliminar un contacto de usuario específico.
  */
 export const deleteContact = async (req, res, next) => {
-  const { id_contacto } = req.params;
-  const { id_usuario, permisos } = req.user;
-
   try {
-    // Verificar permisos
-    if (!permisos.includes('manage_user_contacts')) {
+    const { id_contacto } = req.params;
+    const { id_usuario, permisos } = req.user;
+
+    if (!permisos.includes('update_contact_details')) {
       throw new PermissionDeniedError('No tienes permiso para eliminar contactos de usuario.');
     }
 
-    // Buscar el contacto
     const contacto = await UsuarioContacto.findOne({
       where: { id_contacto, id_usuario },
     });
@@ -172,7 +179,6 @@ export const deleteContact = async (req, res, next) => {
       });
     }
 
-    // Eliminar el contacto
     await contacto.destroy();
 
     logger.info(`Contacto eliminado: ID ${id_contacto} para Usuario ${id_usuario}`);
@@ -185,4 +191,3 @@ export const deleteContact = async (req, res, next) => {
     next(error);
   }
 };
-    
