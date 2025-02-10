@@ -51,28 +51,109 @@
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
-  .subusers-list,
-  .invitaciones-list,
-  .parents-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    li {
+  // Estilos para la sección "Mi cuenta"
+  .mi-cuenta-section {
+    .mi-cuenta-header {
       display: flex;
+      flex-direction: column;
       justify-content: space-between;
       align-items: center;
-      padding: 0.75rem;
-      border-bottom: 1px solid #ccc;
-      button {
-        padding: 0.5rem 1rem;
+      margin-bottom: 1rem;
+
+      h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: mixins.theme(dark-blue-color);
+      }
+      
+      .add-button {
         background-color: mixins.theme(primary-color);
+        color: mixins.theme(light-color);
         border: none;
         border-radius: 4px;
-        color: mixins.theme(light-color);
+        padding: 0.5rem 1rem;
+        align-self: flex-end;
         cursor: pointer;
+        width: 10rem;
         transition: background-color 0.3s ease;
         &:hover {
           background-color: mixins.theme(primary-color-hover);
+        }
+      }
+    }
+    p {
+      text-align: start;
+    }
+    table.subusers-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+
+      thead {
+        background-color: mixins.theme(primary-color);
+        color: mixins.theme(light-color);
+
+        th {
+          padding: 0.75rem;
+          text-align: left;
+          font-size: 1rem;
+        }
+      }
+
+      tbody {
+        tr {
+          border-bottom: 1px solid #ccc;
+          transition: background-color 0.3s ease;
+
+          &:hover {
+            background-color: #f9f9f9;
+          }
+
+          td {
+            padding: 0.75rem;
+            font-size: 0.95rem;
+            vertical-align: middle;
+          }
+
+          .actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+
+            .icon-button {
+              background: none;
+              border: none;
+              cursor: pointer;
+              color: mixins.theme(dark-blue-color);
+              font-size: 1.2rem;
+              transition: color 0.3s ease;
+              &:hover {
+                color: mixins.theme(primary-color);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Estilos para la sección "Asignado a otras cuentas"
+  .asignado-section {
+    .parent-accounts, .pending-invitations {
+      margin-bottom: 1.5rem;
+      h4 {
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+        color: mixins.theme(dark-blue-color);
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        li {
+          padding: 0.75rem;
+          border-bottom: 1px solid #ccc;
+          font-size: 0.95rem;
         }
       }
     }

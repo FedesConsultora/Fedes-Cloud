@@ -3,16 +3,21 @@ import React, { useState } from 'react';
 import Swal from 'sweetalert2';
 import config from '../config/config.js';
 
-const InviteUser = ({ onClose }) => {
+const InviteUser = ({ onClose, mode = 'invite', initialData = {} }) => {
+  // Paso del formulario: 1 = datos del usuario; 2 = verificación y confirmación
   const [step, setStep] = useState(1);
+  // Estado para saber si ya se verificó el email (solo en modo "invite")
   const [emailChecked, setEmailChecked] = useState(false);
+  // Estado que indica si el email existe en el sistema
   const [emailExists, setEmailExists] = useState(false);
+  // Estado del formulario, inicializado con los datos de initialData (si existen) o valores por defecto
   const [inviteData, setInviteData] = useState({
-    email: '',
-    subRol: 'No configurado',
-    permitirSoporte: false,
+    email: initialData?.email || '',
+    subRol: initialData?.subRol || 'No configurado',
+    permitirSoporte: initialData?.permitirSoporte || false,
   });
 
+  // Maneja el cambio en los inputs
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setInviteData({
@@ -21,19 +26,21 @@ const InviteUser = ({ onClose }) => {
     });
   };
 
-  // Verificar si el email existe en el sistema
+  // Función para verificar si el email existe en el sistema (se usa solo en modo "invite")
   const checkEmailExists = async () => {
     if (!inviteData.email) return;
     try {
-      // Este endpoint debe estar implementado en el backend para responder { exists: true/false }
-      const response = await fetch(`${config.API_URL}/user-composite/check-email?email=${encodeURIComponent(inviteData.email)}`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${window.localStorage.getItem('token') || ''}`,
-        },
-      });
+      const response = await fetch(
+        `${config.API_URL}/user-composite/check-email?email=${encodeURIComponent(inviteData.email)}`,
+        {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${window.localStorage.getItem('token') || ''}`,
+          },
+        }
+      );
       if (response.ok) {
         const result = await response.json();
         setEmailExists(result.exists);
@@ -48,10 +55,14 @@ const InviteUser = ({ onClose }) => {
     }
   };
 
+  // Se ejecuta al salir del input de email (solo en modo "invite")
   const handleEmailBlur = () => {
-    checkEmailExists();
+    if (mode !== 'edit') {
+      checkEmailExists();
+    }
   };
 
+  // Avanza al siguiente paso si se ha ingresado un email
   const handleNext = () => {
     if (!inviteData.email) {
       Swal.fire('Advertencia', 'Debes ingresar un email.', 'warning');
@@ -60,14 +71,22 @@ const InviteUser = ({ onClose }) => {
     setStep(2);
   };
 
+  // Retrocede al paso anterior
   const handleBack = () => {
     setStep(1);
   };
 
-  const handleInvite = async () => {
+  // Función para enviar la invitación o guardar los cambios (según el modo)
+  const handleSubmit = async () => {
     try {
-      const response = await fetch(`${config.API_URL}/user-composite/invite`, {
-        method: 'POST',
+      const endpoint =
+        mode === 'invite'
+          ? `${config.API_URL}/user-composite/invite`
+          : `${config.API_URL}/user-composite/edit/${initialData.id_usuario}`;
+      const method = mode === 'invite' ? 'POST' : 'PUT';
+
+      const response = await fetch(endpoint, {
+        method,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${window.localStorage.getItem('token') || ''}`,
@@ -77,27 +96,32 @@ const InviteUser = ({ onClose }) => {
           email: inviteData.email,
           subRol: inviteData.subRol,
           permitirSoporte: inviteData.permitirSoporte,
-          clientURI: config.CLIENT_URI, 
+          clientURI: config.CLIENT_URI,
         }),
       });
 
       const result = await response.json();
       if (response.ok) {
-        Swal.fire('Éxito', 'Invitación enviada correctamente', 'success');
-        onClose && onClose();
+        Swal.fire(
+          'Éxito',
+          mode === 'invite' ? 'Invitación enviada correctamente' : 'Cambios guardados correctamente',
+          'success'
+        );
+        if (onClose) onClose();
       } else {
-        Swal.fire('Error', result.message || 'No se pudo enviar la invitación', 'error');
+        Swal.fire('Error', result.message || 'No se pudo procesar la solicitud', 'error');
       }
     } catch (error) {
-      Swal.fire('Error', 'Ocurrió un error al enviar la invitación', 'error');
+      Swal.fire('Error', 'Ocurrió un error al enviar la solicitud', 'error');
     }
   };
 
   return (
     <div className="invite-user">
+      <h3>{mode === 'edit' ? 'Editar Usuario' : 'Agregar Usuario'}</h3>
       {step === 1 && (
         <div className="invite-step step-1">
-          <h3>Paso 1 de 2: Información del Usuario</h3>
+          <h4>Paso 1 de 2: Información del Usuario</h4>
           <div className="form-group">
             <label>Email</label>
             <input
@@ -107,10 +131,11 @@ const InviteUser = ({ onClose }) => {
               onChange={handleChange}
               onBlur={handleEmailBlur}
               placeholder="Ingresa el email del integrante"
+              disabled={mode === 'edit'} // En modo edición, el email no se puede modificar
             />
-            {emailChecked && !emailExists && inviteData.email && (
+            {mode !== 'edit' && emailChecked && !emailExists && inviteData.email && (
               <small className="info-text">
-                El email que ingresaste no está registrado. Al enviar la invitación, se creará automáticamente una cuenta asociada a Donweb.
+                El email que ingresaste no está registrado. Al enviar la invitación, se creará automáticamente una cuenta asociada a Fedes Cloud.
               </small>
             )}
           </div>
@@ -140,32 +165,23 @@ const InviteUser = ({ onClose }) => {
           </button>
         </div>
       )}
-      {step === 2 && (
+      {step === 2 && ( 
         <div className="invite-step step-2">
-          <h3>Paso 2 de 2: Verificación y Envío de Invitación</h3>
+          <h4>Paso 2 de 2: Verificación y Confirmación</h4>
           <div className="summary">
             <p><strong>Email:</strong> {inviteData.email}</p>
             <p><strong>Rol asignado:</strong> {inviteData.subRol}</p>
-            <p><strong>Acceso a Soporte:</strong> {inviteData.permitirSoporte ? 'Activado' : 'Desactivado'}</p>
-          </div>
-          <p>
-            Comprueba que la información sea correcta. Una vez enviado el email a la dirección que proporcionaste, la invitación quedará como estado pendiente hasta que sea aceptada o expire.
-          </p>
-          <p>
-            Recuerda que si el email no está registrado, se creará automáticamente una cuenta asociada a Donweb.
-          </p>
-          <div className="summary-details">
-            <p><strong>Información del integrante de la cuenta:</strong></p>
-            <p><strong>Email:</strong> {inviteData.email}</p>
-            <p><strong>Rol asignado:</strong> {inviteData.subRol}</p>
-            <p><strong>Acceso a Soporte:</strong> {inviteData.permitirSoporte ? 'Activado' : 'Desactivado'}</p>
+            <p>
+              <strong>Acceso a Soporte:</strong>{' '}
+              {inviteData.permitirSoporte ? <span className="support-access">Activado</span> : 'Desactivado'}
+            </p>
           </div>
           <div className="buttons-group">
             <button type="button" className="button" onClick={handleBack}>
               Volver
             </button>
-            <button type="button" className="button" onClick={handleInvite}>
-              Enviar Invitación
+            <button type="button" className="button" onClick={handleSubmit}>
+              {mode === 'edit' ? 'Guardar cambios' : 'Enviar Invitación'}
             </button>
           </div>
         </div>

@@ -16,6 +16,7 @@ import servicioModel from './servicio.js';
 import dnsRegistroModel from './dnsregistro.js';
 import usuarioContactoModel from './usuariocontacto.js';
 import usuariofacturacion from './usuariofacturacion.js';
+import usuarioPadreHijo from './usuariopadrehijo.js';
 
 const env = process.env.NODE_ENV || 'development';
 const conf = config[env];
@@ -43,6 +44,7 @@ db.Servicio = servicioModel(sequelize, Sequelize.DataTypes);
 db.DNSRegistro = dnsRegistroModel(sequelize, Sequelize.DataTypes);
 db.UsuarioContacto = usuarioContactoModel(sequelize, Sequelize.DataTypes); 
 db.UsuarioFacturacion = usuariofacturacion(sequelize, Sequelize.DataTypes);
+db.UsuarioPadreHijo = usuarioPadreHijo(sequelize, Sequelize.DataTypes);
 
 // Configurar asociaciones
 Object.keys(db).forEach((modelName) => {
@@ -70,5 +72,6 @@ export const Servicio = db.Servicio;
 export const DNSRegistro = db.DNSRegistro;
 export const UsuarioContacto = db.UsuarioContacto;
 export const UsuarioFacturacion = db.UsuarioFacturacion;
+export const UsuarioPadreHijo = db.UsuarioPadreHijo;
 
 export default db;

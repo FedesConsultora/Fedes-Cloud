@@ -22,4 +22,6 @@ router.get('/invitaciones', authMiddleware, userCompositeController.getPendingIn
 router.get('/invite/accept', userCompositeController.getInvitationDetails);
 router.post('/invite/accept', acceptInvitationValidator , userCompositeController.acceptInvitation);
 
+router.put('/edit/:id', authMiddleware, userCompositeController.editSubUser);
+
 export default router;

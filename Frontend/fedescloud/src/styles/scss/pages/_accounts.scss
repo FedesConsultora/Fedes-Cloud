@@ -1,0 +1,82 @@
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.accounts-page {
+  padding: 2rem;
+  background-color: mixins.theme(background-color);
+  color: mixins.theme(text-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  h2 {
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    color: mixins.theme(dark-color);
+  }
+
+  .cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    width: 100%;
+    max-width: 1200px;
+  }
+
+  .access-card {
+    background-color: mixins.theme(light-color);
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 0 10px mixins.theme(shadow-color);
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease;
+    &:hover {
+      transform: translateY(-5px);
+    }
+
+    .card-header {
+      text-align: center;
+      margin-bottom: 1rem;
+      h3 {
+        margin: 0;
+        font-size: 1.4rem;
+        color: mixins.theme(dark-blue-color);
+      }
+      p {
+        font-size: 0.95rem;
+        color: mixins.theme(dark-color);
+      }
+    }
+
+    .card-body {
+      font-size: 1rem;
+      p {
+        margin: 0.5rem 0;
+      }
+    }
+
+    .card-footer {
+      margin-top: 1rem;
+      text-align: center;
+      .button {
+        padding: 0.75rem;
+        background-color: mixins.theme(primary-color);
+        color: mixins.theme(light-color);
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 100%;
+        &:hover {
+          background-color: mixins.theme(primary-color-hover);
+        }
+      }
+    }
+  }
+}

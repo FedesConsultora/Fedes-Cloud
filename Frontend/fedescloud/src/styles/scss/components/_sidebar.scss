@@ -151,8 +151,56 @@
   /* Estilos para el componente UserInfo */
   .user-info {
     padding: 1rem;
-    border-top: 1px solid #ccc;
     width: 100%;
+    background-color: rgba(128, 128, 128, 0.321);
+    font-size: 0.9rem;
+    .tuCuenta{
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgb(204, 204, 204);
+      .nameCuenta{
+        margin: 0 !important;
+      }
+    }
+    // Nueva sección para mostrar cuando se accede como cuenta padre
+    .account-switch-info {
+      text-align: start;
+      p {
+        margin: 0.75rem 0;
+        font-size: 0.9rem;
+        color: mixins.theme(light-color);
+        strong {
+          font-size: 0.8rem;
+          color: mixins.theme(primary-color);
+        }
+      }
+    }
+
+    // Si deseas ajustar el estilo del párrafo que muestra "Tu Rol:" en este contexto,
+    // puedes agregar una regla específica. Por ejemplo:
+    .parent-role-info {
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+      text-align: start;     
+      margin-bottom: 2rem;
+      color: mixins.theme(light-color);
+      strong {
+        font-size: 0.8rem !important;
+        color: mixins.theme(primary-color);
+      }
+      span{
+        margin-left: 0.5rem;
+        font-size: 0.7rem;
+        background-color: rgb(47, 164, 200);
+        padding: 5px;
+        border-radius: 15px;
+        -webkit-border-radius: 15px;
+        -moz-border-radius: 15px;
+        -ms-border-radius: 15px;
+        -o-border-radius: 15px;
+      }
+    }
 
     .user-details {
       display: flex;
@@ -206,7 +254,9 @@
       }
     }
   }
-
+  .access-link{
+    padding-left: 0rem !important;
+  }
   .logout-button {
     display: flex;
     width: 100%;

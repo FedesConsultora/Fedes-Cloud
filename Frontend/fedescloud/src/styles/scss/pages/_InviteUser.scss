@@ -2,34 +2,43 @@
 @use '../abstracts/mixins' as mixins;
 
 .invite-user {
+  max-width: 500px;
+  margin: 1rem auto;
   background-color: mixins.theme(light-color);
-  border-radius: 10px;
-  padding: 2rem;
-  max-width: 600px;
-  margin: 0 auto;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 0 10px mixins.theme(shadow-color);
+  text-align: center;
   transition: background-color 0.3s ease, color 0.3s ease;
 
   h3 {
-    text-align: center;
-    color: mixins.theme(dark-blue-color);
     margin-bottom: 1rem;
+    color: mixins.theme(dark-blue-color);
+  }
+
+  h4 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    color: mixins.theme(dark-blue-color);
   }
 
   .form-group {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     margin-bottom: 1rem;
 
     label {
-      margin-bottom: 0.5rem;
       font-weight: 500;
+      margin-bottom: 0.5rem;
     }
 
     input,
     select {
+      width: 100%;
       padding: 0.75rem;
       border: 1px solid #c6c6c6;
-      border-radius: 10px;
+      border-radius: 4px;
       font-size: 1rem;
       transition: border-color 0.3s ease;
       &:focus {
@@ -40,30 +49,40 @@
     }
 
     .info-text {
-      font-size: 0.9rem;
+      font-size: 0.875rem;
       color: mixins.theme(dark-blue-color);
-      margin-top: 0.5rem;
+      margin-top: 0.25rem;
+    }
+  }
+
+  .password-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+
+    input {
+      flex: 1;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
     }
   }
 
   .summary {
-    background-color: #f7f7f7;
-    border-radius: 8px;
+    background-color: #f5f5f5;
     padding: 1rem;
+    border-radius: 4px;
     margin-bottom: 1rem;
     p {
       margin: 0.5rem 0;
-    }
-  }
-
-  .summary-details {
-    background-color: #f1f1f1;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    p {
-      margin: 0.3rem 0;
-      font-size: 1rem;
+      font-size: 0.95rem;
+      color: mixins.theme(dark-blue-color);
     }
   }
 
@@ -71,12 +90,11 @@
     display: flex;
     justify-content: space-between;
     gap: 1rem;
-    button {
-      flex: 1;
-    }
+    margin-top: 1rem;
   }
 
   .button {
+    flex: 1;
     padding: 0.75rem;
     background-color: mixins.theme(primary-color);
     color: mixins.theme(light-color);
@@ -85,7 +103,6 @@
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    text-align: center;
     &:hover {
       background-color: mixins.theme(primary-color-hover);
     }

@@ -3,20 +3,20 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import ProtectedRoute from './components/ProtectedRoute.js';
-import PublicRoute from './components/PublicRoute.js'; // Importa PublicRoute
-import AuthPage from './pages/AuthPage.js'; 
+import PublicRoute from './components/PublicRoute.js';
+import AuthPage from './pages/AuthPage.js';
 import Home from './pages/Home.js';
 import ResetPassword from './pages/ResetPassword.js';
 import ConfirmEmail from './pages/ConfirmEmail.js';
-import MainLayout from './layouts/MainLayout.js'; 
+import MainLayout from './layouts/MainLayout.js';
 import ThemeToggle from './components/ThemeToggle.js';
 import PageTransition from './components/PageTransition.js';
-import Profile from './pages/Profile.js'; 
-import Settings from './pages/Settings.js'; 
+import Profile from './pages/Profile.js';
+import Settings from './pages/Settings.js';
 import TwoFactorAuth from './pages/TwoFactorAuth.js';
 import DominiosPage from './pages/DominiosPage.js';
 import DominiosBusquedaPage from './pages/DominiosBusquedaPage.js';
-import CertificadosSSLPage from './pages/CertificadosSSLPage.js';  // <-- Importa la nueva página
+import CertificadosSSLPage from './pages/CertificadosSSLPage.js';
 import AdminRoute from './components/AdminRoute.js';
 import UserDetail from './pages/UserDetail.js';
 import DomainDetail from './pages/DomainDetail.js';
@@ -29,24 +29,24 @@ import BillingDetails from './pages/BillingDetails.js';
 import ContactDetails from './pages/ContactDetails.js';
 import UserManagement from './pages/UserManagement.js';
 import AcceptInvitation from './pages/AcceptInvitation.js';
+import Accounts from './pages/Accounts.js'; 
 
 const AppRoutes = () => {
   const location = useLocation();
-  
+
   return (
     <div className="transition-container">
-      <AnimatePresence mode='wait'>
+      <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
           {/* Rutas públicas */}
           <Route
             path="/auth/*"
             element={
               <PublicRoute>
-                  <AuthPage />
+                <AuthPage />
               </PublicRoute>
             }
           />
-
           <Route
             path="/reset-password"
             element={
@@ -55,7 +55,6 @@ const AppRoutes = () => {
               </PageTransition>
             }
           />
-
           <Route
             path="/confirm-email"
             element={
@@ -64,11 +63,13 @@ const AppRoutes = () => {
               </PageTransition>
             }
           />
-          <Route path="/invite/accept" element={
+          <Route
+            path="/invite/accept"
+            element={
               <PageTransition>
                 <AcceptInvitation />
               </PageTransition>
-            } 
+            }
           />
 
           {/* Rutas protegidas */}
@@ -84,17 +85,40 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
-          
-          {/* Rutas de Usuario (con rutas absolutas) */}
-          <Route path="/user" element={<ProtectedRoute><MainLayout><PageTransition><UserPage /></PageTransition></MainLayout></ProtectedRoute>}>
-            {/* Rutas hijas */}
+
+          {/* Rutas de Usuario */}
+          <Route
+            path="/user"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <UserPage />
+                  </PageTransition>
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          >
             <Route path="profile" element={<Profile />} />
             <Route path="contact" element={<ContactDetails />} />
             <Route path="billing" element={<BillingDetails />} />
             <Route path="management" element={<UserManagement />} />
-            {/* Si la ruta no coincide, redirige a profile */}
             <Route path="*" element={<Navigate to="/user/profile" replace />} />
           </Route>
+
+          {/* Nueva ruta para "Cuentas" (accesos a cuentas padre) */}
+          <Route
+            path="/cuentas"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <Accounts />
+                  </PageTransition>
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
 
           <Route
             path="/settings"
@@ -161,7 +185,6 @@ const AppRoutes = () => {
             }
           />
 
-          {/* Nueva ruta para Certificados SSL */}
           <Route
             path="/certificados-ssl"
             element={
@@ -188,7 +211,6 @@ const AppRoutes = () => {
               </AdminRoute>
             }
           />
-
           <Route
             path="/admin/users/:userId"
             element={
@@ -201,20 +223,18 @@ const AppRoutes = () => {
               </AdminRoute>
             }
           />
-
           <Route
             path="/admin/users/:userId/edit"
             element={
               <AdminRoute>
                 <MainLayout>
                   <PageTransition>
-                    <EditUserPage /> 
+                    <EditUserPage />
                   </PageTransition>
                 </MainLayout>
               </AdminRoute>
             }
           />
-
           <Route
             path="/admin/domains/:domainId/edit"
             element={
@@ -227,7 +247,6 @@ const AppRoutes = () => {
               </AdminRoute>
             }
           />
-
           <Route
             path="/admin/domains/:domainId"
             element={

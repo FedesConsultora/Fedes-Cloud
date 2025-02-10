@@ -52,7 +52,6 @@
     background-color: mixins.theme(light-color);
     border-radius: 10px;
     padding: 2rem;
-    box-shadow: 0 0 10px mixins.theme(shadow-color);
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 }

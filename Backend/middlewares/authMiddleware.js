@@ -7,51 +7,31 @@ import logger from '../utils/logger.js';
 const authMiddleware = async (req, res, next) => {
   // Obtener el token desde las cookies
   const token = req.cookies.token;
-
-  // Verifica si el token está presente
   if (!token) {
     return next(new UnauthorizedError('Token de autenticación faltante o inválido'));
   }
 
   try {
     logger.info(`El token entrante es: ${token}`);
-    logger.debug(`JWT_SECRET utilizado para verificar: ${process.env.JWT_SECRET}`);
-
-    // Verifica y decodifica el token JWT
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Busca al usuario en la base de datos, incluyendo Rol y Permisos
+    // Buscar al usuario (o a la cuenta padre, según el flag) en la base de datos
     const user = await Usuario.findByPk(decoded.id_usuario, {
       include: [
         {
           model: Rol,
-          as: 'rol', // Cambio de 'Rol' a 'rol'
+          as: 'rol',
           include: [
             {
               model: Permiso,
-              as: 'permisos', // Debe coincidir con el alias definido en la asociación
-              through: { attributes: [] }, // Excluye atributos de la tabla intermedia
-              include: [
-                {
-                  model: Accion,
-                  as: 'acciones', // Incluye las acciones asociadas a cada permiso
-                },
-              ],
+              as: 'permisos',
+              through: { attributes: [] },
             },
           ],
         },
-        {
-          model: Estado,
-          as: 'estado', // Cambio de 'Estado' a 'estado'
-        },
-        {
-          model: Autenticacion,
-          as: 'autenticacion', // Cambio de 'Autenticacion' a 'autenticacion'
-        },
-        {
-          model: UsuarioContacto, // Añadir la inclusión de UsuarioContacto si es necesario
-          as: 'contactos',
-        },
+        { model: Estado, as: 'estado' },
+        { model: Autenticacion, as: 'autenticacion' },
+        { model: UsuarioContacto, as: 'contactos' },
       ],
     });
 
@@ -59,21 +39,19 @@ const authMiddleware = async (req, res, next) => {
       return next(new UnauthorizedError('Usuario no encontrado'));
     }
 
-    // Convierte el objeto Sequelize en un objeto plano
-    const userData = user.toJSON();
-    // Verifica que el rol tenga permisos
-    if (!userData.rol || !Array.isArray(userData.rol.permisos)) {
-      logger.error(`El rol del usuario no tiene permisos asociados.`);
-      return next(new UnauthorizedError('Permisos de usuario inválidos'));
-    }
-
-    // Adjunta la información del usuario al objeto de la solicitud
+    // Armar el objeto req.user; si se está accediendo como padre, se usa la info del token.
     req.user = {
-      id_usuario: userData.id_usuario,
-      nombre: userData.nombre,
-      email: userData.email,
-      permisos: userData.rol.permisos.map((permiso) => permiso.nombre),
-      // Puedes añadir más campos si es necesario
+      id_usuario: user.id_usuario,
+      nombre: user.nombre,
+      apellido: user.apellido,
+      email: user.email,
+      rol: user.rol,
+      permisos: user.rol?.permisos?.map((permiso) => permiso.nombre) || [],
+      // Flag que indica que se está operando como cuenta padre (si fue seteado en el token)
+      accessAsParent: decoded.accessAsParent || false,
+      // Si se está accediendo como padre, opcionalmente conservar el id del hijo para auditoría
+      childId: decoded.childId || null,
+      subRole: decoded.subRole || user.subRol,
     };
 
     next();

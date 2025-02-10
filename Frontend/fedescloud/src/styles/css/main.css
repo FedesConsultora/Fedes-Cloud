@@ -280,8 +280,52 @@
 }
 .sidebar .user-info {
   padding: 1rem;
-  border-top: 1px solid #ccc;
   width: 100%;
+  background-color: rgba(128, 128, 128, 0.321);
+  font-size: 0.9rem;
+}
+.sidebar .user-info .tuCuenta {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgb(204, 204, 204);
+}
+.sidebar .user-info .tuCuenta .nameCuenta {
+  margin: 0 !important;
+}
+.sidebar .user-info .account-switch-info {
+  text-align: start;
+}
+.sidebar .user-info .account-switch-info p {
+  margin: 0.75rem 0;
+  font-size: 0.9rem;
+  color: var(--light-color);
+}
+.sidebar .user-info .account-switch-info p strong {
+  font-size: 0.8rem;
+  color: var(--primary-color);
+}
+.sidebar .user-info .parent-role-info {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  text-align: start;
+  margin-bottom: 2rem;
+  color: var(--light-color);
+}
+.sidebar .user-info .parent-role-info strong {
+  font-size: 0.8rem !important;
+  color: var(--primary-color);
+}
+.sidebar .user-info .parent-role-info span {
+  margin-left: 0.5rem;
+  font-size: 0.7rem;
+  background-color: rgb(47, 164, 200);
+  padding: 5px;
+  border-radius: 15px;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  -ms-border-radius: 15px;
+  -o-border-radius: 15px;
 }
 .sidebar .user-info .user-details {
   display: flex;
@@ -327,6 +371,9 @@
 }
 .sidebar .user-info .logout-button span, .sidebar .user-info .profile-button span {
   margin-left: 0.25rem;
+}
+.sidebar .access-link {
+  padding-left: 0rem !important;
 }
 .sidebar .logout-button {
   display: flex;
@@ -3343,7 +3390,6 @@ main {
   background-color: var(--light-color);
   border-radius: 10px;
   padding: 2rem;
-  box-shadow: 0 0 10px var(--shadow-color);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -3530,37 +3576,94 @@ main {
   box-shadow: 0 0 10px var(--shadow-color);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
-.user-management .subusers-list,
-.user-management .invitaciones-list,
-.user-management .parents-list {
+.user-management .mi-cuenta-section .mi-cuenta-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.user-management .mi-cuenta-section .mi-cuenta-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--dark-blue-color);
+}
+.user-management .mi-cuenta-section .mi-cuenta-header .add-button {
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  align-self: flex-end;
+  cursor: pointer;
+  width: 10rem;
+  transition: background-color 0.3s ease;
+}
+.user-management .mi-cuenta-section .mi-cuenta-header .add-button:hover {
+  background-color: var(--primary-color-hover);
+}
+.user-management .mi-cuenta-section p {
+  text-align: start;
+}
+.user-management .mi-cuenta-section table.subusers-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+.user-management .mi-cuenta-section table.subusers-table thead {
+  background-color: var(--primary-color);
+  color: var(--light-color);
+}
+.user-management .mi-cuenta-section table.subusers-table thead th {
+  padding: 0.75rem;
+  text-align: left;
+  font-size: 1rem;
+}
+.user-management .mi-cuenta-section table.subusers-table tbody tr {
+  border-bottom: 1px solid #ccc;
+  transition: background-color 0.3s ease;
+}
+.user-management .mi-cuenta-section table.subusers-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+.user-management .mi-cuenta-section table.subusers-table tbody tr td {
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  vertical-align: middle;
+}
+.user-management .mi-cuenta-section table.subusers-table tbody tr .actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.user-management .mi-cuenta-section table.subusers-table tbody tr .actions .icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--dark-blue-color);
+  font-size: 1.2rem;
+  transition: color 0.3s ease;
+}
+.user-management .mi-cuenta-section table.subusers-table tbody tr .actions .icon-button:hover {
+  color: var(--primary-color);
+}
+.user-management .asignado-section .parent-accounts, .user-management .asignado-section .pending-invitations {
+  margin-bottom: 1.5rem;
+}
+.user-management .asignado-section .parent-accounts h4, .user-management .asignado-section .pending-invitations h4 {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  color: var(--dark-blue-color);
+}
+.user-management .asignado-section .parent-accounts ul, .user-management .asignado-section .pending-invitations ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
-.user-management .subusers-list li,
-.user-management .invitaciones-list li,
-.user-management .parents-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.user-management .asignado-section .parent-accounts ul li, .user-management .asignado-section .pending-invitations ul li {
   padding: 0.75rem;
   border-bottom: 1px solid #ccc;
-}
-.user-management .subusers-list li button,
-.user-management .invitaciones-list li button,
-.user-management .parents-list li button {
-  padding: 0.5rem 1rem;
-  background-color: var(--primary-color);
-  border: none;
-  border-radius: 4px;
-  color: var(--light-color);
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-.user-management .subusers-list li button:hover,
-.user-management .invitaciones-list li button:hover,
-.user-management .parents-list li button:hover {
-  background-color: var(--primary-color-hover);
+  font-size: 0.95rem;
 }
 .user-management .button {
   display: block;
@@ -3602,32 +3705,40 @@ main {
 }
 
 .invite-user {
+  max-width: 500px;
+  margin: 1rem auto;
   background-color: var(--light-color);
-  border-radius: 10px;
-  padding: 2rem;
-  max-width: 600px;
-  margin: 0 auto;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 0 10px var(--shadow-color);
+  text-align: center;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 .invite-user h3 {
-  text-align: center;
-  color: var(--dark-blue-color);
   margin-bottom: 1rem;
+  color: var(--dark-blue-color);
+}
+.invite-user h4 {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: var(--dark-blue-color);
 }
 .invite-user .form-group {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   margin-bottom: 1rem;
 }
 .invite-user .form-group label {
-  margin-bottom: 0.5rem;
   font-weight: 500;
+  margin-bottom: 0.5rem;
 }
 .invite-user .form-group input,
 .invite-user .form-group select {
+  width: 100%;
   padding: 0.75rem;
   border: 1px solid #c6c6c6;
-  border-radius: 10px;
+  border-radius: 4px;
   font-size: 1rem;
   transition: border-color 0.3s ease;
 }
@@ -3638,38 +3749,45 @@ main {
   box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
 }
 .invite-user .form-group .info-text {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   color: var(--dark-blue-color);
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
+}
+.invite-user .password-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.invite-user .password-wrapper input {
+  flex: 1;
+}
+.invite-user .password-wrapper .toggle-password {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 .invite-user .summary {
-  background-color: #f7f7f7;
-  border-radius: 8px;
+  background-color: #f5f5f5;
   padding: 1rem;
+  border-radius: 4px;
   margin-bottom: 1rem;
 }
 .invite-user .summary p {
   margin: 0.5rem 0;
-}
-.invite-user .summary-details {
-  background-color: #f1f1f1;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-.invite-user .summary-details p {
-  margin: 0.3rem 0;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  color: var(--dark-blue-color);
 }
 .invite-user .buttons-group {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-}
-.invite-user .buttons-group button {
-  flex: 1;
+  margin-top: 1rem;
 }
 .invite-user .button {
+  flex: 1;
   padding: 0.75rem;
   background-color: var(--primary-color);
   color: var(--light-color);
@@ -3678,7 +3796,6 @@ main {
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  text-align: center;
 }
 .invite-user .button:hover {
   background-color: var(--primary-color-hover);
@@ -3762,6 +3879,80 @@ main {
   transition: background-color 0.3s ease;
 }
 .accept-invitation form .button:hover {
+  background-color: var(--primary-color-hover);
+}
+
+.accounts-page {
+  padding: 2rem;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.accounts-page h2 {
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: var(--dark-color);
+}
+.accounts-page .cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px;
+}
+.accounts-page .access-card {
+  background-color: var(--light-color);
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 0 10px var(--shadow-color);
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.3s ease;
+}
+.accounts-page .access-card:hover {
+  transform: translateY(-5px);
+}
+.accounts-page .access-card .card-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.accounts-page .access-card .card-header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--dark-blue-color);
+}
+.accounts-page .access-card .card-header p {
+  font-size: 0.95rem;
+  color: var(--dark-color);
+}
+.accounts-page .access-card .card-body {
+  font-size: 1rem;
+}
+.accounts-page .access-card .card-body p {
+  margin: 0.5rem 0;
+}
+.accounts-page .access-card .card-footer {
+  margin-top: 1rem;
+  text-align: center;
+}
+.accounts-page .access-card .card-footer .button {
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+.accounts-page .access-card .card-footer .button:hover {
   background-color: var(--primary-color-hover);
 }
 

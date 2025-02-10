@@ -9,7 +9,8 @@ import {
   FaChevronUp, 
   FaRegClipboard, 
   FaCertificate, 
-  FaCreditCard 
+  FaCreditCard,
+  
 } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext.js';
@@ -17,8 +18,8 @@ import UserInfo from './UserInfo.js';
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  const { logout, isAdmin } = useContext(AuthContext); // Obtener isAdmin del contexto
-  const [isServiciosOpen, setIsServiciosOpen] = useState(false); // Estado para manejar el despliegue de Servicios
+  const { logout, isAdmin } = useContext(AuthContext);
+  const [isServiciosOpen, setIsServiciosOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -37,6 +38,9 @@ const Sidebar = () => {
           className="logo" 
         />
       </div>
+      
+      
+      
       <nav className="navigation">
         <ul>
           <li onClick={() => navigate('/')} className="nav-item">
@@ -68,7 +72,6 @@ const Sidebar = () => {
                   <FaCreditCard className="icon" />
                   <span className="label">Mis Pagos</span>
                 </li>
-                {/* Puedes añadir más submenús aquí en el futuro */}
               </ul>
             )}
           </li>
@@ -87,7 +90,7 @@ const Sidebar = () => {
           </li>
         </ul>
       </nav>
-      {/* Componente UserInfo al final del sidebar */}
+      
       <UserInfo onLogout={handleLogout} />
     </aside>
   );

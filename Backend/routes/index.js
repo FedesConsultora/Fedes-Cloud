@@ -11,6 +11,7 @@ import contactRoutes from './userContactRoutes.js';
 import billingRoutes from './userBillingRoutes.js';
 import certificadoRoutes from './certificadoRoutes.js';
 import userCompositeRoutes from './userCompositeRoutes.js';
+import accountRoutes from './accountRoutes.js';
 
 /**
  * @swagger
@@ -36,5 +37,6 @@ router.use('/user-billing', billingRoutes);
 router.use('/user-contact', contactRoutes);
 router.use('/user-composite', userCompositeRoutes);
 router.use('/certificados', certificadoRoutes);
+router.use('/cuentas', accountRoutes);
 
 export default router;

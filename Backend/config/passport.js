@@ -18,6 +18,8 @@ export function generateJWT(user) {
       id_usuario: user.id_usuario,
       nombre: user.nombre,
       id_rol: user.id_rol,
+      id_usuario_padre: user.id_usuario_padre, 
+      subRol: user.subRol,                   
     },
     process.env.JWT_SECRET,
     { expiresIn: '1h' }

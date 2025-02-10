@@ -1,8 +1,8 @@
 // src/contexts/AuthContext.js
-
 import React, { createContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import config from '../config/config.js';
+import { jwtDecode } from 'jwt-decode';
 
 export const AuthContext = createContext();
 
@@ -11,13 +11,15 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [twoFactorRequired, setTwoFactorRequired] = useState(false);
   const [tempToken, setTempToken] = useState(null);
+  const [accessAsParent, setAccessAsParent] = useState(false);
+  const [subRole, setSubRole] = useState(null);
 
   const fetchUserProfile = async () => {
     try {
       const response = await fetch(`${config.API_URL}/auth/profile`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', 
+        credentials: 'include',
       });
       if (response.ok) {
         const userData = await response.json();
@@ -29,33 +31,57 @@ export function AuthProvider({ children }) {
       console.error('Error al conectar con el servidor:', error);
       setUser(null);
     } finally {
-      if (loading) setLoading(false);
+      setLoading(false);
     }
   };
 
-  // Llamar a fetchUserProfile sólo una vez al inicio para ver si ya hay sesión
+  // Actualiza el flag leyendo el token actual desde localStorage,
+  // pero solo si el token tiene formato JWT (tres partes separadas por puntos)
+  const updateAccessFromToken = () => {
+    const token = localStorage.getItem('token');
+    if (token && token.split('.').length === 3) {
+      try {
+        const decoded = jwtDecode(token);
+        setAccessAsParent(!!decoded.accessAsParent);
+        setSubRole(decoded.subRole || null);
+      } catch (err) {
+        console.error('Error decodificando token:', err);
+        setAccessAsParent(false);
+        setSubRole(null);
+      }
+    } else {
+      setAccessAsParent(false);
+      setSubRole(null);
+    }
+  };
+
   useEffect(() => {
     fetchUserProfile();
+    updateAccessFromToken();
   }, []);
 
   useEffect(() => {
-    // Si hay usuario, cada 5 minutos actualizamos el perfil
     if (user) {
       const intervalId = setInterval(() => {
         fetchUserProfile();
+        updateAccessFromToken();
       }, 5 * 60 * 1000);
       return () => clearInterval(intervalId);
     }
   }, [user]);
 
   const login = async (data = {}) => {
-    // Si el login es sin 2FA o ya completo, llamamos fetchUserProfile
     if (!data.twoFactorRequired) {
       await fetchUserProfile();
+      // Si no se ha guardado aún el token original del hijo, guárdalo
+      if (!localStorage.getItem('childToken') && localStorage.getItem('token')) {
+        localStorage.setItem('childToken', localStorage.getItem('token'));
+      }
+      localStorage.removeItem('accessAsParent');
+      updateAccessFromToken();
       setTwoFactorRequired(false);
       setTempToken(null);
     } else {
-      // Si se requiere 2FA, no llamamos aún a fetchUserProfile
       setTwoFactorRequired(true);
       setTempToken(data.tempToken);
     }
@@ -68,11 +94,10 @@ export function AuthProvider({ children }) {
       body: JSON.stringify({ tempToken, twoFactorToken }),
       credentials: 'include',
     });
-
     const result = await response.json();
     if (response.ok) {
-      // Ahora sí tenemos JWT, obtener el perfil
       await fetchUserProfile();
+      updateAccessFromToken();
       setTwoFactorRequired(false);
       setTempToken(null);
     } else {
@@ -91,6 +116,12 @@ export function AuthProvider({ children }) {
         setUser(null);
         setTwoFactorRequired(false);
         setTempToken(null);
+        setAccessAsParent(false);
+        setSubRole(null);
+        localStorage.removeItem('token');
+        localStorage.removeItem('childToken');
+        localStorage.removeItem('accessAsParent');
+        localStorage.removeItem('childProfile');
       }
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
@@ -99,11 +130,23 @@ export function AuthProvider({ children }) {
 
   const updateUser = (updatedUserData) => setUser(updatedUserData);
 
-  // Determinar si el usuario es administrador
   const isAdmin = user?.id_rol === 1;
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, updateUser, twoFactorRequired, completeTwoFactorAuth, isAdmin }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        loading,
+        updateUser,
+        twoFactorRequired,
+        completeTwoFactorAuth,
+        isAdmin,
+        accessAsParent,
+        subRole,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -112,3 +155,5 @@ export function AuthProvider({ children }) {
 AuthProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
+
+export default AuthProvider;

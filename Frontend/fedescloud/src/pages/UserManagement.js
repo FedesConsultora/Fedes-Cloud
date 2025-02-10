@@ -1,9 +1,10 @@
 // src/pages/UserManagement.js
 import React, { useState, useEffect, useContext } from 'react';
 import Swal from 'sweetalert2';
-import InviteUser from './InviteUser.js'; // Componente de invitación
+import InviteUser from './InviteUser.js'; // Componente de invitación (usado tanto para agregar como para editar)
 import config from '../config/config.js';
 import { AuthContext } from '../contexts/AuthContext.js';
+import { FaPencilAlt, FaTrash } from 'react-icons/fa';
 
 const UserManagement = () => {
   // Estado para la pestaña activa: "miCuenta" o "asignado"
@@ -14,8 +15,12 @@ const UserManagement = () => {
   const [parentAccounts, setParentAccounts] = useState([]);
   // Estado para la lista de invitaciones pendientes (para unirse a otras cuentas)
   const [pendingInvitations, setPendingInvitations] = useState([]);
-  // Estado para el modal de agregar cuenta
+  // Estado para el modal de agregar/editar cuenta
   const [showModal, setShowModal] = useState(false);
+  // Modo del modal: "invite" o "edit"
+  const [modalMode, setModalMode] = useState('invite');
+  // Datos iniciales para el modal en caso de edición
+  const [editData, setEditData] = useState(null);
 
   const { user } = useContext(AuthContext);
 
@@ -32,6 +37,7 @@ const UserManagement = () => {
       });
       if (response.ok) {
         const result = await response.json();
+        console.log(result)
         setSubUsers(result.data);
       } else {
         Swal.fire('Error', 'No se pudo obtener la lista de subusuarios', 'error');
@@ -41,7 +47,7 @@ const UserManagement = () => {
     }
   };
 
-  // Función para obtener la(s) cuenta(s) padre a la que estás vinculado
+  // Función para obtener las cuentas padre a la que estás vinculado
   const fetchParentAccounts = async () => {
     try {
       const response = await fetch(`${config.API_URL}/user-composite/parents`, {
@@ -54,7 +60,6 @@ const UserManagement = () => {
       });
       if (response.ok) {
         const result = await response.json();
-        console.log(result);
         setParentAccounts(result.data);
       } else {
         Swal.fire('Error', 'No se pudo obtener las cuentas padre', 'error');
@@ -64,7 +69,7 @@ const UserManagement = () => {
     }
   };
 
-  // Función para obtener las invitaciones pendientes (si se implementa ese endpoint)
+  // Función para obtener las invitaciones pendientes
   const fetchPendingInvitations = async () => {
     try {
       const response = await fetch(`${config.API_URL}/user-composite/invitaciones`, {
@@ -95,26 +100,45 @@ const UserManagement = () => {
     }
   }, [activeTab]);
 
+  // Confirmación antes de desvincular
   const handleUnlink = async (idSubUser) => {
-    try {
-      const response = await fetch(`${config.API_URL}/user-composite/${idSubUser}/unlink`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${window.localStorage.getItem('token') || ''}`,
-        },
-      });
-      if (response.ok) {
-        Swal.fire('Éxito', 'Subusuario desvinculado exitosamente', 'success');
-        fetchSubUsers();
-      } else {
-        Swal.fire('Error', 'No se pudo desvincular el subusuario', 'error');
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "Esta acción desvinculará al usuario. ¡No se podrá revertir!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, desvincular',
+      cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await fetch(`${config.API_URL}/user-composite/${idSubUser}/unlink`, {
+            method: 'PUT',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${window.localStorage.getItem('token') || ''}`,
+            },
+          });
+          if (response.ok) {
+            Swal.fire('Éxito', 'Subusuario desvinculado exitosamente', 'success');
+            fetchSubUsers();
+          } else {
+            Swal.fire('Error', 'No se pudo desvincular el subusuario', 'error');
+          }
+        } catch (error) {
+          console.error('Error unlinking subuser:', error);
+          Swal.fire('Error', 'Hubo un problema al desvincular el subusuario', 'error');
+        }
       }
-    } catch (error) {
-      console.error('Error unlinking subuser:', error);
-      Swal.fire('Error', 'Hubo un problema al desvincular el subusuario', 'error');
-    }
+    });
+  };
+
+  // Función para abrir el modal en modo edición
+  const handleEdit = (subUser) => {
+    setModalMode('edit');
+    setEditData(subUser);
+    setShowModal(true);
   };
 
   return (
@@ -141,31 +165,62 @@ const UserManagement = () => {
       <div className="management-content">
         {activeTab === 'miCuenta' && (
           <div className="mi-cuenta-section">
-            <h3>Invita hasta diez usuarios para que formen parte de tu cuenta</h3>
+            <div className="mi-cuenta-header">
+              <h3>
+                Invita hasta diez usuarios para que formen parte de tu cuenta y decide qué funciones pueden desempeñar.
+              </h3>
+              {/* En modo "miCuenta", el botón de agregar cuenta se coloca arriba a la derecha */}
+              <button className="button add-button" onClick={() => {
+                setModalMode('invite');
+                setEditData(null);
+                setShowModal(true);
+              }}>
+                Agregar cuenta
+              </button>
+            </div>
             <p>
               Titular de la cuenta: <strong>{user.email}</strong>
             </p>
             {subUsers && subUsers.length > 0 ? (
-              <ul className="subusers-list">
-                {subUsers.map((subUser) => (
-                  <li key={subUser.id_usuario}>
-                    <div>
-                      <span>{subUser.email}</span> - <span>{subUser.subRol}</span>
-                    </div>
-                    <button onClick={() => handleUnlink(subUser.id_usuario)}>
-                      Desvincular
-                    </button>
-                  </li>
-                ))}
-              </ul>
+              <table className="subusers-table">
+                <thead>
+                  <tr>
+                    <th>Usuario</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {subUsers.map((subUser) => (
+                    <tr key={subUser.id_usuario}>
+                      <td>{subUser.email}</td>
+                      <td>
+                        {subUser.subRol}
+                        {subUser.permitirSoporte && (
+                          <span className="support-access"> (Acceso a Soporte)</span>
+                        )}
+                      </td>
+                      <td>{subUser.estado_invitacion}</td>
+                      <td>
+                        <div className="actions">
+                          <button className="icon-button" onClick={() => handleEdit(subUser)}>
+                            <FaPencilAlt />
+                          </button>
+                          <button className="icon-button" onClick={() => handleUnlink(subUser.id_usuario)}>
+                            <FaTrash />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             ) : (
               <p>
                 Actualmente, no tienes usuarios en tu cuenta. Cuando los tengas, su información aparecerá aquí.
               </p>
             )}
-            <button className="button" onClick={() => setShowModal(true)}>
-              Agregar cuenta
-            </button>
           </div>
         )}
         {activeTab === 'asignado' && (
@@ -185,9 +240,7 @@ const UserManagement = () => {
                 </ul>
               </div>
             ) : (
-              <p>
-                No estás vinculado a ninguna cuenta.
-              </p>
+              <p>No estás vinculado a ninguna cuenta.</p>
             )}
             <div className="pending-invitations">
               <h4>Invitaciones Pendientes</h4>
@@ -203,9 +256,7 @@ const UserManagement = () => {
                   ))}
                 </ul>
               ) : (
-                <p>
-                  No tienes invitaciones pendientes.
-                </p>
+                <p>No tienes invitaciones pendientes.</p>
               )}
             </div>
           </div>
@@ -214,7 +265,15 @@ const UserManagement = () => {
       {showModal && (
         <div className="modal-overlay">
           <div className="modal">
-            <InviteUser onClose={() => { setShowModal(false); fetchSubUsers(); }} />
+            <InviteUser
+              mode={modalMode}
+              initialData={editData}
+              onClose={() => {
+                setShowModal(false);
+                // Al cerrar el modal (tanto en modo "invite" como "edit"), refrescamos la lista de subusuarios
+                fetchSubUsers();
+              }}
+            />
           </div>
         </div>
       )}
