@@ -17,6 +17,10 @@ import dnsRegistroModel from './dnsregistro.js';
 import usuarioContactoModel from './usuariocontacto.js';
 import usuariofacturacion from './usuariofacturacion.js';
 import usuarioPadreHijo from './usuariopadrehijo.js';
+import ordenModel from './Orden.js';
+import ordenDetalleModel from './OrdenDetalle.js';
+import ordenDetalleHistorialModel from './OrdenDetalleHistorial.js';
+import pagoModel from './Pago.js';
 
 const env = process.env.NODE_ENV || 'development';
 const conf = config[env];
@@ -45,6 +49,10 @@ db.DNSRegistro = dnsRegistroModel(sequelize, Sequelize.DataTypes);
 db.UsuarioContacto = usuarioContactoModel(sequelize, Sequelize.DataTypes); 
 db.UsuarioFacturacion = usuariofacturacion(sequelize, Sequelize.DataTypes);
 db.UsuarioPadreHijo = usuarioPadreHijo(sequelize, Sequelize.DataTypes);
+db.Orden = ordenModel(sequelize, Sequelize.DataTypes);
+db.OrdenDetalle = ordenDetalleModel(sequelize, Sequelize.DataTypes);
+db.OrdenDetalleHistorial = ordenDetalleHistorialModel(sequelize, Sequelize.DataTypes);
+db.Pago = pagoModel(sequelize, Sequelize.DataTypes);
 
 // Configurar asociaciones
 Object.keys(db).forEach((modelName) => {
@@ -73,5 +81,9 @@ export const DNSRegistro = db.DNSRegistro;
 export const UsuarioContacto = db.UsuarioContacto;
 export const UsuarioFacturacion = db.UsuarioFacturacion;
 export const UsuarioPadreHijo = db.UsuarioPadreHijo;
+export const Orden = db.Orden;
+export const OrdenDetalle = db.OrdenDetalle;
+export const OrdenDetalleHistorial = db.OrdenDetalleHistorial;
+export const Pago = db.Pago;
 
 export default db;

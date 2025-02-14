@@ -12,6 +12,11 @@ import billingRoutes from './userBillingRoutes.js';
 import certificadoRoutes from './certificadoRoutes.js';
 import userCompositeRoutes from './userCompositeRoutes.js';
 import accountRoutes from './accountRoutes.js';
+import ordenRoutes from './ordenRoutes.js';
+import ordenDetalleRoutes from './ordenDetalleRoutes.js';
+import ordenDetalleHistorialRoutes from './ordenDetalleHistorialRoutes.js';
+import pagoRoutes from './pagoRoutes.js';
+
 
 /**
  * @swagger
@@ -38,5 +43,9 @@ router.use('/user-contact', contactRoutes);
 router.use('/user-composite', userCompositeRoutes);
 router.use('/certificados', certificadoRoutes);
 router.use('/cuentas', accountRoutes);
+router.use('/ordenes', ordenRoutes);
+router.use('/orden-detalles', ordenDetalleRoutes);
+router.use('/orden-detalles/historial', ordenDetalleHistorialRoutes);
+router.use('/pagos', pagoRoutes);
 
 export default router;
