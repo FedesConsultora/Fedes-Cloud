@@ -68,10 +68,6 @@ const Sidebar = () => {
                   <FaCertificate className="icon" />
                   <span className="label">Certificados SSL</span>
                 </li>
-                <li onClick={() => navigate('/pagos')} className="submenu-item">
-                  <FaCreditCard className="icon" />
-                  <span className="label">Mis Pagos</span>
-                </li>
               </ul>
             )}
           </li>
@@ -83,7 +79,10 @@ const Sidebar = () => {
               <span className="label">Administrador</span>
             </li>
           )}
-
+          <li onClick={() => navigate('/pagos')} className="nav-item">
+            <FaCreditCard className="icon" />
+            <span className="label">Mis Pagos</span>
+          </li>
           <li onClick={() => navigate('/settings')} className="nav-item">
             <FaCog className="icon" />
             <span className="label">Configuración</span>

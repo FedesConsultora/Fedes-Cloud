@@ -9,7 +9,12 @@ import { ValidationError, PermissionDeniedError } from '../utils/errors/GeneralE
 export const createContact = async (req, res, next) => {
   try {
     const { contacto } = req.body;
-    const { id_usuario, permisos } = req.user;
+    const { id_usuario, permisos, subRole } = req.user;
+
+     // Si el usuario tiene un subrol (es decir, es un subusuario), solo permitir si el subrol es 'Administrador' o 'Facturación'
+     if (subRole && !['Administrador', 'Facturación'].includes(subRole)) {
+      throw new PermissionDeniedError('No tienes permiso para crear contactos de usuario.');
+     }
 
     if (!permisos.includes('update_contact_details')) {
       throw new PermissionDeniedError('No tienes permiso para crear contactos de usuario.');
@@ -101,7 +106,12 @@ export const updateContact = async (req, res, next) => {
   try {
     const { id_contacto } = req.params;
     const { contacto } = req.body;
-    const { id_usuario, permisos } = req.user;
+    const { id_usuario, permisos, subRole } = req.user;
+    
+    // Si el usuario tiene un subrol, solo permitir la actualización si es 'Administrador' o 'Facturación'
+    if (subRole && !['Administrador', 'Facturación'].includes(subRole)) {
+      throw new PermissionDeniedError('No tienes permiso para actualizar contactos de usuario.');
+    }
 
     if (!permisos.includes('update_contact_details')) {
       throw new PermissionDeniedError('No tienes permiso para actualizar contactos de usuario.');

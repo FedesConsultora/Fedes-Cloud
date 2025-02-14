@@ -1,10 +1,15 @@
 // middlewares/authMiddleware.js
 import jwt from 'jsonwebtoken';
 import { UnauthorizedError } from '../utils/errors/GeneralErrors.js';
-import { Usuario, Rol, Permiso, Estado, Autenticacion, Accion, UsuarioContacto } from '../models/index.js'; 
+import { Usuario, Rol, Permiso, Estado, Autenticacion, Accion, UsuarioContacto } from '../models/index.js';
 import logger from '../utils/logger.js';
 
 const authMiddleware = async (req, res, next) => {
+  // Eximir la ruta de confirmación de email
+  if (req.path === '/confirm-email') {
+    return next();
+  }
+
   // Obtener el token desde las cookies
   const token = req.cookies.token;
   if (!token) {
@@ -47,9 +52,7 @@ const authMiddleware = async (req, res, next) => {
       email: user.email,
       rol: user.rol,
       permisos: user.rol?.permisos?.map((permiso) => permiso.nombre) || [],
-      // Flag que indica que se está operando como cuenta padre (si fue seteado en el token)
       accessAsParent: decoded.accessAsParent || false,
-      // Si se está accediendo como padre, opcionalmente conservar el id del hijo para auditoría
       childId: decoded.childId || null,
       subRole: decoded.subRole || user.subRol,
     };

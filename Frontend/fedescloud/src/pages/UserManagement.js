@@ -5,6 +5,7 @@ import InviteUser from './InviteUser.js'; // Componente de invitación (usado ta
 import config from '../config/config.js';
 import { AuthContext } from '../contexts/AuthContext.js';
 import { FaPencilAlt, FaTrash } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const UserManagement = () => {
   // Estado para la pestaña activa: "miCuenta" o "asignado"
@@ -22,8 +23,15 @@ const UserManagement = () => {
   // Datos iniciales para el modal en caso de edición
   const [editData, setEditData] = useState(null);
 
-  const { user } = useContext(AuthContext);
-
+  const { user, accessAsParent  } = useContext(AuthContext);
+  const navigate = useNavigate();
+  // Si se detecta que se está accediendo como cuenta padre, redirigimos
+  
+  if (accessAsParent) {
+    Swal.fire('Acceso denegado', 'No tienes permiso para gestionar usuarios desde esta cuenta.', 'error');
+    navigate('/');
+  }
+  
   // Función para obtener los subusuarios que has invitado
   const fetchSubUsers = async () => {
     try {
@@ -37,7 +45,7 @@ const UserManagement = () => {
       });
       if (response.ok) {
         const result = await response.json();
-        console.log(result)
+        console.log(result);
         setSubUsers(result.data);
       } else {
         Swal.fire('Error', 'No se pudo obtener la lista de subusuarios', 'error');
@@ -251,7 +259,6 @@ const UserManagement = () => {
                       <div>
                         <span>{inv.email}</span> - <span>{inv.subRol}</span>
                       </div>
-                      {/* Aquí podrías agregar botones para aceptar/rechazar la invitación */}
                     </li>
                   ))}
                 </ul>
@@ -263,14 +270,19 @@ const UserManagement = () => {
         )}
       </div>
       {showModal && (
-        <div className="modal-overlay">
-          <div className="modal">
+        <div
+          className="modal-overlay"
+          onClick={() => {
+            setShowModal(false);
+            fetchSubUsers();
+          }}
+        >
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
             <InviteUser
               mode={modalMode}
               initialData={editData}
               onClose={() => {
                 setShowModal(false);
-                // Al cerrar el modal (tanto en modo "invite" como "edit"), refrescamos la lista de subusuarios
                 fetchSubUsers();
               }}
             />

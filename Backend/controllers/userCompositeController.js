@@ -11,14 +11,18 @@ import bcrypt from 'bcrypt';
  */
 export const inviteUser = async (req, res, next) => {
   try {
+    // Si se está operando como cuenta padre (flag accessAsParent true) no se permite invitar
+    if (req.user.accessAsParent) {
+      return res.status(403).json({
+        success: false,
+        message: 'No tienes permiso para invitar usuarios desde una cuenta padre.'
+      });
+    } 
+
     const { email, subRol, permitirSoporte, clientURI } = req.body;
     const parent = req.user;
     const parentId = parent.id_usuario;
 
-    // Verificar permisos del usuario que invita
-    if (!parent.permisos.includes('manage_users')) {
-      throw new PermissionDeniedError('No tienes permiso para invitar usuarios.');
-    }
     if (!email) {
       throw new ValidationError([{ msg: 'El email es obligatorio.', param: 'email', location: 'body' }]);
     }
@@ -111,6 +115,15 @@ export const inviteUser = async (req, res, next) => {
  */
 export const unlinkSubUser = async (req, res, next) => {
   try {
+
+    // Bloqueo para cuentas padre
+    if (req.user.accessAsParent) {
+      return res.status(403).json({
+        success: false,
+        message: 'No tienes permiso para desvincular usuarios desde una cuenta padre.'
+      });
+    }
+
     const { id } = req.params; // id del usuario hijo
     const parentId = req.user.id_usuario;
     // Buscar la relación en la tabla intermedia
@@ -135,6 +148,15 @@ export const unlinkSubUser = async (req, res, next) => {
  */
 export const getSubUsers = async (req, res, next) => {
   try {
+
+    // Bloqueo para cuentas padre
+    if (req.user.accessAsParent) {
+      return res.status(403).json({
+        success: false,
+        message: 'No tienes permiso para ver los subusuarios desde una cuenta padre.'
+      });
+    }
+
     const parentId = req.user.id_usuario;
     // Consultar la tabla intermedia para obtener todas las relaciones en las que el usuario es padre
     const relations = await UsuarioPadreHijo.findAll({
@@ -178,6 +200,15 @@ export const getSubUsers = async (req, res, next) => {
  */
 export const editSubUser = async (req, res, next) => {
   try {
+
+    // Bloqueo para cuentas padre
+    if (req.user.accessAsParent) {
+      return res.status(403).json({
+        success: false,
+        message: 'No tienes permiso para editar subusuarios desde una cuenta padre.'
+      });
+    }
+
     const { id } = req.params; // id del usuario hijo a editar
     const { subRol, permitirSoporte } = req.body;
     const parentId = req.user.id_usuario;
@@ -200,6 +231,61 @@ export const editSubUser = async (req, res, next) => {
     next(error);
   }
 };
+
+
+/**
+ * Obtener las cuentas padre a las que está vinculado el usuario autenticado.
+ * Utiliza la asociación many-to-many definida (alias "padres").
+ */
+export const getParentAccounts = async (req, res, next) => {
+  try {
+    
+    const childId = req.user.id_usuario;
+    const child = await Usuario.findByPk(childId, {
+      include: [{
+        model: Usuario,
+        as: 'padres',
+        through: { attributes: ['subRol', 'permitirSoporte', 'estado_invitacion'] },
+        attributes: ['id_usuario', 'nombre', 'apellido', 'email'],
+      }],
+    });
+    res.status(200).json({ success: true, data: child.padres });
+  } catch (error) {
+    logger.error(`Error al obtener cuentas padre: ${error.message}`);
+    next(error);
+  }
+};
+
+/**
+ * Obtener invitaciones pendientes.
+ * (Este endpoint se deja casi igual; puede requerir ajustes según el flujo de invitaciones.)
+ */
+export const getPendingInvitations = async (req, res, next) => {
+  try {// Bloqueo para cuentas padre
+    if (req.user.accessAsParent) {
+      return res.status(403).json({
+        success: false,
+        message: 'No tienes permiso para ver las invitaciones pendientes desde una cuenta padre.'
+      });
+    }
+    const pendingInvitations = await UsuarioPadreHijo.findAll({
+      where: {
+        id_hijo: req.user.id_usuario,
+        estado_invitacion: 'Pendiente'
+      },
+      include: [{
+        model: Usuario,
+        as: 'padre',
+        attributes: ['id_usuario', 'nombre', 'apellido', 'email']
+      }]
+    });
+    res.status(200).json({ success: true, data: pendingInvitations });
+  } catch (error) {
+    logger.error(`Error al obtener invitaciones pendientes: ${error.message}`);
+    next(error);
+  }
+};
+
 
 /**
  * Endpoint para verificar si un email ya existe en el sistema.
@@ -258,7 +344,6 @@ export const acceptInvitation = async (req, res, next) => {
     const { token, email, newPassword, nombre, apellido, fechaNacimiento } = req.body;
     // Extraer el id del padre del query string
     const parentId = req.query.parent;
-    console.log('PARENTID:', parentId);
     
     if (!token || !email) {
       return res.status(400).json({ success: false, message: 'Token y email son obligatorios.' });
@@ -305,7 +390,6 @@ export const acceptInvitation = async (req, res, next) => {
       { estado_invitacion: 'Aceptada', accepted: true },
       { where: { id_hijo: user.id_usuario, id_padre: parentId, estado_invitacion: 'Pendiente' } }
     );
-    console.log('Filas actualizadas:', affectedRows);
     
     return res.status(200).json({ 
       success: true, 
@@ -319,48 +403,3 @@ export const acceptInvitation = async (req, res, next) => {
   }
 };
 
-/**
- * Obtener las cuentas padre a las que está vinculado el usuario autenticado.
- * Utiliza la asociación many-to-many definida (alias "padres").
- */
-export const getParentAccounts = async (req, res, next) => {
-  try {
-    const childId = req.user.id_usuario;
-    const child = await Usuario.findByPk(childId, {
-      include: [{
-        model: Usuario,
-        as: 'padres',
-        through: { attributes: ['subRol', 'permitirSoporte', 'estado_invitacion'] },
-        attributes: ['id_usuario', 'nombre', 'apellido', 'email'],
-      }],
-    });
-    res.status(200).json({ success: true, data: child.padres });
-  } catch (error) {
-    logger.error(`Error al obtener cuentas padre: ${error.message}`);
-    next(error);
-  }
-};
-
-/**
- * Obtener invitaciones pendientes.
- * (Este endpoint se deja casi igual; puede requerir ajustes según el flujo de invitaciones.)
- */
-export const getPendingInvitations = async (req, res, next) => {
-  try {
-    const pendingInvitations = await UsuarioPadreHijo.findAll({
-      where: {
-        id_hijo: req.user.id_usuario,
-        estado_invitacion: 'Pendiente'
-      },
-      include: [{
-        model: Usuario,
-        as: 'padre',
-        attributes: ['id_usuario', 'nombre', 'apellido', 'email']
-      }]
-    });
-    res.status(200).json({ success: true, data: pendingInvitations });
-  } catch (error) {
-    logger.error(`Error al obtener invitaciones pendientes: ${error.message}`);
-    next(error);
-  }
-};

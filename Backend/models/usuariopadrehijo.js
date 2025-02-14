@@ -4,19 +4,16 @@ import { Model } from 'sequelize';
 export default (sequelize, DataTypes) => {
   class UsuarioPadreHijo extends Model {
     static associate(models) {
-      // Cada registro pertenece a un usuario padre
       UsuarioPadreHijo.belongsTo(models.Usuario, {
         foreignKey: 'id_padre',
         as: 'padre',
       });
-      // Cada registro pertenece a un usuario hijo
       UsuarioPadreHijo.belongsTo(models.Usuario, {
         foreignKey: 'id_hijo',
         as: 'hijo',
       });
     }
   }
-
   UsuarioPadreHijo.init(
     {
       id: {

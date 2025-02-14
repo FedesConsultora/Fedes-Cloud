@@ -94,6 +94,10 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      newEmailPending: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       avatar: {
         type: DataTypes.STRING,
         allowNull: true,

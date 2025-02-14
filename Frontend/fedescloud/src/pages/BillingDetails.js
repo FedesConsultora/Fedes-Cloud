@@ -1,7 +1,8 @@
 // src/pages/BillingDetails.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Swal from 'sweetalert2';
 import config from '../config/config.js';
+import { AuthContext } from '../contexts/AuthContext.js';
 
 const BillingDetails = () => {
   const [billingData, setBillingData] = useState({
@@ -13,6 +14,15 @@ const BillingDetails = () => {
     condicionIVA: '',
   });
 
+  const { subRole, accessAsParent } = useContext(AuthContext);
+
+  // Determinamos si se puede editar:
+  // - Si NO se accede como cuenta padre, se supone que es la cuenta principal y se puede editar.
+  // - Si se accede como cuenta padre, solo se permite editar si el subRole es "Administrador" o "Facturación".
+  console.log(subRole)
+  const canEditBilling =
+    !accessAsParent || (subRole === 'Administrador' || subRole === 'Facturación');
+
   useEffect(() => {
     const fetchBillingData = async () => {
       try {
@@ -21,15 +31,14 @@ const BillingDetails = () => {
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${window.localStorage.getItem('token') || ''}`
-          }
+            Authorization: `Bearer ${window.localStorage.getItem('token') || ''}`,
+          },
         });
         if (!response.ok) {
           Swal.fire('Error', 'No se pudieron obtener los datos de facturación', 'error');
           return;
         }
         const result = await response.json();
-        // Se extrae el objeto real de datos de facturación
         setBillingData(result.data || {
           razonSocial: '',
           domicilio: '',
@@ -86,6 +95,7 @@ const BillingDetails = () => {
                 value={billingData.razonSocial}
                 onChange={handleChange}
                 placeholder="Razón Social"
+                disabled={!canEditBilling}
               />
             </div>
             <div className="form-group">
@@ -96,6 +106,7 @@ const BillingDetails = () => {
                 value={billingData.domicilio}
                 onChange={handleChange}
                 placeholder="Domicilio"
+                disabled={!canEditBilling}
               />
             </div>
             <div className="form-group">
@@ -106,11 +117,17 @@ const BillingDetails = () => {
                 value={billingData.ciudad}
                 onChange={handleChange}
                 placeholder="Ciudad"
+                disabled={!canEditBilling}
               />
             </div>
             <div className="form-group">
               <label>Provincia:</label>
-              <select name="provincia" value={billingData.provincia} onChange={handleChange}>
+              <select
+                name="provincia"
+                value={billingData.provincia}
+                onChange={handleChange}
+                disabled={!canEditBilling}
+              >
                 <option value="Buenos Aires">Buenos Aires</option>
                 <option value="CABA">CABA</option>
                 {/* Agrega más provincias según sea necesario */}
@@ -118,7 +135,12 @@ const BillingDetails = () => {
             </div>
             <div className="form-group">
               <label>País:</label>
-              <select name="pais" value={billingData.pais} onChange={handleChange}>
+              <select
+                name="pais"
+                value={billingData.pais}
+                onChange={handleChange}
+                disabled={!canEditBilling}
+              >
                 <option value="">Elige un país</option>
                 <option value="Argentina">Argentina</option>
                 {/* Mapea la lista que necesites */}
@@ -126,7 +148,12 @@ const BillingDetails = () => {
             </div>
             <div className="form-group">
               <label>Condición IVA:</label>
-              <select name="condicionIVA" value={billingData.condicionIVA} onChange={handleChange}>
+              <select
+                name="condicionIVA"
+                value={billingData.condicionIVA}
+                onChange={handleChange}
+                disabled={!canEditBilling}
+              >
                 <option value="Consumidor Final">Consumidor Final</option>
                 <option value="IVA responsable inscripto">IVA responsable inscripto</option>
                 <option value="Sujeto no categorizado">Sujeto no categorizado</option>
@@ -135,9 +162,13 @@ const BillingDetails = () => {
                 <option value="IVA no responsable">IVA no responsable</option>
               </select>
             </div>
-            <button type="button" className="button" onClick={handleSave}>
-              Guardar
-            </button>
+            {canEditBilling ? (
+              <button type="button" className="button" onClick={handleSave}>
+                Guardar
+              </button>
+            ) : (
+              <p>Solo los usuarios con permisos de Facturación o Administrador pueden editar estos datos.</p>
+            )}
           </form>
         </div>
       </div>

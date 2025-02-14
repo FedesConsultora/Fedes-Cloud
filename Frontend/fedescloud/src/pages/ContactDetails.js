@@ -1,10 +1,11 @@
 // src/pages/ContactDetails.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Swal from 'sweetalert2';
 import config from '../config/config.js';
+import { AuthContext } from '../contexts/AuthContext.js';
 
 const ContactDetails = () => {
-  // Estado para guardar el ID del contacto (si existe) y los datos del contacto.
+  const { subRole, accessAsParent  } = useContext(AuthContext);
   const [contactId, setContactId] = useState(null);
   const [contactData, setContactData] = useState({
     tipo_contacto: 'No configurado',
@@ -14,6 +15,10 @@ const ContactDetails = () => {
     organization: ''
   });
 
+  // Definimos la variable que determina si se pueden editar los campos.
+  
+    
+  const canEdit = !accessAsParent || (subRole === 'Registrante' || subRole === 'Administrador');
   useEffect(() => {
     const fetchContactData = async () => {
       try {
@@ -30,10 +35,9 @@ const ContactDetails = () => {
           return;
         }
         const result = await response.json();
-        // Se asume que el endpoint retorna un objeto con { success, data }
         if (result && result.success && result.data) {
           const contact = result.data;
-          setContactId(contact.id_contacto); // Se asume que la columna se llama "id_contacto"
+          setContactId(contact.id_contacto);
           setContactData({
             tipo_contacto: contact.tipo_contacto || 'No configurado',
             phone: contact.phone || '',
@@ -57,6 +61,10 @@ const ContactDetails = () => {
 
   // Al guardar, se construye el payload acorde al modelo actualizado y se realiza la llamada
   const handleSave = async () => {
+    if (!canEdit) {
+      Swal.fire('Atención', 'No tienes permisos para editar los datos de contacto', 'info');
+      return;
+    }
     try {
       const payload = {
         contacto: {
@@ -101,6 +109,12 @@ const ContactDetails = () => {
     <div className="contact-page">
       <div className="contact-container">
         <h3>Datos de contacto</h3>
+        {/* Si no se pueden editar, se muestra un mensaje informativo */}
+        {!canEdit && (
+          <div className="alert-message">
+            Solo el usuario con subrol Registrante o Administrador puede editar los datos de contacto.
+          </div>
+        )}
         <div className="contact-info">
           <form>
             <div className="form-group">
@@ -109,6 +123,7 @@ const ContactDetails = () => {
                 name="tipo_contacto"
                 value={contactData.tipo_contacto}
                 onChange={handleChange}
+                disabled={!canEdit}
               >
                 <option value="No configurado">No configurado</option>
                 <option value="Administrador">Administrador</option>
@@ -125,6 +140,7 @@ const ContactDetails = () => {
                 value={contactData.phone}
                 onChange={handleChange}
                 placeholder="Teléfono"
+                disabled={!canEdit}
               />
             </div>
             <div className="form-group">
@@ -135,6 +151,7 @@ const ContactDetails = () => {
                 value={contactData.jobTitle}
                 onChange={handleChange}
                 placeholder="Cargo o título laboral"
+                disabled={!canEdit}
               />
             </div>
             <div className="form-group">
@@ -145,6 +162,7 @@ const ContactDetails = () => {
                 value={contactData.fax}
                 onChange={handleChange}
                 placeholder="Fax"
+                disabled={!canEdit}
               />
             </div>
             <div className="form-group">
@@ -155,11 +173,15 @@ const ContactDetails = () => {
                 value={contactData.organization}
                 onChange={handleChange}
                 placeholder="Nombre de la organización"
+                disabled={!canEdit}
               />
             </div>
-            <button type="button" className="button" onClick={handleSave}>
-              Guardar
-            </button>
+            {/* Solo muestra el botón de guardar si se permite editar */}
+            {canEdit && (
+              <button type="button" className="button" onClick={handleSave}>
+                Guardar
+              </button>
+            )}
           </form>
         </div>
       </div>

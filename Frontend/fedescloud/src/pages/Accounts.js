@@ -91,9 +91,7 @@ const Accounts = () => {
       });
       const result = await response.json();
       if (response.ok && result.success) {
-        // Actualizamos localStorage con el token del hijo recibido
         localStorage.setItem('token', result.token);
-        // Eliminamos las variables auxiliares
         localStorage.removeItem('accessAsParent');
         localStorage.removeItem('childProfile');
         window.location.reload();

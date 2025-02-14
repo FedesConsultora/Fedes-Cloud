@@ -243,7 +243,6 @@ export const getTLDs = async (req, res, next) => {
 export const suggestDomains = async (req, res, next) => {
   try {
     // Verificar permisos
-    console.log(req.user)
     if (!req.user || !req.user.permisos.includes('suggest_domains')) {
       throw new PermissionDeniedError('No tienes permiso para sugerir dominios.');
     }

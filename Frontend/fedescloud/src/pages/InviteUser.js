@@ -26,7 +26,6 @@ const InviteUser = ({ onClose, mode = 'invite', initialData = {} }) => {
     });
   };
 
-  // Función para verificar si el email existe en el sistema (se usa solo en modo "invite")
   const checkEmailExists = async () => {
     if (!inviteData.email) return;
     try {

@@ -1,45 +1,47 @@
+// src/pages/Profile.js
 import React, { useContext, useState, useRef } from 'react';
 import { AuthContext } from '../contexts/AuthContext.js';
 import Swal from 'sweetalert2';
 import config from '../config/config.js';
 
 const Profile = () => {
-  const { user, updateUser } = useContext(AuthContext);
+  const { user, updateUser, accessAsParent } = useContext(AuthContext);
 
-  // Estado local para "nombre" y "apellido", y el avatar actual
+  // Estado local para "nombre", "apellido" y "avatar"
   const [formData, setFormData] = useState({
     nombre: user?.nombre ?? '',
     apellido: user?.apellido ?? '',
     avatar: user?.avatar ?? null,
   });
 
-  // Estado para saber si se está editando "nombre" o "apellido".
-  // (Para el avatar, usaremos el input oculto con un click programático.)
+  // Estado para manejar el modo edición de nombre y apellido.
   const [editingFields, setEditingFields] = useState({
     nombre: false,
     apellido: false,
   });
 
-  // Referencia al <input type="file"> oculto.
+  // Referencia para el input oculto de avatar.
   const fileInputRef = useRef(null);
 
   if (!user) {
     return <div>No se encontraron datos del usuario.</div>;
   }
 
-  // Maneja cambios en los inputs (nombre, apellido).
+  // Función para actualizar los valores de los inputs.
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Abre el selector de archivos para el avatar (click programático).
+  // Función para hacer click en el input de avatar de forma programática.
   const handleAvatarClick = () => {
-    if (fileInputRef.current) {
+    if (fileInputRef.current && !accessAsParent) {
       fileInputRef.current.click();
+    } else if (accessAsParent) {
+      Swal.fire('Atención', 'Solo el dueño de la cuenta puede editar el perfil.', 'info');
     }
   };
 
-  // Lógica al seleccionar una imagen en el input oculto.
+  // Función para subir el avatar.
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -48,7 +50,6 @@ const Profile = () => {
     formDataImage.append('avatar', file);
 
     try {
-      // Envía la imagen al backend
       const response = await fetch(`${config.API_URL}/auth/upload-avatar`, {
         method: 'POST',
         credentials: 'include',
@@ -56,9 +57,7 @@ const Profile = () => {
       });
       const result = await response.json();
       if (response.ok) {
-        // Actualiza el estado local con la nueva URL
-        setFormData({ ...formData, avatar: result.url });
-        // Además, actualiza el perfil en la BD (para reflejar la nueva imagen)
+        setFormData((prev) => ({ ...prev, avatar: result.url }));
         await saveField('avatar', result.url);
       } else {
         Swal.fire('Error', result.message || 'No se pudo subir el avatar', 'error');
@@ -69,13 +68,21 @@ const Profile = () => {
     }
   };
 
-  // Alterna el modo edición de un campo (nombre o apellido).
+  // Función para alternar el modo edición de un campo.
   const toggleEditField = (field) => {
+    if (accessAsParent) {
+      Swal.fire('Atención', 'Solo el dueño de la cuenta puede editar el perfil de usuario.', 'info');
+      return;
+    }
     setEditingFields((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
-  // Llama a /auth/update-profile para actualizar el campo en la BD.
+  // Función para llamar al endpoint y actualizar un campo.
   const saveField = async (field, value = formData[field]) => {
+    if (accessAsParent) {
+      Swal.fire('Atención', 'Solo el dueño de la cuenta puede editar el perfil de usuario.', 'info');
+      return;
+    }
     try {
       const response = await fetch(`${config.API_URL}/auth/update-profile`, {
         method: 'PUT',
@@ -84,13 +91,11 @@ const Profile = () => {
         body: JSON.stringify({ [field]: value }),
       });
       const result = await response.json();
-
       if (response.ok) {
         updateUser({ ...user, [field]: value });
         Swal.fire('Éxito', 'Perfil actualizado exitosamente', 'success');
-        // Cierra el modo edición
         if (field !== 'avatar') {
-          setEditingFields({ ...editingFields, [field]: false });
+          setEditingFields((prev) => ({ ...prev, [field]: false }));
         }
       } else {
         Swal.fire('Error', result.message || 'No se pudo actualizar el perfil', 'error');
@@ -101,7 +106,7 @@ const Profile = () => {
     }
   };
 
-  // Guarda cambios de nombre o apellido
+  // Función para guardar cambios al hacer clic en "Guardar".
   const handleSaveClick = (field) => {
     saveField(field);
   };
@@ -110,30 +115,32 @@ const Profile = () => {
     <div className="profile-page">
       <div className="profile-container">
         <h2>Perfil del Usuario</h2>
+        {accessAsParent && (
+          <div className="alert-message">
+            Solo el dueño de la cuenta puede editar el perfil de usuario.
+          </div>
+        )}
         <div className="profile-info">
-          
           {/* Campo Avatar */}
           <div className="profile-field avatar-field">
             <div className="avatar-wrapper">
-              {/* Imagen de avatar */}
               <img
                 src={formData.avatar ?? `${process.env.PUBLIC_URL}/assets/icons/user-placeholder2.png`}
                 alt="User Avatar"
                 className="user-avatar"
               />
-
-              {/* Overlay con lápiz para editar */}
-              <div className="avatar-overlay" onClick={handleAvatarClick}>
-                <div className="avatar-overlay-content">
-                  <img
-                    src={`${process.env.PUBLIC_URL}/assets/icons/pencil-icon.webp`}
-                    alt="Editar"
-                  />
-                  <span>Editar</span>
+              {/* Sólo muestra el overlay de edición si no se está en modo cuenta padre */}
+              {!accessAsParent && (
+                <div className="avatar-overlay" onClick={handleAvatarClick}>
+                  <div className="avatar-overlay-content">
+                    <img
+                      src={`${process.env.PUBLIC_URL}/assets/icons/pencil-icon.webp`}
+                      alt="Editar"
+                    />
+                    <span>Editar</span>
+                  </div>
                 </div>
-              </div>
-
-              {/* Input oculto: se hace click en él programáticamente */}
+              )}
               <input
                 type="file"
                 accept="image/*"
@@ -147,7 +154,7 @@ const Profile = () => {
           {/* Campo Nombre */}
           <div className="profile-field">
             <label>Nombre:</label>
-            {editingFields.nombre ? (
+            {editingFields.nombre && !accessAsParent ? (
               <div className="input-group">
                 <input
                   type="text"
@@ -165,7 +172,7 @@ const Profile = () => {
             ) : (
               <span>{formData.nombre ?? ''}</span>
             )}
-            {!editingFields.nombre && (
+            {!editingFields.nombre && !accessAsParent && (
               <button className="edit-btn" onClick={() => toggleEditField('nombre')}>
                 <img
                   src={`${process.env.PUBLIC_URL}/assets/icons/pencil-icon.webp`}
@@ -178,7 +185,7 @@ const Profile = () => {
           {/* Campo Apellido */}
           <div className="profile-field">
             <label>Apellido:</label>
-            {editingFields.apellido ? (
+            {editingFields.apellido && !accessAsParent ? (
               <div className="input-group">
                 <input
                   type="text"
@@ -196,7 +203,7 @@ const Profile = () => {
             ) : (
               <span>{formData.apellido ?? ''}</span>
             )}
-            {!editingFields.apellido && (
+            {!editingFields.apellido && !accessAsParent && (
               <button className="edit-btn" onClick={() => toggleEditField('apellido')}>
                 <img
                   src={`${process.env.PUBLIC_URL}/assets/icons/pencil-icon.webp`}
@@ -206,7 +213,7 @@ const Profile = () => {
             )}
           </div>
 
-          {/* Campo Email (solo lectura aquí) */}
+          {/* Campo Email (solo lectura) */}
           <div className="profile-field">
             <label>Email:</label>
             <span>{user.email ?? ''}</span>

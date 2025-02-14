@@ -211,27 +211,7 @@ export const register = async (req, res, next) => {
       emailTokenExpires,
       emailConfirmed: false,
     }, { transaction });
-    /*
-    // Si el rol es Externo, crear shopperId
-    if (defaultRole.nombre === 'Externo') {
-      const shopperData = {
-        email,
-        externalId: newUser.id_usuario,
-        marketId: 'en-US', // Ajusta según tu mercado objetivo
-        nameFirst: nombre,
-        nameLast: apellido,
-        password: generateSecurePassword(),
-      };
-
-      // Crear la subcuenta de shopper en GoDaddy
-      const createShopperResponse = await goDaddyService.createShopper(shopperData);
-      const { shopperId } = createShopperResponse;
-
-      // Asignar el shopperId al usuario
-      newUser.shopperId = shopperId;
-      await newUser.save({ transaction });
-    }
-    */
+    
     // Enviar el correo de confirmación
     const confirmURL = `${clientURI}/auth/confirm-email?token=${emailToken}&email=${newUser.email}`;
 
@@ -302,11 +282,19 @@ export const googleRegister = async (req, res, next) => {
 
 export const confirmEmail = async (req, res, next) => {
   try {
-    const { token, email } = req.query;
+    const { token, email: queryEmail } = req.query;
+    logger.info(`Intentando confirmar email con token: ${token} y query email: ${queryEmail}`);
 
-    logger.info(`Intentando confirmar email: ${email} con token: ${token}`);
-
-    const user = await Usuario.findOne({ where: { email, emailToken: token } });
+    // Buscamos al usuario: se acepta que el email coincida ya sea con el email actual o con el newEmailPending
+    const user = await Usuario.findOne({
+      where: {
+        emailToken: token,
+        [Op.or]: [
+          { email: queryEmail },
+          { newEmailPending: queryEmail }
+        ]
+      }
+    });
 
     if (!user) {
       throw new ValidationError([{
@@ -324,31 +312,58 @@ export const confirmEmail = async (req, res, next) => {
       }]);
     }
 
-    if (user.emailConfirmed) {
-      throw new ValidationError([{
-        msg: 'El correo electrónico ya está confirmado.',
-        param: 'email',
-        location: 'query',
-      }]);
+    if (user.newEmailPending) {
+      if (user.newEmailPending !== queryEmail) {
+        throw new ValidationError([{
+          msg: 'El email proporcionado no coincide con el pendiente de confirmación.',
+          param: 'email',
+          location: 'query',
+        }]);
+      }
+      // Actualizamos el email real y limpiamos el campo temporal
+      user.email = user.newEmailPending;
+      user.newEmailPending = null;
+      user.emailConfirmed = true;
+      logger.info(`Cambio de correo: Se actualizó el email a ${user.email}`);
+    } else {
+      if (user.email !== queryEmail) {
+        throw new ValidationError([{
+          msg: 'El email proporcionado no coincide.',
+          param: 'email',
+          location: 'query',
+        }]);
+      }
+      user.emailConfirmed = true;
+      logger.info(`Registro: Se confirmó el email ${user.email}`);
     }
 
-    user.emailConfirmed = true;
+    // Limpiar el token y su expiración
     user.emailToken = null;
     user.emailTokenExpires = null;
 
     await user.save();
 
-    logger.info(`Correo electrónico confirmado para ${email}`);
+    // Forzamos el logout: borrar la cookie con las mismas opciones usadas al setearla
+    res.clearCookie('token', {
+      path: '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Strict'
+    });
+
+    logger.info(`Correo electrónico confirmado para ${queryEmail}`);
 
     res.status(200).json({
       success: true,
-      message: 'Correo electrónico confirmado exitosamente',
+      logout: true,
+      message: 'Correo electrónico confirmado exitosamente. Por favor, inicia sesión de nuevo con tu nuevo correo.'
     });
   } catch (error) {
     logger.error(`Error en confirmación de correo: ${error.message}`);
     next(error);
   }
 };
+
 
 export const requestPasswordReset = async (req, res, next) => {
   try {
@@ -618,6 +633,11 @@ export const getProfile = async (req, res, next) => {
 
 export const enableTwoFactor = async (req, res, next) => {
   try {
+
+    if (req.user.accessAsParent) {
+      throw new PermissionDeniedError('No tienes permiso para habilitar 2FA desde una cuenta padre.');
+    }
+
     const user = await Usuario.findByPk(req.user.id_usuario);
 
     if (!user) {
@@ -661,6 +681,12 @@ export const enableTwoFactor = async (req, res, next) => {
 
 export const verifyTwoFactor = async (req, res, next) => {
   try {
+
+    // Bloquear si se está operando como cuenta padre.
+    if (req.user.accessAsParent) {
+      throw new PermissionDeniedError('No tienes permiso para verificar 2FA desde una cuenta padre.');
+    }
+
     const { token } = req.body;
 
     if (!token) {
@@ -711,6 +737,12 @@ export const verifyTwoFactor = async (req, res, next) => {
 
 export const disableTwoFactor = async (req, res, next) => {
   try {
+
+    // Bloquear si se está operando como cuenta padre.
+    if (req.user.accessAsParent) {
+      throw new PermissionDeniedError('No tienes permiso para deshabilitar 2FA desde una cuenta padre.');
+    }
+
     const { token } = req.body;
 
     if (!token) {
@@ -766,6 +798,14 @@ export const disableTwoFactor = async (req, res, next) => {
  */
 export const updateProfile = async (req, res, next) => {
   try {
+    // Bloquear la actualización si el usuario está operando como cuenta padre
+    if (req.user.accessAsParent) {
+      return res.status(403).json({
+        success: false,
+        message: 'No se permite actualizar el perfil en modo de acceso como cuenta padre.'
+      });
+    }
+
     const { nombre, apellido, avatar } = req.body;
     const { id_usuario } = req.user;
 
@@ -809,28 +849,38 @@ export const updateProfile = async (req, res, next) => {
   }
 };
 
-/**
- * Actualizar el email del usuario autenticado.
- */
+// Actualizar el email del usuario autenticado (solicitud de cambio de correo)
+// Actualizar el email del usuario autenticado (solicitud de cambio de correo)
 export const updateEmail = async (req, res, next) => {
   try {
-    const { newEmail, confirmationCode } = req.body;
+    // Se espera recibir en el body: newEmail, currentPassword y clientURI
+    const { newEmail, currentPassword, clientURI } = req.body;
     const { id_usuario } = req.user;
 
     const user = await Usuario.findByPk(id_usuario);
     if (!user) {
-      throw new ValidationError([{
-        msg: 'Usuario no encontrado.',
-        param: 'user',
-        location: 'body',
+      throw new ValidationError([{ 
+        msg: 'Usuario no encontrado.', 
+        param: 'user', 
+        location: 'body' 
       }]);
     }
 
     if (newEmail === user.email) {
-      throw new ValidationError([{
-        msg: 'El nuevo email debe ser diferente al actual.',
-        param: 'newEmail',
-        location: 'body',
+      throw new ValidationError([{ 
+        msg: 'El nuevo email debe ser diferente al actual.', 
+        param: 'newEmail', 
+        location: 'body' 
+      }]);
+    }
+
+    // Verificar que la contraseña actual sea correcta
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      throw new ValidationError([{ 
+        msg: 'La contraseña actual es incorrecta.', 
+        param: 'currentPassword', 
+        location: 'body' 
       }]);
     }
 
@@ -840,32 +890,33 @@ export const updateEmail = async (req, res, next) => {
       throw new EmailAlreadyExistsError();
     }
 
-    // Generar un token de confirmación
+    // Generar un token de confirmación (válido por 24 horas)
     const emailToken = crypto.randomBytes(32).toString('hex');
     const emailTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 horas
 
-    // Actualizar los campos relevantes
-    user.email = newEmail;
-    user.emailConfirmed = false;
+    // Guardar el nuevo email en el campo temporal y actualizar el token
+    // NOTA: No se modifica user.email ni user.emailConfirmed hasta que se confirme el cambio
+    user.newEmailPending = newEmail;
     user.emailToken = emailToken;
     user.emailTokenExpires = emailTokenExpires;
-
     await user.save();
 
-    // Enviar el correo de confirmación al nuevo email
-    const confirmURL = `${process.env.CLIENT_URI}/auth/confirm-email?token=${emailToken}&email=${newEmail}`;
+    // Construir la URL de confirmación para el cambio de email utilizando el clientURI enviado desde el frontend
+    const confirmURL = `${clientURI}/auth/confirm-email?token=${emailToken}&email=${newEmail}`;
 
+    // Enviar el correo de confirmación usando el nuevo template (por ejemplo, "changeEmail")
     await sendEmail({
       to: newEmail,
-      subject: 'Confirma tu nuevo correo electrónico',
-      template: 'confirmEmail',
+      subject: 'Confirma el cambio de tu correo electrónico',
+      template: 'changeEmail', // Asegúrate de tener este template en tus templates de emails
       context: {
         nombre: user.nombre,
         confirmURL,
+        year: new Date().getFullYear(),
       },
     });
 
-    logger.info(`Se ha enviado un correo de confirmación a ${newEmail} para el usuario ID ${id_usuario}`);
+    logger.info(`Se ha enviado un correo de confirmación de cambio a ${newEmail} para el usuario ID ${id_usuario}`);
 
     res.status(200).json({
       success: true,
@@ -948,6 +999,13 @@ export const updatePassword = async (req, res, next) => {
  */
 export const uploadAvatar = async (req, res, next) => {
   try {
+    // Verificamos si el usuario está en modo de acceso como cuenta padre
+    if (req.user.accessAsParent) {
+      return res.status(403).json({
+        success: false,
+        message: 'No se permiten modificaciones de avatar en modo de acceso como cuenta padre.'
+      });
+    }
     if (!req.file) {
       return res.status(400).json({
         success: false,

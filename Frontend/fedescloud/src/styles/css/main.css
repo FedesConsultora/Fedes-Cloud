@@ -1416,6 +1416,9 @@ main {
   color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+.settings-page .email-form {
+  margin-bottom: 2rem;
+}
 .settings-page .settings-container {
   width: 100%;
   max-width: 600px;
@@ -1459,30 +1462,19 @@ main {
   background-color: var(--light-color);
   border-radius: 10px;
   padding: 1.5rem 2rem;
+  margin-bottom: 1.5rem;
   transition: background-color 0.3s ease, color 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.settings-page .settings-container .settings-section .enable-two-factor div {
-  display: flex;
-  flex-direction: column;
-}
-.settings-page .settings-container .settings-section .enable-two-factor div img {
-  width: 180px;
-  align-self: center;
+  text-align: center;
 }
 .settings-page .settings-container .settings-section h3 {
   font-size: 1.4rem;
   color: var(--dark-blue-color);
   margin-bottom: 1rem;
-  text-align: center;
 }
 .settings-page .settings-container .settings-section p {
   font-size: 1rem;
   margin-bottom: 1.5rem;
   line-height: 1.5;
-  text-align: center;
 }
 .settings-page .settings-container .settings-section form {
   display: flex;
@@ -1492,6 +1484,7 @@ main {
 .settings-page .settings-container .settings-section form .form-group {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
 }
 .settings-page .settings-container .settings-section form .form-group label {
   margin-bottom: 0.5rem;
@@ -1502,12 +1495,30 @@ main {
   border: 1px solid #c6c6c6;
   border-radius: 10px;
   font-size: 1rem;
+  width: 100%;
   transition: border-color 0.3s ease;
 }
 .settings-page .settings-container .settings-section form .form-group input:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+}
+.settings-page .settings-container .settings-section form .form-group .password-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+.settings-page .settings-container .settings-section form .form-group .password-wrapper input {
+  flex: 1;
+}
+.settings-page .settings-container .settings-section form .form-group .password-wrapper .toggle-password {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  position: absolute;
+  right: 0;
 }
 .settings-page .settings-container .settings-section form .button {
   padding: 0.75rem;
@@ -1518,17 +1529,24 @@ main {
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-top: 1rem;
   width: 100%;
   text-align: center;
 }
 .settings-page .settings-container .settings-section form .button:hover {
   background-color: var(--primary-color-hover);
 }
+.settings-page .settings-container .settings-section .alert-message {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: red;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+}
 
 /* src/pages/Home.scss */
 .home-page {
   padding: 2rem;
+  height: 100%;
   min-height: 100vh;
   background-image: url("/public/assets/images/Home_Fondo.webp");
   background-size: cover;
@@ -1613,6 +1631,11 @@ main {
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
+}
+.profile-page .profile-container .alert-message {
+  text-align: center;
+  color: red;
+  padding-bottom: 1rem;
 }
 .profile-page .profile-container h2 {
   margin-bottom: 2rem;
@@ -3403,6 +3426,11 @@ main {
   color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+.contact-page .alert-message {
+  text-align: center;
+  color: red;
+  padding-bottom: 1rem;
+}
 .contact-page .contact-container {
   width: 100%;
   max-width: 600px;
@@ -3710,7 +3738,6 @@ main {
   background-color: var(--light-color);
   border-radius: 8px;
   padding: 1.5rem;
-  box-shadow: 0 0 10px var(--shadow-color);
   text-align: center;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -4017,6 +4044,10 @@ body {
   overflow-x: hidden;
   width: 100vw;
   min-height: 100vh;
+}
+
+.motiondiv {
+  height: 100%;
 }
 
 /* Estilos generales para mostrar/ocultar contraseñas y validaciones */
