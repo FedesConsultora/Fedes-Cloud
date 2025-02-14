@@ -1,13 +1,12 @@
 // src/pages/ResetPassword.js
-
 import React, { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Swal from 'sweetalert2';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { resetPasswordValidationSchema } from '../validations/authValidation.js';
 import config from '../config/config.js';
 import Logo from '../components/Logo.js';
+import { resetPasswordValidationSchema } from '../validations/authValidation.js';
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -15,7 +14,19 @@ const ResetPassword = () => {
   const query = new URLSearchParams(location.search);
   const token = query.get('token');
   const email = query.get('email');
+  const action = query.get('action'); // Si action === 'update', es cambio de contraseña estando logueado
+  const id = query.get('id'); // id_usuario, necesario en el flujo update
 
+  const [status, setStatus] = useState(null);
+  const [tokenExpired, setTokenExpired] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const hasSubmittedRef = useRef(false);
+
+  // Estados para controlar la visibilidad de los inputs de contraseña
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // En el flujo de recuperación se muestra el formulario
   const {
     register,
     handleSubmit,
@@ -23,49 +34,53 @@ const ResetPassword = () => {
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(resetPasswordValidationSchema),
-    defaultValues: {
-      email: email || '',
-    },
-  });
-
-  const [status, setStatus] = useState(null);
-  const [tokenExpired, setTokenExpired] = useState(false);
-  const [isResending, setIsResending] = useState(false);
-  const hasSubmittedRef = useRef(false); 
-
-  // Estados para manejar la visibilidad de las contraseñas
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  // Estados para la validación en tiempo real
-  const [passwordValidations, setPasswordValidations] = useState({
-    min: false,
-    lowercase: false,
-    uppercase: false,
-    number: false,
-    specialChar: false,
+    defaultValues: { email: email || '' },
   });
 
   const password = watch('password', '');
 
+  // Efecto para el flujo "update": si action === 'update' y tenemos token e id, se confirma automáticamente el cambio de contraseña.
   useEffect(() => {
-    // Actualizar las validaciones en tiempo real
-    setPasswordValidations({
-      min: password.length >= 8,
-      lowercase: /[a-z]/.test(password),
-      uppercase: /[A-Z]/.test(password),
-      number: /\d/.test(password),
-      specialChar: /[@$!%*?&]/.test(password),
-    });
-  }, [password]);
+    if (action === 'update' && token && id) {
+      const confirmChange = async () => {
+        try {
+          const response = await fetch(
+            `${config.API_URL}/auth/confirm-password-change?token=${token}&id=${id}&action=update`,
+            { method: 'GET', credentials: 'include' }
+          );
+          const result = await response.json();
+          if (response.ok) {
+            setStatus('success');
+            // Muestra el mensaje de éxito y espera 2 segundos antes de redireccionar
+            Swal.fire({
+              title: 'Éxito',
+              text: result.message,
+              icon: 'success',
+              timer: 2000,
+              showConfirmButton: false,
+            }).then(() => {
+              // Forzamos la redirección a login tras 2 segundos
+              window.location.replace(`${window.location.origin}/auth/login`);
+            });
+          } else {
+            setStatus('error');
+            Swal.fire('Error', result.message || 'Error en la confirmación del cambio de contraseña', 'error');
+          }
+        } catch (error) {
+          setStatus('error');
+          Swal.fire('Error', 'Hubo un problema con el servidor', 'error');
+          console.error(error);
+        }
+      };
+      confirmChange();
+    }
+  }, [action, token, id]);
 
-  
-
+  // Función para enviar el formulario en el flujo de recuperación
   const onSubmit = async (data) => {
     if (hasSubmittedRef.current) return;
     hasSubmittedRef.current = true;
     setStatus('submitting');
-
     try {
       const response = await fetch(`${config.API_URL}/auth/reset-password`, {
         method: 'POST',
@@ -76,29 +91,29 @@ const ResetPassword = () => {
           password: data.password,
         }),
       });
-
-      console.log('respuesta: ', response);
       const result = await response.json();
-
       if (response.ok) {
         setStatus('success');
-        Swal.fire('Éxito', result.message, 'success').then(() => navigate('/auth/login'));
+        Swal.fire('Éxito', result.message, 'success').then(() =>
+          navigate('/auth/login')
+        );
       } else {
         setStatus('error');
-
         if (result.errors && result.errors.length > 0) {
-          const errorMessages = result.errors.map((err) => `Error: ${err.message}`).join('\n');
+          const errorMessages = result.errors
+            .map((err) => `Error: ${err.message}`)
+            .join('\n');
           Swal.fire('Error', errorMessages, 'error');
-
           const tokenExpiredError = result.errors.find((err) =>
             err.message.toLowerCase().includes('expirado')
           );
-
-          if (tokenExpiredError) {
-            setTokenExpired(true);
-          }
+          if (tokenExpiredError) setTokenExpired(true);
         } else {
-          Swal.fire('Error', result.message || 'Error al restablecer la contraseña', 'error');
+          Swal.fire(
+            'Error',
+            result.message || 'Error al restablecer la contraseña',
+            'error'
+          );
         }
       }
     } catch (error) {
@@ -108,6 +123,7 @@ const ResetPassword = () => {
     }
   };
 
+  // Función para reenviar el correo de restablecimiento (usado en ambos flujos)
   const handleResend = async () => {
     setIsResending(true);
     try {
@@ -116,13 +132,17 @@ const ResetPassword = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, clientURI: window.location.origin }),
       });
-
       const result = await response.json();
-
       if (response.ok) {
-        Swal.fire('Éxito', result.message, 'success').then(() => navigate('/auth/login'));
+        Swal.fire('Éxito', result.message, 'success').then(() =>
+          navigate('/auth/login')
+        );
       } else {
-        Swal.fire('Error', result.message || 'Error al reenviar restablecimiento de contraseña', 'error');
+        Swal.fire(
+          'Error',
+          result.message || 'Error al reenviar restablecimiento de contraseña',
+          'error'
+        );
       }
     } catch (error) {
       Swal.fire('Error', 'Hubo un problema con el servidor', 'error');
@@ -132,14 +152,15 @@ const ResetPassword = () => {
     }
   };
 
-  if (!token || !email) {
+  // Si no existe token, mostramos un mensaje de enlace inválido
+  if (!token) {
     return (
       <div className="reset-password-page">
         <div className="reset-password-container">
           <Logo />
           <h2>Enlace Inválido</h2>
           <p>
-            El enlace para restablecer la contraseña es inválido o ha expirado. Por favor, solicita un nuevo{' '}
+            El enlace es inválido o ha expirado. Por favor, solicita un nuevo{' '}
             <Link to="/auth/request-password-reset">restablecimiento de contraseña</Link>.
           </p>
         </div>
@@ -147,6 +168,21 @@ const ResetPassword = () => {
     );
   }
 
+  // Si es flujo "update" (cambio de contraseña estando logueado),
+  // no mostramos el formulario y dejamos que el useEffect confirme el cambio.
+  if (action === 'update' && token && id) {
+    return (
+      <div className="reset-password-page">
+        <div className="reset-password-container">
+          {status === null && <p>Confirmando el cambio de contraseña...</p>}
+          {status === 'success' && <p>Cambio de contraseña confirmado.</p>}
+          {status === 'error' && <p>Error en la confirmación del cambio de contraseña.</p>}
+        </div>
+      </div>
+    );
+  }
+
+  // Flujo de recuperación: mostramos el formulario para restablecer la contraseña
   return (
     <div className="reset-password-page">
       <div className="reset-password-container">
@@ -155,7 +191,6 @@ const ResetPassword = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <input type="hidden" {...register('token')} value={token} />
           <input type="hidden" {...register('email')} value={email} />
-
           <div className="form-group">
             <label htmlFor="email">Correo Electrónico</label>
             <input
@@ -167,9 +202,10 @@ const ResetPassword = () => {
             />
             {errors.email && <span className="error">{errors.email.message}</span>}
           </div>
-
           <div className="form-group password-group">
-            <label htmlFor="password">Nueva Contraseña</label>
+            <label htmlFor="password">
+              {action === 'update' ? 'Nueva Contraseña' : 'Nueva Contraseña'}
+            </label>
             <div className="password-wrapper">
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -181,8 +217,8 @@ const ResetPassword = () => {
               <button
                 type="button"
                 className="toggle-password"
-                onClick={() => setShowPassword((prev) => !prev)}
-                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                onClick={() => setShowPassword(!showPassword)}
+                disabled={isSubmitting || tokenExpired}
               >
                 <img
                   src={
@@ -190,35 +226,18 @@ const ResetPassword = () => {
                       ? `${process.env.PUBLIC_URL}/assets/icons/ojo-abierto.png`
                       : `${process.env.PUBLIC_URL}/assets/icons/ojo-cerrado.png`
                   }
-                  alt={showPassword ? 'Ojo abierto' : 'Ojo cerrado'}
+                  alt={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   width="24"
                   height="24"
                 />
               </button>
             </div>
             {errors.password && <span className="error">{errors.password.message}</span>}
-            {/* Validación en tiempo real */}
-            <ul className="password-validations">
-              <li className={passwordValidations.min ? 'valid' : ''}>
-                {passwordValidations.min ? '✔️' : '❌'} Al menos 8 caracteres
-              </li>
-              <li className={passwordValidations.lowercase ? 'valid' : ''}>
-                {passwordValidations.lowercase ? '✔️' : '❌'} Al menos una letra minúscula
-              </li>
-              <li className={passwordValidations.uppercase ? 'valid' : ''}>
-                {passwordValidations.uppercase ? '✔️' : '❌'} Al menos una letra mayúscula
-              </li>
-              <li className={passwordValidations.number ? 'valid' : ''}>
-                {passwordValidations.number ? '✔️' : '❌'} Al menos un número
-              </li>
-              <li className={passwordValidations.specialChar ? 'valid' : ''}>
-                {passwordValidations.specialChar ? '✔️' : '❌'} Al menos un carácter especial (@, $, !, %, *, ?, &)
-              </li>
-            </ul>
           </div>
-
           <div className="form-group password-group">
-            <label htmlFor="confirmPassword">Confirmar Nueva Contraseña</label>
+            <label htmlFor="confirmPassword">
+              Confirmar {action === 'update' ? 'Nueva Contraseña' : 'Contraseña'}
+            </label>
             <div className="password-wrapper">
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
@@ -230,8 +249,8 @@ const ResetPassword = () => {
               <button
                 type="button"
                 className="toggle-password"
-                onClick={() => setShowConfirmPassword((prev) => !prev)}
-                aria-label={showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                disabled={isSubmitting || tokenExpired}
               >
                 <img
                   src={
@@ -239,7 +258,7 @@ const ResetPassword = () => {
                       ? `${process.env.PUBLIC_URL}/assets/icons/ojo-abierto.png`
                       : `${process.env.PUBLIC_URL}/assets/icons/ojo-cerrado.png`
                   }
-                  alt={showConfirmPassword ? 'Ojo abierto' : 'Ojo cerrado'}
+                  alt={showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   width="24"
                   height="24"
                 />
@@ -247,17 +266,21 @@ const ResetPassword = () => {
             </div>
             {errors.confirmPassword && <span className="error">{errors.confirmPassword.message}</span>}
           </div>
-
           <button type="submit" className="button" disabled={isSubmitting || tokenExpired}>
-            {isSubmitting ? 'Restableciendo...' : 'Restablecer Contraseña'}
+            {isSubmitting
+              ? action === 'update'
+                ? 'Confirmando...'
+                : 'Restableciendo...'
+              : action === 'update'
+              ? 'Confirmar Cambio de Contraseña'
+              : 'Restablecer Contraseña'}
           </button>
         </form>
-
         {status === 'error' && tokenExpired && (
           <div className="resend-section">
-            <p>El token de restablecimiento ha expirado.</p>
+            <p>El token ha expirado.</p>
             <button onClick={handleResend} disabled={isResending} className="resend-button">
-              {isResending ? 'Reenviando...' : 'Reenviar Correo de Restablecimiento'}
+              {isResending ? 'Reenviando...' : 'Reenviar Correo'}
             </button>
           </div>
         )}

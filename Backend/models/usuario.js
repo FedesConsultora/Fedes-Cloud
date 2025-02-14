@@ -82,6 +82,10 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      newPasswordPending:{
+       type: DataTypes.STRING,
+       allowNull: true,
+      },
       emailToken: {
         type: DataTypes.STRING,
         allowNull: true,

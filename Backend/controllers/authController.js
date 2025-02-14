@@ -929,12 +929,11 @@ export const updateEmail = async (req, res, next) => {
 };
 
 
-/**
- * Actualizar la contraseña del usuario autenticado.
- */
-export const updatePassword = async (req, res, next) => {
+// Solicitar cambio de contraseña: se guarda la nueva contraseña encriptada en newPasswordPending y se envía un correo de confirmación
+export const updatePasswordEmail = async (req, res, next) => {
   try {
-    const { currentPassword, newPassword } = req.body;
+    // Se espera recibir en el body: currentPassword, newPassword y clientURI
+    const { currentPassword, newPassword, clientURI } = req.body;
     const { id_usuario } = req.user;
 
     const user = await Usuario.findByPk(id_usuario);
@@ -942,23 +941,15 @@ export const updatePassword = async (req, res, next) => {
       throw new ValidationError([{
         msg: 'Usuario no encontrado.',
         param: 'user',
-        location: 'body',
+        location: 'body'
       }]);
     }
 
-    // Verificar que se proporcione la contraseña actual y la nueva contraseña
+    // Verificar que se proporcione la contraseña actual y la nueva
     if (!currentPassword || !newPassword) {
       throw new ValidationError([
-        {
-          msg: 'La contraseña actual es obligatoria.',
-          param: 'currentPassword',
-          location: 'body',
-        },
-        {
-          msg: 'La nueva contraseña es obligatoria.',
-          param: 'newPassword',
-          location: 'body',
-        },
+        { msg: 'La contraseña actual es obligatoria.', param: 'currentPassword', location: 'body' },
+        { msg: 'La nueva contraseña es obligatoria.', param: 'newPassword', location: 'body' }
       ]);
     }
 
@@ -968,31 +959,120 @@ export const updatePassword = async (req, res, next) => {
       throw new ValidationError([{
         msg: 'La contraseña actual es incorrecta.',
         param: 'currentPassword',
-        location: 'body',
+        location: 'body'
       }]);
     }
 
-    // Validar la nueva contraseña (puedes reutilizar las validaciones del backend o implementarlas aquí)
-    // Por ejemplo, asegurarse de que cumple con los requisitos de complejidad
+    // (Opcional) Aquí podrías agregar validaciones adicionales para la nueva contraseña
 
-    // Encriptar la nueva contraseña
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // Encriptar la nueva contraseña y guardarla en newPasswordPending (sin modificar user.password)
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    user.newPasswordPending = hashedNewPassword;
 
-    // Actualizar la contraseña
-    user.password = hashedPassword;
+    // Generar un token de confirmación (válido por 1 hora, por ejemplo)
+    const passwordToken = crypto.randomBytes(32).toString('hex');
+    const passwordTokenExpires = Date.now() + 60 * 60 * 1000; // 1 hora
+
+    // Guardar el token y su expiración en los mismos campos usados para email
+    user.emailToken = passwordToken;
+    user.emailTokenExpires = passwordTokenExpires;
     await user.save();
 
-    logger.info(`Contraseña actualizada exitosamente para el usuario ID ${id_usuario}`);
+    // Construir la URL de confirmación para el cambio de contraseña usando el clientURI enviado
+    // Se agrega el parámetro action=update para diferenciar este flujo
+    const confirmURL = `${clientURI}/auth/reset-password?token=${passwordToken}&id=${id_usuario}&action=update`;
+
+    // Enviar el correo de confirmación usando el template "changePassword"
+    await sendEmail({
+      to: user.email, // Se envía al email actual, ya que la confirmación se realiza sobre él
+      subject: 'Confirma el cambio de tu contraseña',
+      template: 'changePassword', // Asegúrate de tener este template en tus templates de email
+      context: {
+        nombre: user.nombre,
+        confirmURL,
+        year: new Date().getFullYear(),
+      },
+    });
+
+    logger.info(`Se ha enviado un correo de confirmación para el cambio de contraseña al usuario ID ${id_usuario}`);
 
     res.status(200).json({
       success: true,
-      message: 'Contraseña actualizada exitosamente.',
+      message: 'Se ha enviado un correo de confirmación para el cambio de contraseña. Por favor, confirma el cambio.',
     });
   } catch (error) {
     logger.error(`Error al actualizar contraseña: ${error.message}`);
     next(error);
   }
-};  
+};
+
+export const confirmPasswordChange = async (req, res, next) => {
+  try {
+    // Se espera recibir en el query: token, id (id_usuario) y action (debe ser 'update')
+    const { token, id, action } = req.query;
+    logger.info(`Intentando confirmar cambio de contraseña para usuario ${id} con token: ${token} y action: ${action}`);
+
+    // (Opcional) Puedes validar que action === 'update'
+    if (action !== 'update') {
+      throw new ValidationError([{
+        msg: 'Acción no permitida.',
+        param: 'action',
+        location: 'query'
+      }]);
+    }
+
+    const user = await Usuario.findOne({
+      where: {
+        id_usuario: id,
+        emailToken: token,
+        emailTokenExpires: { [Op.gt]: Date.now() }
+      }
+    });
+
+    if (!user) {
+      throw new ValidationError([{
+        msg: 'Token inválido o expirado para cambio de contraseña.',
+        param: 'token',
+        location: 'query'
+      }]);
+    }
+
+    // Verificar que exista una nueva contraseña pendiente
+    if (!user.newPasswordPending) {
+      throw new ValidationError([{
+        msg: 'No hay un cambio de contraseña pendiente.',
+        param: 'token',
+        location: 'query'
+      }]);
+    }
+
+    // Actualizar la contraseña real y limpiar los campos temporales
+    user.password = user.newPasswordPending;
+    user.newPasswordPending = null;
+    user.emailToken = null;
+    user.emailTokenExpires = null;
+    await user.save();
+
+    logger.info(`Cambio de contraseña confirmado para el usuario ID ${user.id_usuario}`);
+
+    // Forzar el logout: borrar la cookie del token (asegúrate de usar las mismas opciones que en el login)
+    res.clearCookie('token', {
+      path: '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Strict'
+    });
+
+    res.status(200).json({
+      success: true,
+      logout: true,
+      message: 'Contraseña actualizada exitosamente. Por favor, inicia sesión de nuevo con tu nueva contraseña.'
+    });
+  } catch (error) {
+    logger.error(`Error en confirmación de cambio de contraseña: ${error.message}`);
+    next(error);
+  }
+};
 
 /**
  * Subir/Reemplazar avatar del usuario autenticado.

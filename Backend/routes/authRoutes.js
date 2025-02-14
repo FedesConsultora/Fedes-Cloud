@@ -67,7 +67,9 @@ router.post('/disable-2fa', authMiddleware, authController.disableTwoFactor);
 
 router.put('/update-profile', authMiddleware, authController.updateProfile);
 router.put('/update-email', authMiddleware, authController.updateEmail);
-router.put('/update-password', authMiddleware, authController.updatePassword);
+router.put('/update-password-email', authMiddleware, authController.updatePasswordEmail);
+// La confirmación de cambio de contraseña no requiere autenticación:
+router.get('/confirm-password-change', authController.confirmPasswordChange);
 
 // Sube o reemplaza el avatar del usuario autenticado
 router.post(

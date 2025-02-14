@@ -29,7 +29,7 @@ import BillingDetails from './pages/BillingDetails.js';
 import ContactDetails from './pages/ContactDetails.js';
 import UserManagement from './pages/UserManagement.js';
 import AcceptInvitation from './pages/AcceptInvitation.js';
-import Accounts from './pages/Accounts.js'; 
+import Accounts from './pages/Accounts.js';
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -63,6 +63,7 @@ const AppRoutes = () => {
               </PageTransition>
             }
           />
+          
           <Route
             path="/invite/accept"
             element={
@@ -106,7 +107,7 @@ const AppRoutes = () => {
             <Route path="*" element={<Navigate to="/user/profile" replace />} />
           </Route>
 
-          {/* Nueva ruta para "Cuentas" (accesos a cuentas padre) */}
+          {/* Nueva ruta para "Cuentas" */}
           <Route
             path="/cuentas"
             element={

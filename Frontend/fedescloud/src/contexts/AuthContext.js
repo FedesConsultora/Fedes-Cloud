@@ -57,7 +57,10 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     // Si la ruta es de confirmación, no actualizamos el perfil para que el usuario no quede logueado
-    if (window.location.pathname.startsWith('/auth/confirm-email')) {
+    if (
+      window.location.pathname.startsWith('/auth/confirm-email') ||
+      window.location.pathname.startsWith('/auth/reset-password')
+    ) {
       setUser(null);
       setLoading(false);
       return;

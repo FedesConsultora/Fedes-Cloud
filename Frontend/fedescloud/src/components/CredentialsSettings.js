@@ -69,8 +69,8 @@ const CredentialsSettings = () => {
     }
   };
 
-  // Función para actualizar la contraseña  
-  // (más adelante se implementará la lógica de recuperación, pero aquí ya se prepara el envío del clientURI)
+  // Nueva función para actualizar la contraseña de forma similar al cambio de email:
+  // Se envía un email con un enlace de confirmación; el cambio real se realiza al confirmar.
   const updatePassword = async (e) => {
     e.preventDefault();
     if (accessAsParent) {
@@ -79,18 +79,20 @@ const CredentialsSettings = () => {
     }
     try {
       const clientURI = window.location.origin;
-      const response = await fetch(`${config.API_URL}/auth/update-password`, {
+      const response = await fetch(`${config.API_URL}/auth/update-password-email`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          ...passwordData,
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
           clientURI: clientURI
         })
       });
       const result = await response.json();
       if (response.ok) {
-        Swal.fire('Éxito', 'Contraseña actualizada exitosamente.', 'success');
+        // Se envía un correo para confirmar el cambio de contraseña.
+        Swal.fire('Éxito', 'Se envió un correo electrónico para confirmar el cambio de contraseña. Por favor, confirma el cambio.', 'success');
       } else {
         Swal.fire('Error', result.message || 'No se pudo actualizar la contraseña.', 'error');
       }
