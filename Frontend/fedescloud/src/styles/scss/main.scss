@@ -14,6 +14,7 @@
 @use 'components/crearServicioModal';
 @use 'components/contactoModal';
 @use 'components/sweetalert2_custom';
+@use 'components/webHostingPlanCard';
 
 @use 'layouts/mainLayout';
 @use 'layouts/authLayout';
@@ -43,6 +44,8 @@
 @use 'pages/InviteUser';
 @use 'pages/AcceptInvitation';
 @use 'pages/accounts';
+@use 'pages/hosting';
+@use 'pages/webHostingPlansPage';
 
 /* Aplicar el tema claro por defecto dentro de :root */
 :root {

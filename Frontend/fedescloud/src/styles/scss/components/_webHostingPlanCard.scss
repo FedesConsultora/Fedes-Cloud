@@ -1,0 +1,90 @@
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.plan-card {
+  background-color: mixins.theme(light-color);
+  border: 1px solid mixins.theme(primary-color);
+  border-radius: 10px;
+  padding: 1rem;
+  width: 280px;
+  box-shadow: 0 2px 5px mixins.theme(shadow-color);
+  text-align: center;
+  margin: 1rem;
+  
+  h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: mixins.theme(dark-color);
+  }
+  
+  .subtitle {
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    color: mixins.theme(primary-color);
+  }
+  
+  .pricing {
+    margin-bottom: 1rem;
+    .original-price {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: mixins.theme(dark-color);
+      text-decoration: line-through;
+    }
+    .discount-label {
+      font-size: 0.9rem;
+      color: mixins.theme(primary-color);
+    }
+    .discounted-price {
+      font-size: 1rem;
+      color: mixins.theme(primary-color);
+      span {
+        font-size: 0.85rem;
+        margin-left: 0.3rem;
+      }
+    }
+    .bonus {
+      font-size: 0.85rem;
+      color: mixins.theme(dark-color);
+    }
+  }
+  
+  .features {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+    font-size: 0.85rem;
+    li {
+      margin-bottom: 0.25rem;
+    }
+  }
+  
+  .continue-btn,
+  .details-btn {
+    padding: 0.6rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .continue-btn {
+    background-color: mixins.theme(primary-color);
+    color: mixins.theme(light-color);
+    &:hover {
+      background-color: mixins.theme(primary-color-hover);
+    }
+  }
+  
+  .details-btn {
+    background-color: transparent;
+    color: mixins.theme(primary-color);
+    font-weight: bold;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

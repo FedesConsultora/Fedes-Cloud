@@ -10,7 +10,7 @@ import {
   FaRegClipboard, 
   FaCertificate, 
   FaCreditCard,
-  
+  FaServer 
 } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext.js';
@@ -39,8 +39,6 @@ const Sidebar = () => {
         />
       </div>
       
-      
-      
       <nav className="navigation">
         <ul>
           <li onClick={() => navigate('/')} className="nav-item">
@@ -67,6 +65,10 @@ const Sidebar = () => {
                 <li onClick={() => navigate('/certificados-ssl')} className="submenu-item">
                   <FaCertificate className="icon" />
                   <span className="label">Certificados SSL</span>
+                </li>
+                <li onClick={() => navigate('/hosting')} className="submenu-item">
+                  <FaServer className="icon" />
+                  <span className="label">Hosting</span>
                 </li>
               </ul>
             )}

@@ -7,10 +7,12 @@
   align-items: center;
   padding: 3rem;
   min-height: 100vh;
-  background-color: mixins.theme(background-color);
+  background-image: url('/public/assets/images/Home_Fondo.webp');
+  background-size: cover;
+  background-position: center;
   color: mixins.theme(text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
-
+  height: 100%;
   h2 {
     margin-bottom: 2rem;
     font-size: 2rem;
@@ -47,10 +49,8 @@
   .existing-certificates {
     width: 100%;
     max-width: 900px;
-    background-color: mixins.theme(light-color);
     border-radius: 10px;
     padding: 2rem;
-    box-shadow: 0 0 5px mixins.theme(shadow-color);
     transition: background-color 0.3s ease, color 0.3s ease;
     margin-bottom: 2rem;
   }

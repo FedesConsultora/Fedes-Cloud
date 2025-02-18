@@ -21,6 +21,12 @@ export default (sequelize, DataTypes) => {
         foreignKey: 'id_orden',
         as: 'pagos',
       });
+
+      // Nueva relación: Orden -> EstadoOrden
+      Orden.belongsTo(models.EstadoOrden, {
+        foreignKey: 'estadoOrdenId',
+        as: 'estadoOrden',
+      });
     }
   }
 
@@ -36,11 +42,7 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
       },
-      estado: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        defaultValue: 'pendiente', // pendiente, pagado, completado, cancelado, etc.
-      },
+      
       montoTotal: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
@@ -49,7 +51,7 @@ export default (sequelize, DataTypes) => {
       moneda: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: 'USD',
+        defaultValue: 'ARS',
       },
       metodoPago: {
         type: DataTypes.STRING,

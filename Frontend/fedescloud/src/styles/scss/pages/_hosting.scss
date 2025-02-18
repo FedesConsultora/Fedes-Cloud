@@ -1,0 +1,287 @@
+// src/styles/hosting.scss
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.hosting-type-page {
+    padding: 3rem;
+    text-align: center;
+    background-image: url('/public/assets/images/Home_Fondo.webp');
+    background-size: cover;
+    background-position: center;
+    color: mixins.theme(text-color);
+    height: 100%;
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: mixins.theme(dark-color);
+    }
+  
+    .hosting-type-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+  
+      .hosting-type-card {
+        background-color: mixins.theme(light-color);
+        border: 1px solid mixins.theme(primary-color);
+        border-radius: 10px;
+        padding: 1rem;
+        width: 250px;
+        box-shadow: 0 2px 5px mixins.theme(shadow-color);
+        text-align: center;
+        position: relative;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+  
+        &:hover {
+          transform: translateY(-5px);
+        }
+  
+        h3 {
+          font-size: 1.2rem;
+          margin-bottom: 0.5rem;
+          color: mixins.theme(dark-color);
+        }
+  
+        .description {
+          font-size: 0.9rem;
+          margin-bottom: 1rem;
+          color: mixins.theme(primary-color);
+          font-weight: 600;
+          padding-top: 2rem;
+        }
+  
+        .features {
+          list-style: none;
+          padding: 0;
+          margin-bottom: 1rem;
+          font-size: 0.85rem;
+          text-align: left;
+  
+          li {
+            margin-bottom: 0.25rem;
+          }
+        }
+  
+        .select-btn {
+          padding: 0.75rem;
+          background-color: mixins.theme(primary-color);
+          color: mixins.theme(light-color);
+          border: none;
+          border-radius: 5px;
+          font-size: 1rem;
+          cursor: pointer;
+          width: 100%;
+          transition: background-color 0.3s ease;
+          margin-top: 1rem;
+  
+          &:hover {
+            background-color: mixins.theme(primary-color-hover);
+          }
+        }
+  
+        .badge {
+          position: absolute;
+          top: -10px;
+          right: -10px;
+          background-color: mixins.theme(primary-color);
+          color: mixins.theme(light-color);
+          padding: 0.3rem 0.5rem;
+          border-radius: 50%;
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+
+.hosting-plan-page {
+  padding: 3rem;
+  text-align: center;
+  background-color: mixins.theme(background-color);
+  color: mixins.theme(text-color);
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    position: relative;
+
+    .back-btn {
+      position: absolute;
+      left: 1.8rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: mixins.theme(primary-color);
+      padding: 0.5rem;
+      transition: color 0.3s ease;
+      &:hover {
+        color: mixins.theme(primary-color-hover);
+      }
+    }
+
+    h2 {
+      font-size: 2rem;
+      margin: 0;
+      color: mixins.theme(dark-color);
+    }
+  }
+
+  .pricing-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      background-color: mixins.theme(primary-color);
+      color: mixins.theme(light-color);
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: mixins.theme(primary-color-hover);
+      }
+
+      &.active {
+        background-color: mixins.theme(dark-blue-color);
+      }
+    }
+  }
+
+  .plans-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+  }
+
+  .plan-card {
+    background-color: mixins.theme(light-color) !important;
+    border: 1px solid mixins.theme(primary-color);
+    border-radius: 10px;
+    padding: 1.5rem;
+    width: 280px;
+    box-shadow: 0 2px 5px mixins.theme(shadow-color);
+    text-align: center;
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    &:hover {
+      transform: translateY(-5px);
+    }
+    .badge {
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: mixins.theme(primary-color);
+        color: mixins.theme(light-color);
+        padding: 0.3rem 0.7rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+    h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+      color: mixins.theme(dark-color);
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      color: mixins.theme(primary-color);
+      justify-self: self-start;
+      font-weight: 600;
+    }
+
+    .prices {
+      margin-bottom: 1rem;
+
+      .price {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: mixins.theme(dark-color);
+      }
+
+      .original-price {
+        font-size: 1rem;
+        text-decoration: line-through;
+        color: mixins.theme(gray-color);
+        margin-bottom: 0.25rem;
+      }
+
+      .discount-price {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: mixins.theme(dark-color);
+        margin-bottom: 0.25rem;
+        display: flex;
+        .discount-label {
+          font-size: 0.8rem;
+          color: mixins.theme(primary-color);
+          margin-left: 0.4rem;
+          display: flex;
+          align-items: center;
+          position: relative;
+          top: 0.15rem;
+        }
+      }
+
+      .bonus {
+        font-size: 0.9rem;
+        color: mixins.theme(primary-color);
+        margin-top: 0.5rem;
+      }
+    }
+
+    .features {
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0;
+      font-size: 0.85rem;
+      text-align: left;
+
+      li {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.25rem;
+        .feature-text{
+            padding-left: 0.5rem;
+            position: relative;
+            top: 0.14rem;
+        }
+      }
+    }
+
+    .select-btn {
+      padding: 0.75rem;
+      background-color: mixins.theme(primary-color);
+      color: mixins.theme(light-color);
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+
+      &:hover {
+        background-color: mixins.theme(primary-color-hover);
+      }
+    }
+  }
+}

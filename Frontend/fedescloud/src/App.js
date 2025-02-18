@@ -17,6 +17,7 @@ import TwoFactorAuth from './pages/TwoFactorAuth.js';
 import DominiosPage from './pages/DominiosPage.js';
 import DominiosBusquedaPage from './pages/DominiosBusquedaPage.js';
 import CertificadosSSLPage from './pages/CertificadosSSLPage.js';
+import HostingTypePage from './pages/HostingTypePage.js'; // Importamos la nueva página de Hosting
 import AdminRoute from './components/AdminRoute.js';
 import UserDetail from './pages/UserDetail.js';
 import DomainDetail from './pages/DomainDetail.js';
@@ -30,6 +31,8 @@ import ContactDetails from './pages/ContactDetails.js';
 import UserManagement from './pages/UserManagement.js';
 import AcceptInvitation from './pages/AcceptInvitation.js';
 import Accounts from './pages/Accounts.js';
+import WebHostingPlansPage from './pages/WebHostingPlansPage.js';
+import WordPressHostingPlanPage from './pages/WordPressHostingPlanPage.js';
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -63,7 +66,6 @@ const AppRoutes = () => {
               </PageTransition>
             }
           />
-          
           <Route
             path="/invite/accept"
             element={
@@ -199,6 +201,44 @@ const AppRoutes = () => {
             }
           />
 
+          {/* Nueva ruta para Hosting */}
+          <Route
+            path="/hosting"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <HostingTypePage />
+                  </PageTransition>
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/hosting/web/plans"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <WebHostingPlansPage />
+                  </PageTransition>
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/hosting/wordpress/plans"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <WordPressHostingPlanPage />
+                  </PageTransition>
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
           {/* Rutas para Admin */}
           <Route
             path="/admin"

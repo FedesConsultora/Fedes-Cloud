@@ -21,6 +21,7 @@ import ordenModel from './Orden.js';
 import ordenDetalleModel from './OrdenDetalle.js';
 import ordenDetalleHistorialModel from './OrdenDetalleHistorial.js';
 import pagoModel from './Pago.js';
+import estadoOrden from './estadoOrden.js';
 
 const env = process.env.NODE_ENV || 'development';
 const conf = config[env];
@@ -53,6 +54,7 @@ db.Orden = ordenModel(sequelize, Sequelize.DataTypes);
 db.OrdenDetalle = ordenDetalleModel(sequelize, Sequelize.DataTypes);
 db.OrdenDetalleHistorial = ordenDetalleHistorialModel(sequelize, Sequelize.DataTypes);
 db.Pago = pagoModel(sequelize, Sequelize.DataTypes);
+db.EstadoOrden = estadoOrden(sequelize, Sequelize.DataTypes);
 
 // Configurar asociaciones
 Object.keys(db).forEach((modelName) => {
@@ -85,5 +87,6 @@ export const Orden = db.Orden;
 export const OrdenDetalle = db.OrdenDetalle;
 export const OrdenDetalleHistorial = db.OrdenDetalleHistorial;
 export const Pago = db.Pago;
+export const EstadoOrden = db.EstadoOrden;
 
 export default db;

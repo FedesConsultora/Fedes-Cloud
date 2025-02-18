@@ -16,7 +16,7 @@ import ordenRoutes from './ordenRoutes.js';
 import ordenDetalleRoutes from './ordenDetalleRoutes.js';
 import ordenDetalleHistorialRoutes from './ordenDetalleHistorialRoutes.js';
 import pagoRoutes from './pagoRoutes.js';
-
+import estadoOrdenRoutes from './estadoOrdenRoutes.js';
 
 /**
  * @swagger
@@ -47,5 +47,7 @@ router.use('/ordenes', ordenRoutes);
 router.use('/orden-detalles', ordenDetalleRoutes);
 router.use('/orden-detalles/historial', ordenDetalleHistorialRoutes);
 router.use('/pagos', pagoRoutes);
+router.use('/estado-orden', estadoOrdenRoutes);
+
 
 export default router;

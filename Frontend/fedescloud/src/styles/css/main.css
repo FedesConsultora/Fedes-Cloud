@@ -878,6 +878,87 @@
   background-color: var(--delete-color-hover);
 }
 
+.plan-card {
+  background-color: var(--light-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 10px;
+  padding: 1rem;
+  width: 280px;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  text-align: center;
+  margin: 1rem;
+}
+.plan-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--dark-color);
+}
+.plan-card .subtitle {
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+}
+.plan-card .pricing {
+  margin-bottom: 1rem;
+}
+.plan-card .pricing .original-price {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--dark-color);
+  text-decoration: line-through;
+}
+.plan-card .pricing .discount-label {
+  font-size: 0.9rem;
+  color: var(--primary-color);
+}
+.plan-card .pricing .discounted-price {
+  font-size: 1rem;
+  color: var(--primary-color);
+}
+.plan-card .pricing .discounted-price span {
+  font-size: 0.85rem;
+  margin-left: 0.3rem;
+}
+.plan-card .pricing .bonus {
+  font-size: 0.85rem;
+  color: var(--dark-color);
+}
+.plan-card .features {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  font-size: 0.85rem;
+}
+.plan-card .features li {
+  margin-bottom: 0.25rem;
+}
+.plan-card .continue-btn,
+.plan-card .details-btn {
+  padding: 0.6rem;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.3s ease;
+}
+.plan-card .continue-btn {
+  background-color: var(--primary-color);
+  color: var(--light-color);
+}
+.plan-card .continue-btn:hover {
+  background-color: var(--primary-color-hover);
+}
+.plan-card .details-btn {
+  background-color: transparent;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+.plan-card .details-btn:hover {
+  text-decoration: underline;
+}
+
 .main-layout {
   display: flex;
   min-height: 100vh;
@@ -2970,9 +3051,12 @@ main {
   align-items: center;
   padding: 3rem;
   min-height: 100vh;
-  background-color: var(--background-color);
+  background-image: url("/public/assets/images/Home_Fondo.webp");
+  background-size: cover;
+  background-position: center;
   color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
+  height: 100%;
   /* Step 1: Tarjetas de selección de certificado */
   /* Step 2: Seleccionar Plan */
   /* Step 3: Formulario */
@@ -3010,10 +3094,8 @@ main {
 .certificados-ssl-page .existing-certificates {
   width: 100%;
   max-width: 900px;
-  background-color: var(--light-color);
   border-radius: 10px;
   padding: 2rem;
-  box-shadow: 0 0 5px var(--shadow-color);
   transition: background-color 0.3s ease, color 0.3s ease;
   margin-bottom: 2rem;
 }
@@ -3981,6 +4063,293 @@ main {
 }
 .accounts-page .access-card .card-footer .button:hover {
   background-color: var(--primary-color-hover);
+}
+
+.hosting-type-page {
+  padding: 3rem;
+  text-align: center;
+  background-image: url("/public/assets/images/Home_Fondo.webp");
+  background-size: cover;
+  background-position: center;
+  color: var(--text-color);
+  height: 100%;
+}
+.hosting-type-page h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: var(--dark-color);
+}
+.hosting-type-page .hosting-type-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+.hosting-type-page .hosting-type-cards .hosting-type-card {
+  background-color: var(--light-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 10px;
+  padding: 1rem;
+  width: 250px;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.hosting-type-page .hosting-type-cards .hosting-type-card:hover {
+  transform: translateY(-5px);
+}
+.hosting-type-page .hosting-type-cards .hosting-type-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--dark-color);
+}
+.hosting-type-page .hosting-type-cards .hosting-type-card .description {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+  font-weight: 600;
+  padding-top: 2rem;
+}
+.hosting-type-page .hosting-type-cards .hosting-type-card .features {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  text-align: left;
+}
+.hosting-type-page .hosting-type-cards .hosting-type-card .features li {
+  margin-bottom: 0.25rem;
+}
+.hosting-type-page .hosting-type-cards .hosting-type-card .select-btn {
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+.hosting-type-page .hosting-type-cards .hosting-type-card .select-btn:hover {
+  background-color: var(--primary-color-hover);
+}
+.hosting-type-page .hosting-type-cards .hosting-type-card .badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  padding: 0.3rem 0.5rem;
+  border-radius: 50%;
+  font-size: 0.75rem;
+}
+
+.hosting-plan-page {
+  padding: 3rem;
+  text-align: center;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+.hosting-plan-page .header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  position: relative;
+}
+.hosting-plan-page .header .back-btn {
+  position: absolute;
+  left: 1.8rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--primary-color);
+  padding: 0.5rem;
+  transition: color 0.3s ease;
+}
+.hosting-plan-page .header .back-btn:hover {
+  color: var(--primary-color-hover);
+}
+.hosting-plan-page .header h2 {
+  font-size: 2rem;
+  margin: 0;
+  color: var(--dark-color);
+}
+.hosting-plan-page .pricing-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.hosting-plan-page .pricing-toggle button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  transition: background-color 0.3s ease;
+}
+.hosting-plan-page .pricing-toggle button:hover {
+  background-color: var(--primary-color-hover);
+}
+.hosting-plan-page .pricing-toggle button.active {
+  background-color: var(--dark-blue-color);
+}
+.hosting-plan-page .plans-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}
+.hosting-plan-page .plan-card {
+  background-color: var(--light-color) !important;
+  border: 1px solid var(--primary-color);
+  border-radius: 10px;
+  padding: 1.5rem;
+  width: 280px;
+  box-shadow: 0 2px 5px var(--shadow-color);
+  text-align: center;
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+.hosting-plan-page .plan-card:hover {
+  transform: translateY(-5px);
+}
+.hosting-plan-page .plan-card .badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+.hosting-plan-page .plan-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: var(--dark-color);
+}
+.hosting-plan-page .plan-card .subtitle {
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+  justify-self: self-start;
+  font-weight: 600;
+}
+.hosting-plan-page .plan-card .prices {
+  margin-bottom: 1rem;
+}
+.hosting-plan-page .plan-card .prices .price {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--dark-color);
+}
+.hosting-plan-page .plan-card .prices .original-price {
+  font-size: 1rem;
+  text-decoration: line-through;
+  color: var(--gray-color);
+  margin-bottom: 0.25rem;
+}
+.hosting-plan-page .plan-card .prices .discount-price {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--dark-color);
+  margin-bottom: 0.25rem;
+  display: flex;
+}
+.hosting-plan-page .plan-card .prices .discount-price .discount-label {
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  margin-left: 0.4rem;
+  display: flex;
+  align-items: center;
+  position: relative;
+  top: 0.15rem;
+}
+.hosting-plan-page .plan-card .prices .bonus {
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  margin-top: 0.5rem;
+}
+.hosting-plan-page .plan-card .features {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  font-size: 0.85rem;
+  text-align: left;
+}
+.hosting-plan-page .plan-card .features li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+.hosting-plan-page .plan-card .features li .feature-text {
+  padding-left: 0.5rem;
+  position: relative;
+  top: 0.14rem;
+}
+.hosting-plan-page .plan-card .select-btn {
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+.hosting-plan-page .plan-card .select-btn:hover {
+  background-color: var(--primary-color-hover);
+}
+
+.web-hosting-plans-page {
+  padding: 2rem;
+  text-align: center;
+}
+.web-hosting-plans-page h2 {
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  color: #333;
+}
+.web-hosting-plans-page .plans-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.web-hosting-plans-page {
+  padding: 2rem;
+  text-align: center;
+}
+.web-hosting-plans-page h2 {
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  color: #333;
+}
+.web-hosting-plans-page .plans-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
 }
 
 /* Aplicar el tema claro por defecto dentro de :root */

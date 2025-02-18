@@ -2,7 +2,7 @@
 
 import React, { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext.js';
-import { FaGlobe, FaCertificate, FaCreditCard, FaUser, FaCog, FaUserShield } from 'react-icons/fa';
+import { FaGlobe, FaCertificate, FaCreditCard, FaUser, FaCog, FaUserShield, FaServer } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
@@ -21,6 +21,11 @@ const Home = () => {
       onClick: () => navigate('/certificados-ssl'), 
     },
     {
+      title: 'Mis Hostings',
+      icon: <FaServer />,
+      onClick: () => navigate('/hosting'),
+    },
+    {
       title: 'Perfil',
       icon: <FaUser />,
       onClick: () => navigate('/user/profile'),
@@ -36,6 +41,7 @@ const Home = () => {
       icon: <FaCog />,
       onClick: () => navigate('/settings'),
     },
+     
   ];
 
   // Agregar el botón de Administrador si el usuario tiene el rol 'admin'
