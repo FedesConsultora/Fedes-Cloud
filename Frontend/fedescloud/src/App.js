@@ -33,6 +33,7 @@ import AcceptInvitation from './pages/AcceptInvitation.js';
 import Accounts from './pages/Accounts.js';
 import WebHostingPlansPage from './pages/WebHostingPlansPage.js';
 import WordPressHostingPlanPage from './pages/WordPressHostingPlanPage.js';
+import ExistingHostingsList from './components/hosting/ExistingHostingsList.js';
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -223,6 +224,16 @@ const AppRoutes = () => {
                   <PageTransition>
                     <WebHostingPlansPage />
                   </PageTransition>
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/hosting/existing"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <PageTransition><ExistingHostingsList /></PageTransition>
                 </MainLayout>
               </ProtectedRoute>
             }

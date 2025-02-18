@@ -4,19 +4,19 @@ import { Model } from 'sequelize';
 export default (sequelize, DataTypes) => {
   class Hosting extends Model {
     static associate(models) {
-      // Relación: Hosting pertenece a Usuario
+      // Cada Hosting pertenece a un Usuario
       Hosting.belongsTo(models.Usuario, {
         foreignKey: 'id_usuario',
         as: 'usuario',
       });
 
-      // Relación: Hosting puede estar vinculado a una Orden (opcional)
+      // Opcional: Si el Hosting se adquirió mediante una Orden
       Hosting.belongsTo(models.Orden, {
         foreignKey: 'id_orden',
         as: 'orden',
       });
 
-      // Relación: Hosting -> EstadoHosting
+      // Relación: Hosting se asocia con un EstadoHosting
       Hosting.belongsTo(models.EstadoHosting, {
         foreignKey: 'estadoHostingId',
         as: 'estadoHosting',
@@ -81,12 +81,11 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
-      // Eliminamos el campo 'estado' (string) y 'metadata'
       observaciones: {
         type: DataTypes.TEXT,
         allowNull: true,
       },
-      // El campo 'estadoHostingId' se agregará mediante migración
+      // El campo 'estadoHostingId' se agregará mediante migración.
     },
     {
       sequelize,

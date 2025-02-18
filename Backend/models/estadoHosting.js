@@ -4,7 +4,11 @@ import { Model } from 'sequelize';
 export default (sequelize, DataTypes) => {
   class EstadoHosting extends Model {
     static associate(models) {
-       EstadoHosting.hasMany(models.Hosting, { foreignKey: 'estadoHostingId', as: 'hostings' });
+      // Cada EstadoHosting puede tener muchos Hostings asociados.
+      EstadoHosting.hasMany(models.Hosting, {
+        foreignKey: 'estadoHostingId',
+        as: 'hostings',
+      });
     }
   }
 
