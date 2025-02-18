@@ -2,28 +2,111 @@
 @use 'sass:color';
 @use '../abstracts/mixins' as mixins;
 
-.hosting-type-page {
+.hosting-page {
     padding: 3rem;
-    text-align: center;
-    background-image: url('/public/assets/images/Home_Fondo.webp');
-    background-size: cover;
-    background-position: center;
+    background-color: mixins.theme(background-color);
     color: mixins.theme(text-color);
-    height: 100%;
+  
     h2 {
-      font-size: 2rem;
-      margin-bottom: 2rem;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        color: mixins.theme(dark-color);
+    }
+  
+    .tabs {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+  
+      button {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        background-color: mixins.theme(primary-color);
+        color: mixins.theme(light-color);
+        transition: background-color 0.3s ease;
+  
+        &:hover {
+           background-color: mixins.theme(primary-color-hover);
+        }
+  
+        &.active {
+           background-color: mixins.theme(dark-blue-color);
+        }
+      }
+    } 
+}
+
+.existing-hostings-list {
+    background-color: mixins.theme(light-color);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px mixins.theme(shadow-color);
+    max-width: 100%;
+    margin: 0 auto;
+  
+    h2 {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
       color: mixins.theme(dark-color);
     }
   
-    .hosting-type-cards {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      justify-content: center;
-      margin-bottom: 2rem;
+    table {
+      width: 100%;
+      border-collapse: collapse;
   
-      .hosting-type-card {
+      thead {
+        background-color: mixins.theme(primary-color);
+        color: mixins.theme(light-color);
+        
+        tr {
+          th {
+            padding: 0.75rem;
+            text-align: left;
+            font-size: 1rem;
+            border-bottom: 2px solid mixins.theme(primary-color-hover);
+          }
+        }
+      }
+  
+      tbody {
+        tr {
+          border-bottom: 1px solid mixins.theme(shadow-color);
+          transition: background-color 0.3s ease;
+          
+          &:hover {
+            background-color: mixins.theme(primary-color-hover);
+          }
+          
+          td {
+            padding: 0.75rem;
+            font-size: 0.95rem;
+            color: mixins.theme(dark-color);
+          }
+        }
+      }
+    }
+  
+    p {
+      text-align: center;
+      font-size: 1rem;
+      color: mixins.theme(black-color);
+    }
+  }
+
+.hosting-type-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+
+    .hosting-type-card {
         background-color: mixins.theme(light-color);
         border: 1px solid mixins.theme(primary-color);
         border-radius: 10px;
@@ -37,64 +120,63 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-  
+
+      &:hover {
+        transform: translateY(-5px);
+      }
+
+      h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: mixins.theme(dark-color);
+      }
+
+      .description {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        color: mixins.theme(primary-color);
+        font-weight: 600;
+        padding-top: 2rem;
+      }
+
+      .features {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+        text-align: left;
+
+        li {
+          margin-bottom: 0.25rem;
+        }
+      }
+
+      .select-btn {
+        padding: 0.75rem;
+        background-color: mixins.theme(primary-color);
+        color: mixins.theme(light-color);
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.3s ease;
+        margin-top: 1rem;
+
         &:hover {
-          transform: translateY(-5px);
+          background-color: mixins.theme(primary-color-hover);
         }
-  
-        h3 {
-          font-size: 1.2rem;
-          margin-bottom: 0.5rem;
-          color: mixins.theme(dark-color);
-        }
-  
-        .description {
-          font-size: 0.9rem;
-          margin-bottom: 1rem;
-          color: mixins.theme(primary-color);
-          font-weight: 600;
-          padding-top: 2rem;
-        }
-  
-        .features {
-          list-style: none;
-          padding: 0;
-          margin-bottom: 1rem;
-          font-size: 0.85rem;
-          text-align: left;
-  
-          li {
-            margin-bottom: 0.25rem;
-          }
-        }
-  
-        .select-btn {
-          padding: 0.75rem;
-          background-color: mixins.theme(primary-color);
-          color: mixins.theme(light-color);
-          border: none;
-          border-radius: 5px;
-          font-size: 1rem;
-          cursor: pointer;
-          width: 100%;
-          transition: background-color 0.3s ease;
-          margin-top: 1rem;
-  
-          &:hover {
-            background-color: mixins.theme(primary-color-hover);
-          }
-        }
-  
-        .badge {
-          position: absolute;
-          top: -10px;
-          right: -10px;
-          background-color: mixins.theme(primary-color);
-          color: mixins.theme(light-color);
-          padding: 0.3rem 0.5rem;
-          border-radius: 50%;
-          font-size: 0.75rem;
-        }
+      }
+
+      .badge {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background-color: mixins.theme(primary-color);
+        color: mixins.theme(light-color);
+        padding: 0.3rem 0.5rem;
+        border-radius: 50%;
+        font-size: 0.75rem;
       }
     }
   }

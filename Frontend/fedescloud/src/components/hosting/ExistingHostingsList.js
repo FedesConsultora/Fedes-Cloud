@@ -1,16 +1,19 @@
 // src/components/hosting/ExistingHostingsList.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Swal from 'sweetalert2';
 import config from '../../config/config.js';
+import { AuthContext } from '../../contexts/AuthContext.js';
 
 const ExistingHostingsList = () => {
+  const { user } = useContext(AuthContext); // Obtenemos el usuario autenticado
   const [hostings, setHostings] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchHostings = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${config.API_URL}/hostings`, {
+      // Suponiendo que el endpoint para hostings del usuario es /hosting/user/:id
+      const response = await fetch(`${config.API_URL}/hosting/user/${user.id_usuario}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -29,8 +32,10 @@ const ExistingHostingsList = () => {
   };
 
   useEffect(() => {
-    fetchHostings();
-  }, []);
+    if (user && user.id_usuario) {
+      fetchHostings();
+    }
+  }, [user]);
 
   return (
     <div className="existing-hostings-list">

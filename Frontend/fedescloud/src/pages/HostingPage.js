@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import HostingTypeStep from '../components/hosting/HostingTypeStep.js';
 import ExistingHostingsList from '../components/hosting/ExistingHostingsList.js';
-import { HOSTING_TYPES } from '../data/hostingData';
+import { HOSTING_TYPES } from '../data/hostingData.js';
 
 const HostingPage = () => {
   const navigate = useNavigate();

@@ -17,7 +17,6 @@ import TwoFactorAuth from './pages/TwoFactorAuth.js';
 import DominiosPage from './pages/DominiosPage.js';
 import DominiosBusquedaPage from './pages/DominiosBusquedaPage.js';
 import CertificadosSSLPage from './pages/CertificadosSSLPage.js';
-import HostingTypePage from './pages/HostingTypePage.js'; // Importamos la nueva página de Hosting
 import AdminRoute from './components/AdminRoute.js';
 import UserDetail from './pages/UserDetail.js';
 import DomainDetail from './pages/DomainDetail.js';
@@ -34,6 +33,7 @@ import Accounts from './pages/Accounts.js';
 import WebHostingPlansPage from './pages/WebHostingPlansPage.js';
 import WordPressHostingPlanPage from './pages/WordPressHostingPlanPage.js';
 import ExistingHostingsList from './components/hosting/ExistingHostingsList.js';
+import HostingPage from './pages/HostingPage.js';
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -209,7 +209,7 @@ const AppRoutes = () => {
               <ProtectedRoute>
                 <MainLayout>
                   <PageTransition>
-                    <HostingTypePage />
+                    <HostingPage />
                   </PageTransition>
                 </MainLayout>
               </ProtectedRoute>

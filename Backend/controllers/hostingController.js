@@ -58,6 +58,7 @@ export const createHosting = async (req, res, next) => {
 export const getHostingsByUser = async (req, res, next) => {
   try {
     const { id_usuario } = req.params; // O, si está en el token, req.user.id_usuario
+    logger.info(`Obteniendo Hostings para el usuario: ${id_usuario}`);
     const hostings = await Hosting.findAll({
       where: { id_usuario },
       // Puedes incluir relaciones, por ejemplo con EstadoHosting:
