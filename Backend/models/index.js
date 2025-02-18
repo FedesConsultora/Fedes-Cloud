@@ -24,7 +24,9 @@ import pagoModel from './Pago.js';
 import estadoOrden from './estadoOrden.js';
 import hosting from './hosting.js';
 import estadoHosting from './estadoHosting.js';
-
+import carritoModel from './carrito.js';
+import itemCarritoModel from './itemCarrito.js';
+import complementoItemCarritoModel from './complementoItemCarrito.js';
 
 const env = process.env.NODE_ENV || 'development';
 const conf = config[env];
@@ -60,6 +62,9 @@ db.Pago = pagoModel(sequelize, Sequelize.DataTypes);
 db.EstadoOrden = estadoOrden(sequelize, Sequelize.DataTypes);
 db.Hosting = hosting(sequelize, Sequelize.DataTypes);
 db.EstadoHosting = estadoHosting(sequelize, Sequelize.DataTypes);
+db.Carrito = carritoModel(sequelize, Sequelize.DataTypes);
+db.ItemCarrito = itemCarritoModel(sequelize, Sequelize.DataTypes);
+db.ComplementoItemCarrito = complementoItemCarritoModel(sequelize, Sequelize.DataTypes);
 
 // Configurar asociaciones
 Object.keys(db).forEach((modelName) => {
@@ -95,5 +100,8 @@ export const Pago = db.Pago;
 export const EstadoOrden = db.EstadoOrden;
 export const Hosting = db.Hosting;
 export const EstadoHosting = db.EstadoHosting;
+export const Carrito = db.Carrito;
+export const ItemCarrito = db.ItemCarrito;
+export const ComplementoItemCarrito = db.ComplementoItemCarrito;
 
 export default db;

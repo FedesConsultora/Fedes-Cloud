@@ -19,6 +19,10 @@ import pagoRoutes from './pagoRoutes.js';
 import estadoOrdenRoutes from './estadoOrdenRoutes.js';
 import estadoHostingRoutes from './estadoHostingRoutes.js';
 import hostingRoutes from './hostingRoutes.js';
+import cartRoutes from './cartRoutes.js';
+import cartItemRoutes from './cartItemRoutes.js';
+import cartItemAddonRoutes from './cartItemAddonRoutes.js';
+
 
 /**
  * @swagger
@@ -52,6 +56,9 @@ router.use('/pagos', pagoRoutes);
 router.use('/estado-orden', estadoOrdenRoutes);
 router.use('/estado-hosting', estadoHostingRoutes);
 router.use('/hosting', hostingRoutes);
+router.use('/cart', cartRoutes);
+router.use('/cart-items', cartItemRoutes);
+router.use('/cart-item-addons', cartItemAddonRoutes);
 
 
 export default router;
