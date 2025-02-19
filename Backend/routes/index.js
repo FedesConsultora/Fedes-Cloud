@@ -22,6 +22,7 @@ import hostingRoutes from './hostingRoutes.js';
 import cartRoutes from './cartRoutes.js';
 import cartItemRoutes from './cartItemRoutes.js';
 import cartItemAddonRoutes from './cartItemAddonRoutes.js';
+import CatalogoComplementosRoutes from './CatalogoComplementosRoutes.js';
 
 
 /**
@@ -59,6 +60,8 @@ router.use('/hosting', hostingRoutes);
 router.use('/cart', cartRoutes);
 router.use('/cart-items', cartItemRoutes);
 router.use('/cart-item-addons', cartItemAddonRoutes);
+router.use('/catalogo-complementos', CatalogoComplementosRoutes);
+
 
 
 export default router;

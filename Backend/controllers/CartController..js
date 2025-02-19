@@ -1,5 +1,5 @@
 // controllers/CartController.js
-import { Cart } from '../models/index.js';
+import { Carrito } from '../models/index.js';
 import logger from '../utils/logger.js';
 
 /**
