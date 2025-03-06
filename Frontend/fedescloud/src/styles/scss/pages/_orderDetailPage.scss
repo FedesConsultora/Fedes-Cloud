@@ -1,0 +1,91 @@
+// src/styles/scss/pages/_orderDetailPage.scss
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.order-detail-page {
+  position: relative;
+  padding: 2rem;
+  max-width: 900px;
+  margin: 2rem auto;
+  background-color: mixins.theme(light-color);
+  border: 1px solid mixins.theme(primary-color);
+  border-radius: 10px;
+  box-shadow: 0 2px 5px mixins.theme(shadow-color);
+  font-family: 'Arial', sans-serif;
+  color: mixins.theme(dark-color);
+
+  .back-button {
+    position: absolute;
+    top: 5px;
+    left: 33px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: mixins.theme(primary-color);
+    transition: color 0.3s ease;
+    &:hover {
+      color: mixins.theme(primary-color-hover);
+    }
+  }
+
+  .order-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    .order-info {
+      flex: 1;
+      h2 {
+        font-size: 1.8rem;
+        margin: 0;
+      }
+      .order-statuses {
+        margin-top: 0.5rem;
+        span {
+          display: inline-block;
+          padding: 0.3rem 0.6rem;
+          margin-right: 0.5rem;
+          background-color: mixins.theme(gray-color);
+          border-radius: 5px;
+          font-size: 0.9rem;
+          &.active {
+            background-color: mixins.theme(primary-color);
+            color: mixins.theme(light-color);
+          }
+        }
+      }
+    }
+  }
+
+  .order-summary {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid mixins.theme(shadow-color);
+    padding-top: 1rem;
+    margin-bottom: 1rem;
+    p {
+      font-size: 1rem;
+      margin: 0.3rem 0;
+    }
+  }
+
+  .order-history {
+    h3 {
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+      color: mixins.theme(dark-blue-color);
+    }
+    .history-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      .history-item {
+        border-bottom: 1px solid mixins.theme(shadow-color);
+        padding: 0.5rem 0;
+        p {
+          font-size: 0.9rem;
+          margin: 0.2rem 0;
+        }
+      }
+    }
+  }
+}

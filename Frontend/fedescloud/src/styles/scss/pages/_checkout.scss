@@ -1,0 +1,89 @@
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+:root {
+  --primary-color: #3498db;
+  --primary-color-hover: #2980b9;
+  --dark-color: #2c3e50;
+  --dark-blue-color: #1a5276;
+  --light-color: #ffffff;
+  --gray-color: #7f8c8d;
+  --background-color: #ecf0f1;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+.checkout-page {
+  padding: 2rem;
+  background-color: var(--background-color);
+  color: var(--dark-color);
+  font-family: 'Arial', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+
+  .checkout-card {
+    background-color: var(--light-color);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px var(--shadow-color);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: var(--dark-blue-color);
+      font-weight: bold;
+    }
+
+    p {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      color: var(--dark-color);
+    }
+
+    .order-info {
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+      color: var(--dark-color);
+    }
+
+    
+  }
+  .checkout-button {
+    width: 70%;
+    padding: 1rem;
+    background-color: var(--primary-color);
+    color: var(--light-color);
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 1.5rem;
+
+    &:hover {
+      background-color: var(--primary-color-hover);
+      box-shadow: 0 4px 12px var(--primary-color-hover);
+    }
+  }
+}
+
+/* Vista mobile: Aseguramos un buen padding y escalado */
+@media (max-width: 600px) {
+  .checkout-page {
+    padding: 1rem;
+  }
+  .checkout-card {
+    padding: 1.5rem;
+    h2 {
+      font-size: 1.8rem;
+    }
+    .checkout-button {
+      font-size: 1rem;
+      padding: 0.75rem;
+    }
+  }
+}

@@ -28,6 +28,7 @@ import carritoModel from './carrito.js';
 import itemCarritoModel from './itemCarrito.js';
 import complementoItemCarritoModel from './complementoItemCarrito.js';
 import catalogoComplementosModel from './catalogoComplementos.js';
+import impuestoModel from './impuesto.js';
 
 const env = process.env.NODE_ENV || 'development';
 const conf = config[env];
@@ -67,6 +68,7 @@ db.Carrito = carritoModel(sequelize, Sequelize.DataTypes);
 db.ItemCarrito = itemCarritoModel(sequelize, Sequelize.DataTypes);
 db.ComplementoItemCarrito = complementoItemCarritoModel(sequelize, Sequelize.DataTypes);
 db.CatalogoComplementos = catalogoComplementosModel(sequelize, Sequelize.DataTypes);
+db.Impuesto = impuestoModel(sequelize, Sequelize.DataTypes);
 
 // Configurar asociaciones
 Object.keys(db).forEach((modelName) => {
@@ -106,5 +108,6 @@ export const Carrito = db.Carrito;
 export const ItemCarrito = db.ItemCarrito;
 export const ComplementoItemCarrito = db.ComplementoItemCarrito;
 export const CatalogoComplementos = db.CatalogoComplementos;
+export const Impuesto = db.Impuesto;
 
 export default db;

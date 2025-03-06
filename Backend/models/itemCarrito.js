@@ -56,6 +56,10 @@ export default (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: 0,
       },
+      metaDatos: {                   
+        type: DataTypes.JSON,
+        allowNull: true,
+      },
     },
     {
       sequelize,

@@ -76,79 +76,6 @@ const CertificadosSSLPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Función para crear la orden (crea el certificado local y llama a GoDaddy)
-  const handleRequestCertificate = async () => {
-    if (!formData.type) {
-      Swal.fire('Advertencia', 'Selecciona un tipo de certificado.', 'warning');
-      return;
-    }
-    if (!formData.plan) {
-      Swal.fire('Advertencia', 'Selecciona el plan (duración).', 'warning');
-      return;
-    }
-    if (!formData.verificationEmail.trim()) {
-      Swal.fire('Advertencia', 'Ingresa un correo de verificación.', 'warning');
-      return;
-    }
-
-    setIsLoading(true);
-
-    // Determinar el período en días según el plan
-    let period;
-    if (formData.plan.includes('1 año')) {
-      period = 365;
-    } else if (formData.plan.includes('2 años')) {
-      period = 730;
-    } else if (formData.plan.includes('3 años')) {
-      period = 1095;
-    } else if (formData.plan.includes('5 años')) {
-      period = 1825;
-    } else {
-      period = 60;
-    }
-
-    // Construir el payload para crear la orden en GoDaddy.
-    const payloadCreate = {
-      productType: formData.type === 'DV' ? 'DV_SSL' : formData.type === 'OV' ? 'OV_SSL' : 'EV_SSL',
-      commonName: formData.domain.trim() || 'no-configurado.com',
-      period: period,
-      csr: '', // Se dejará vacío para que el backend lo genere 
-      subjectAlternativeNames: [],
-      contact: {
-        email: formData.verificationEmail,
-        nameFirst: 'John',
-        nameLast: 'Doe',
-      },
-    };
-
-    console.log('Payload enviado a crear orden:', payloadCreate);
-
-    try {
-      const responseCreate = await fetch(`${config.API_URL}/certificados/create-order`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${window.localStorage.getItem('token') || ''}`,
-        },
-        credentials: 'include',
-        body: JSON.stringify(payloadCreate),
-      });
-      console.log('Response Status:', responseCreate.status);
-      const resultCreate = await responseCreate.json();
-      console.log('Response Data:', resultCreate);
-      if (responseCreate.ok && resultCreate.success) {
-        setPendingOrder(resultCreate.data);
-        Swal.fire('Orden Creada', 'La orden de certificado ha sido creada exitosamente.', 'success');
-      } else {
-        Swal.fire('Error al crear la orden', resultCreate.message || 'No se pudo crear la orden', 'error');
-      }
-    } catch (err) {
-      Swal.fire('Error', `Ocurrió un error: ${err.message}`, 'error');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   // Función de búsqueda en "Mis Certificados SSL"
   const handleSearchExisting = () => {
     if (!searchQuery.trim()) {
@@ -206,7 +133,6 @@ const CertificadosSSLPage = () => {
                   formData={formData}
                   onBack={() => setStep(2)}
                   onChange={handleInputChange}
-                  onSubmit={handleRequestCertificate}
                 />
               )}
             </>

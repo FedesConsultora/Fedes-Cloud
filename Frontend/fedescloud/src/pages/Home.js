@@ -1,8 +1,7 @@
 // src/pages/Home.js
-
 import React, { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext.js';
-import { FaGlobe, FaCertificate, FaCreditCard, FaUser, FaCog, FaUserShield, FaServer } from 'react-icons/fa';
+import { FaGlobe, FaCertificate, FaClipboardList, FaUser, FaCog, FaUserShield, FaServer } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
@@ -18,7 +17,7 @@ const Home = () => {
     {
       title: 'Mis Certificados SSL',
       icon: <FaCertificate />,
-      onClick: () => navigate('/certificados-ssl'), 
+      onClick: () => navigate('/certificados-ssl'),
     },
     {
       title: 'Mis Hostings',
@@ -31,20 +30,17 @@ const Home = () => {
       onClick: () => navigate('/user/profile'),
     },
     {
-      title: 'Mis Pagos',
-      icon: <FaCreditCard />,
-      onClick: () => navigate('/pagos'), 
+      title: 'Mis Pedidos',
+      icon: <FaClipboardList />,
+      onClick: () => navigate('/pedidos'), 
     },
-    
     {
       title: 'Configuración',
       icon: <FaCog />,
       onClick: () => navigate('/settings'),
     },
-     
   ];
 
-  // Agregar el botón de Administrador si el usuario tiene el rol 'admin'
   if (user && user.rol && user.rol.nombre.toLowerCase() === 'admin') {
     dashboardItems.push({
       title: 'Administrador',

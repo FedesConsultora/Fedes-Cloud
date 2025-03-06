@@ -1,4 +1,5 @@
-import { OrdenDetalleHistorial, OrdenDetalle, Orden } from '../models/index.js';
+import { Op } from 'sequelize';
+import { OrdenDetalleHistorial, OrdenDetalle, Orden, Usuario } from '../models/index.js';
 import logger from '../utils/logger.js';
 
 export const getHistorialByDetalle = async (req, res, next) => {

@@ -1,0 +1,150 @@
+// src/styles/scss/pages/_orders.scss
+@use 'sass:color';
+@use '../abstracts/mixins' as mixins;
+
+.orders-page {
+  padding: 3rem;
+  min-height: 100vh;
+  background-color: mixins.theme(background-color);
+  color: mixins.theme(text-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: mixins.theme(dark-color);
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .refresh-button {
+    background-color: mixins.theme(primary-color);
+    color: mixins.theme(light-color);
+    border: none;
+    border-radius: 6px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 2rem;
+
+    &:hover {
+      background-color: mixins.theme(primary-color-hover);
+    }
+  }
+
+  .orders-container {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+  }
+
+  .order-card {
+    background-color: mixins.theme(light-color);
+    border: 1px solid mixins.theme(primary-color);
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 5px mixins.theme(shadow-color);
+    transition: transform 0.3s ease;
+    width: 300px;
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-5px);
+    }
+
+    h3 {
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+      color: mixins.theme(dark-blue-color);
+    }
+
+    p {
+      font-size: 0.95rem;
+      margin: 0.3rem 0;
+      color: mixins.theme(dark-color);
+    }
+  }
+
+  .order-detail-container {
+    width: 100%;
+    max-width: 800px;
+    background-color: mixins.theme(light-color);
+    border: 1px solid mixins.theme(primary-color);
+    border-radius: 10px;
+    padding: 2rem;
+    margin-top: 2rem;
+    box-shadow: 0 2px 5px mixins.theme(shadow-color);
+    position: relative;
+
+    .close-detail {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: mixins.theme(primary-color);
+      cursor: pointer;
+    }
+
+    .order-summary {
+      margin-bottom: 1rem;
+    }
+
+    .order-statuses {
+      margin-bottom: 1rem;
+
+      h4 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: mixins.theme(primary-color);
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+
+        li {
+          padding: 0.3rem 0;
+          font-size: 0.95rem;
+          color: mixins.theme(dark-color);
+
+          &.active {
+            font-weight: bold;
+            color: mixins.theme(dark-blue-color);
+          }
+        }
+      }
+    }
+
+    .order-details-list {
+      h4 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: mixins.theme(primary-color);
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+
+        .order-detail-item {
+          padding: 0.5rem;
+          border-bottom: 1px solid mixins.theme(shadow-color);
+          margin-bottom: 0.5rem;
+
+          p {
+            font-size: 0.9rem;
+            margin: 0.2rem 0;
+          }
+        }
+      }
+    }
+  }
+}

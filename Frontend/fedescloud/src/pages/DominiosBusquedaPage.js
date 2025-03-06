@@ -1,21 +1,22 @@
 // src/pages/DominiosBusquedaPage.js
-
 import React, { useState, useEffect, useContext } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
+import { Player } from '@lottiefiles/react-lottie-player';
 import config from '../config/config.js';
 import Swal from 'sweetalert2';
 import { AuthContext } from '../contexts/AuthContext.js';
-import { Player } from '@lottiefiles/react-lottie-player'; // Importar el Player de lottie-react
+import { CartContext } from '../contexts/CartContext.js';
 
 const DominiosBusquedaPage = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('query') || '';
   const [availabilityResult, setAvailabilityResult] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
-  const [isLoading, setIsLoading] = useState(false); // Estado para manejar la animación de carga
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  const { cart, fetchCart } = useContext(CartContext);
 
   useEffect(() => {
     if (query.trim()) {
@@ -24,21 +25,20 @@ const DominiosBusquedaPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
-  // Función unificada para "check domain" + "suggest domains"
   const fetchDomainData = async (rawQuery) => {
-    setIsLoading(true); // Iniciar animación de carga
+    setIsLoading(true);
     try {
-      // 1) Revisar si hay '.' -> check availability
+      // Si el query incluye punto, intenta chequear disponibilidad
       if (rawQuery.includes('.')) {
         await checkAvailability(rawQuery);
       }
-      // 2) En todo caso, sugerir
+      // Siempre se hacen las sugerencias
       await suggestDomains(rawQuery);
     } catch (error) {
       console.error(error);
-      Swal.fire('Error', 'Error al obtener los datos del dominio', 'error');
+      Swal.fire('Error', 'Error al obtener datos del dominio', 'error');
     } finally {
-      setIsLoading(false); // Finalizar animación de carga
+      setIsLoading(false);
     }
   };
 
@@ -51,7 +51,6 @@ const DominiosBusquedaPage = () => {
         body: JSON.stringify({ domain: dom }),
       });
       const data = await response.json();
-      console.log(data);
       if (response.ok) {
         setAvailabilityResult(data.data);
       } else {
@@ -69,17 +68,11 @@ const DominiosBusquedaPage = () => {
       const params = new URLSearchParams({
         query: rawQuery,
         limit: 8,
-        country: 'AR', // Puedes ajustar o permitir que el usuario seleccione el país
-        // Añade otros parámetros según sea necesario
+        country: 'AR',
       });
-
-      // Opcional: Añadir más parámetros desde el estado o props
-
       const response = await fetch(`${config.API_URL}/dominios/sugerir?${params.toString()}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
       });
       const data = await response.json();
@@ -95,10 +88,50 @@ const DominiosBusquedaPage = () => {
     }
   };
 
-  // Función para manejar la selección de un dominio sugerido
-  const handleSelectDomain = (domain) => {
-    // Redirigir a una página de compra o mostrar un modal con más detalles
-    navigate(`/dominios/comprar?domain=${encodeURIComponent(domain)}`);
+  // Función para agregar un dominio al carrito
+  const addDomainToCart = async (domainSuggestion) => {
+    // Verificamos que exista un carrito activo
+    if (!cart || !cart.id_carrito) {
+      Swal.fire('Error', 'No se encontró un carrito activo. Por favor, intenta nuevamente.', 'error');
+      return;
+    }
+
+    // Construir el objeto del ítem para el dominio
+    const itemData = {
+      id_carrito: cart.id_carrito,
+      tipoProducto: 'DOMINIO',
+      productoId: domainSuggestion.domain, // Usamos el nombre del dominio
+      descripcion: domainSuggestion.domain,
+      cantidad: 1,
+      precioUnitario: domainSuggestion.price
+        ? domainSuggestion.price.toFixed(2)
+        : '0.00',
+      metaDatos: {
+        domain: domainSuggestion.domain,
+        price: domainSuggestion.price,
+        currency: domainSuggestion.currency || 'USD',
+      },
+    };
+
+    try {
+      const response = await fetch(`${config.API_URL}/cart-items`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(itemData),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        Swal.fire('Agregado', `El dominio ${domainSuggestion.domain} fue agregado al carrito.`, 'success');
+        await fetchCart();
+        navigate('/carrito');
+      } else {
+        Swal.fire('Error', result.message || 'No se pudo agregar el dominio al carrito.', 'error');
+      }
+    } catch (error) {
+      console.error(error);
+      Swal.fire('Error', error.message, 'error');
+    }
   };
 
   return (
@@ -114,20 +147,17 @@ const DominiosBusquedaPage = () => {
         Buscaste: <strong>{query}</strong>
       </p>
 
-      {/* Mostrar animación de carga mientras isLoading es true */}
       {isLoading && (
         <div className="loading-animation">
           <Player
             autoplay
             loop
-            src="/assets/videos/animacionCarga.json" // Ruta relativa a la carpeta public
+            src="/assets/videos/animacionCarga.json"
             style={{ height: '300px', width: '300px' }}
-          >
-          </Player>
+          />
         </div>
       )}
 
-      {/* Mostrar resultado de disponibilidad (si query tenía punto) */}
       {!isLoading && availabilityResult && (
         <div className="domain-check-result">
           <h3>Disponibilidad</h3>
@@ -141,7 +171,7 @@ const DominiosBusquedaPage = () => {
           )}
           {availabilityResult.available && (
             <button
-              onClick={() => handleSelectDomain(availabilityResult.domain)}
+              onClick={() => addDomainToCart(availabilityResult)}
               className="select-button"
               aria-label={`Seleccionar dominio ${availabilityResult.domain}`}
             >
@@ -151,7 +181,6 @@ const DominiosBusquedaPage = () => {
         </div>
       )}
 
-      {/* Mostrar sugerencias siempre si no está cargando */}
       {!isLoading && suggestions.length > 0 && (
         <div className="domain-suggestions">
           <h3>Otras opciones similares</h3>
@@ -169,7 +198,7 @@ const DominiosBusquedaPage = () => {
                   <td>{sug.domain}</td>
                   <td>{sug.price ? `${sug.price} ${sug.currency}` : 'N/A'}</td>
                   <td>
-                    <button onClick={() => handleSelectDomain(sug.domain)}>Seleccionar</button>
+                    <button onClick={() => addDomainToCart(sug)}>Seleccionar</button>
                   </td>
                 </tr>
               ))}
@@ -178,7 +207,6 @@ const DominiosBusquedaPage = () => {
         </div>
       )}
 
-      {/* Si no hay disponibilidadResult y no hay suggestions, puede ser que no se encontró nada */}
       {!isLoading && !availabilityResult && suggestions.length === 0 && (
         <p>No se encontraron datos para la búsqueda.</p>
       )}

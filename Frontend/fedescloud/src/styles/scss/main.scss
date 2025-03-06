@@ -46,7 +46,11 @@
 @use 'pages/accounts';
 @use 'pages/hosting';
 @use 'pages/webHostingPlansPage';
-
+@use 'pages/cart';
+@use 'pages/checkout';
+@use 'pages/orders';
+@use 'pages/orderDetailPage';
+@use 'components/orderHistoryList';
 /* Aplicar el tema claro por defecto dentro de :root */
 :root {
   @include mixins.apply-theme(light);

@@ -544,3 +544,16 @@ export const getCertificateSiteSeal = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateCertificateStatuses = async (req, res, next) => {
+  try {
+    // Opcional: Podés restringir a ciertos roles/ permisos
+    await pollCertificateStatus();
+    res.status(200).json({
+      success: true,
+      message: 'Estados de certificados actualizados.'
+    });
+  } catch (error) {
+    next(error);
+  }
+};

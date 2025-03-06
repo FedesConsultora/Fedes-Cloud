@@ -63,6 +63,11 @@ export default (sequelize, DataTypes) => {
         allowNull: true,
         comment: 'ID de la transacción en la pasarela de pago',
       },
+      idempotencyKey: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true,
+      },
     },
     {
       sequelize,

@@ -1,13 +1,20 @@
 // src/pages/WebHostingPlanPage.js
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { HOSTING_PLANS } from '../data/hostingData.js';
 import HostingPricingToggle from '../components/hosting/HostingPricingToggle.js';
-import { FaArrowLeft, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaArrowLeft } from 'react-icons/fa';
 import { RiCheckboxIndeterminateLine } from 'react-icons/ri';
+import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../contexts/AuthContext.js';
+import { CartContext } from '../contexts/CartContext.js';
+import config from '../config/config.js';
+import Swal from 'sweetalert2';
 
 const WebHostingPlanPage = () => {
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+  const { cart, fetchCart } = useContext(CartContext);
   const [paymentMode, setPaymentMode] = useState('annual');
 
   const handleToggle = (mode) => {
@@ -17,13 +24,53 @@ const WebHostingPlanPage = () => {
   const renderIcon = (status) => {
     switch (status) {
       case 'double':
-        return <RiCheckboxIndeterminateLine color="#f1c40f" />; // a medias
+        return <RiCheckboxIndeterminateLine color="#f1c40f" />;
       case 'single':
-        return <FaCheck color="#27ae60" />; // check simple
+        return <FaCheck color="#27ae60" />;
       case 'cross':
-        return <FaTimes color="#e74c3c" />; // cruz
+        return <FaTimes color="#e74c3c" />;
       default:
         return null;
+    }
+  };
+
+  // Función para agregar el plan seleccionado al carrito
+  const handleSelectPlan = async (plan) => {
+    // Verificamos que ya exista un carrito activo
+    if (!cart || !cart.id_carrito) {
+      Swal.fire('Error', 'No se encontró un carrito activo. Por favor, intenta nuevamente.', 'error');
+      return;
+    }
+
+    // Construimos el objeto itemData incluyendo id_carrito obtenido desde el contexto
+    const itemData = {
+      id_carrito: cart.id_carrito, // Este campo es obligatorio
+      tipoProducto: 'HOSTING',
+      productoId: plan.id, // Identificador del plan
+      descripcion: plan.title,
+      cantidad: 1,
+      precioUnitario: paymentMode === 'monthly' ? plan.monthly.price : plan.annual.discountedPrice,
+    };
+
+    try {
+      const response = await fetch(`${config.API_URL}/cart-items`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(itemData),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        Swal.fire('Agregado', 'El plan de hosting fue agregado al carrito', 'success');
+        // Refrescamos el carrito en el contexto
+        fetchCart();
+        // Redirigimos a la página del carrito
+        navigate('/carrito');
+      } else {
+        Swal.fire('Error', data.message || 'No se pudo agregar el plan al carrito', 'error');
+      }
+    } catch (error) {
+      Swal.fire('Error', error.message, 'error');
     }
   };
 
@@ -39,9 +86,8 @@ const WebHostingPlanPage = () => {
       <HostingPricingToggle paymentMode={paymentMode} onToggle={handleToggle} />
 
       <div className="plans-container">
-        {HOSTING_PLANS.webHostingPlans.map(plan => (
+        {HOSTING_PLANS.webHostingPlans.map((plan) => (
           <div key={plan.id} className="plan-card">
-            {/* Si el plan es el más vendido, mostramos un badge */}
             {plan.bestSeller && <div className="badge">Más Vendido</div>}
             <h3>{plan.title}</h3>
             <p className="subtitle">{plan.subtitle}</p>
@@ -66,7 +112,9 @@ const WebHostingPlanPage = () => {
                 </li>
               ))}
             </ul>
-            <button className="select-btn">CONTINUAR</button>
+            <button className="select-btn" onClick={() => handleSelectPlan(plan)}>
+              Añadir al carrito
+            </button>
           </div>
         ))}
       </div>

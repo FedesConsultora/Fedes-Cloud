@@ -8,7 +8,8 @@ import logger from '../utils/logger.js';
  */
 export const addCartItemAddon = async (req, res, next) => {
   try {
-    const { id_item_carrito, tipoComplemento, descripcionComplemento, precio, categoria } = req.body;
+    const { id_item_carrito, id_catalogo ,tipoComplemento, descripcionComplemento, precio, categoria } = req.body;
+
     if (!id_item_carrito || !tipoComplemento || !precio) {
       return res.status(400).json({
         success: false,
@@ -17,6 +18,7 @@ export const addCartItemAddon = async (req, res, next) => {
     }
     const newAddon = await ComplementoItemCarrito.create({
       id_item_carrito,
+      id_catalogo, 
       tipoComplemento,
       descripcionComplemento: descripcionComplemento || null,
       precio,

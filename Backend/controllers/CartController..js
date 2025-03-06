@@ -15,7 +15,7 @@ export const createCart = async (req, res, next) => {
         message: 'User ID is required to create a cart.'
       });
     }
-    const newCart = await Cart.create({ id_usuario, estado: 'active' });
+    const newCart = await Carrito.create({ id_usuario, estado: 'active' });
     logger.info(`Cart created for user ${id_usuario}: ID ${newCart.id_carrito}`);
     res.status(201).json({
       success: true,
@@ -41,7 +41,7 @@ export const getCartByUser = async (req, res, next) => {
         message: 'User ID is required.'
       });
     }
-    const cart = await Cart.findOne({
+    const cart = await Carrito.findOne({
       where: { id_usuario, estado: 'active' },
       include: [{ association: 'items', include: [{ association: 'complementos' }] }],
     });
@@ -67,7 +67,7 @@ export const getCartByUser = async (req, res, next) => {
 export const updateCart = async (req, res, next) => {
   try {
     const { id_cart } = req.params;
-    const cart = await Cart.findByPk(id_cart);
+    const cart = await Carrito.findByPk(id_cart);
     if (!cart) {
       return res.status(404).json({
         success: false,
@@ -93,7 +93,7 @@ export const updateCart = async (req, res, next) => {
 export const deleteCart = async (req, res, next) => {
   try {
     const { id_cart } = req.params;
-    const cart = await Cart.findByPk(id_cart);
+    const cart = await Carrito.findByPk(id_cart);
     if (!cart) {
       return res.status(404).json({
         success: false,

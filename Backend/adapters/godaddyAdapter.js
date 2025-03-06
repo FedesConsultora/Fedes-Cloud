@@ -8,7 +8,13 @@ export default class GoDaddyAdapter {
     // Carga las variables de entorno
     this.apiKey = process.env.GODADDY_API_KEY;
     this.apiSecret = process.env.GODADDY_API_SECRET;
-    this.baseURL = process.env.GODADDY_BASE_URL || 'https://api.ote-godaddy.com'; 
+    // Definir una URL base por defecto si no está definida en las variables de entorno.
+    let baseURL = process.env.GODADDY_BASE_URL || 'https://api.ote-godaddy.com';
+    // Asegurarse de que la URL termine con una barra para concatenar correctamente las rutas
+    if (!baseURL.endsWith('/')) {
+      baseURL += '/';
+    }
+    this.baseURL = baseURL;
   }
 
   /**
@@ -139,7 +145,7 @@ export default class GoDaddyAdapter {
 
       // Loggear la solicitud antes de enviarla
       logger.info(`Enviando solicitud de registro de dominio: ${JSON.stringify(payload)}`);
-
+      console.log('url: ', url);
       const response = await fetch(url, {
         method: 'POST',
         headers,

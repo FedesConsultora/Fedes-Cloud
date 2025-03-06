@@ -9,6 +9,11 @@ export default (sequelize, DataTypes) => {
         foreignKey: 'id_item_carrito',
         as: 'itemCarrito',
       });
+      // (Opcional pero recomendado) Asociación con CatalogoComplementos
+      ComplementoItemCarrito.belongsTo(models.CatalogoComplementos, {
+        foreignKey: 'id_catalogo',
+        as: 'catalogo',
+      });
     }
   }
 
@@ -23,23 +28,26 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
       },
+      // NUEVA COLUMNA: FK al modelo CatalogoComplementos
+      id_catalogo: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
+      },
       tipoComplemento: {
         type: DataTypes.STRING,
         allowNull: false,
-        comment: 'Ej: Privacidad, Seguridad premium, Cloudflare, etc.',
       },
       descripcionComplemento: {
         type: DataTypes.STRING,
         allowNull: true,
       },
       precio: {
-        type: DataTypes.DECIMAL(10,2),
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
       },
       categoria: {
         type: DataTypes.STRING,
         allowNull: true,
-        comment: 'Categoría del addon (ej: dominio, hosting, etc.)',
       },
     },
     {
@@ -47,6 +55,13 @@ export default (sequelize, DataTypes) => {
       modelName: 'ComplementoItemCarrito',
       tableName: 'ComplementoItemCarrito',
       timestamps: true,
+      // ÍNDICE ÚNICO: para no permitir duplicar el mismo complemento en el mismo ítem
+      indexes: [
+        {
+          unique: true,
+          fields: ['id_item_carrito', 'id_catalogo'],
+        },
+      ],
     }
   );
 

@@ -1,14 +1,21 @@
 // src/pages/WordPressHostingPlanPage.js
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { HOSTING_PLANS } from '../data/hostingData.js';
 import HostingPricingToggle from '../components/hosting/HostingPricingToggle.js';
-import { FaArrowLeft, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaArrowLeft } from 'react-icons/fa';
 import { RiCheckboxIndeterminateLine } from 'react-icons/ri';
+import { FaCheck, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../contexts/AuthContext.js';
+import { CartContext } from '../contexts/CartContext.js';
+import config from '../config/config.js';
+import Swal from 'sweetalert2';
 
 const WordPressHostingPlanPage = () => {
   const navigate = useNavigate();
-  const [paymentMode, setPaymentMode] = useState('annual'); // por defecto anual
+  const { user } = useContext(AuthContext);
+  const { cart, fetchCart } = useContext(CartContext);
+  const [paymentMode, setPaymentMode] = useState('annual'); // Por defecto anual
 
   const handleToggle = (mode) => {
     setPaymentMode(mode);
@@ -27,6 +34,45 @@ const WordPressHostingPlanPage = () => {
     }
   };
 
+  // Función para agregar el plan de WordPress Hosting al carrito
+  const handleSelectPlan = async (plan) => {
+    if (!cart || !cart.id_carrito) {
+      Swal.fire('Error', 'No se encontró un carrito activo. Por favor, intenta nuevamente.', 'error');
+      return;
+    }
+
+    // Construir el objeto que se enviará para crear el item del carrito
+    const itemData = {
+      id_carrito: cart.id_carrito,  // Campo obligatorio
+      tipoProducto: 'HOSTING',
+      productoId: plan.id,          // Identificador del plan
+      descripcion: plan.title,
+      cantidad: 1,
+      precioUnitario: paymentMode === 'monthly' ? plan.monthly.price : plan.annual.discountedPrice,
+    };
+
+    try {
+      const response = await fetch(`${config.API_URL}/cart-items`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(itemData),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        Swal.fire('Agregado', 'El plan de WordPress Hosting fue agregado al carrito', 'success');
+        // Actualiza el carrito en el contexto
+        fetchCart();
+        // Redirige a la página del carrito
+        navigate('/carrito');
+      } else {
+        Swal.fire('Error', data.message || 'No se pudo agregar el plan al carrito', 'error');
+      }
+    } catch (error) {
+      Swal.fire('Error', error.message, 'error');
+    }
+  };
+
   return (
     <div className="hosting-plan-page">
       <div className="header">
@@ -39,7 +85,7 @@ const WordPressHostingPlanPage = () => {
       <HostingPricingToggle paymentMode={paymentMode} onToggle={handleToggle} />
 
       <div className="plans-container">
-        {HOSTING_PLANS.wordpressHostingPlans.map(plan => (
+        {HOSTING_PLANS.wordpressHostingPlans.map((plan) => (
           <div key={plan.id} className="plan-card">
             {plan.bestSeller && <div className="badge">Más Vendido</div>}
             <h3>{plan.title}</h3>
@@ -65,7 +111,9 @@ const WordPressHostingPlanPage = () => {
                 </li>
               ))}
             </ul>
-            <button className="select-btn">CONTINUAR</button>
+            <button className="select-btn" onClick={() => handleSelectPlan(plan)}>
+              Añadir al carrito
+            </button>
           </div>
         ))}
       </div>

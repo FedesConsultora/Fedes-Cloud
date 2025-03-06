@@ -11,7 +11,7 @@
   flex-direction: column;
   align-items: center;
   transition: background-color 0.3s ease, color 0.3s ease;
-
+  
   .logo-container {
     margin-bottom: 40px;
     padding: 1rem;
@@ -141,10 +141,7 @@
         }
       }
 
-      /* Enlaces para "Administrador" y "Configuración" */
-      .nav-item:not(.servicios) {
-        /* Ya está estilizado por defecto */
-      }
+     
     }
   }
 
@@ -154,6 +151,27 @@
     width: 100%;
     background-color: rgba(128, 128, 128, 0.321);
     font-size: 0.9rem;
+    .cart-icon-container {
+      position: relative;
+      width: 18px;
+      svg{
+        width: 18px;
+      }
+    }
+    
+    .cart-badge {
+      position: absolute;
+      top: -12px;
+      right: -15px;
+      background-color: red; // o mixins.theme(primary-color) si prefieres
+      color: #fff;
+      font-size: 0.6rem;
+      font-weight: bold;
+      padding: 2px 3px;
+      border-radius: 50%;
+      min-width: 18px;
+      text-align: center;
+    }
     .tuCuenta{
       display: flex;
       flex-direction: column;
@@ -256,6 +274,7 @@
   }
   .access-link{
     padding-left: 0rem !important;
+    margin-bottom: 0.5rem !important;
   }
   .logout-button {
     display: flex;

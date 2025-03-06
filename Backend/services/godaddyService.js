@@ -51,36 +51,7 @@ export default class GoDaddyService {
   }
 
   async registerDomain(domain, body = {}, shopperId = null) {
-    try {
-      const url = new URL(`/v1/domains/purchase`, this.baseURL);
-
-      const headers = {
-        'Authorization': `sso-key ${this.apiKey}:${this.apiSecret}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      };
-
-      if (shopperId) {
-        headers['X-Shopper-Id'] = shopperId;
-      }
-
-      const payload = { domain, ...body };
-
-      const response = await fetch(url, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorBody = await response.text();
-        throw new Error(`GoDaddy API error (registerDomain): ${response.status} - ${errorBody}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      throw error;
-    }
+    return this.adapter.registerDomain(domain, body, shopperId);
   }
 
   // **Nuevo Método para Validar la Solicitud de Compra**

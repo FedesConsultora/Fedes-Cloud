@@ -34,6 +34,10 @@ import WebHostingPlansPage from './pages/WebHostingPlansPage.js';
 import WordPressHostingPlanPage from './pages/WordPressHostingPlanPage.js';
 import ExistingHostingsList from './components/hosting/ExistingHostingsList.js';
 import HostingPage from './pages/HostingPage.js';
+import CartPage from './pages/CartPage.js'; // Nueva importación para la página del carrito
+import CheckoutPage from './pages/CheckoutPage.js';
+import OrdersPage from './pages/OrdersPage.js';
+import OrderDetailPage from './pages/OrderDetailPage.js';
 
 const AppRoutes = () => {
   const location = useLocation();
@@ -110,7 +114,7 @@ const AppRoutes = () => {
             <Route path="*" element={<Navigate to="/user/profile" replace />} />
           </Route>
 
-          {/* Nueva ruta para "Cuentas" */}
+          {/* Ruta para Cuentas */}
           <Route
             path="/cuentas"
             element={
@@ -202,7 +206,7 @@ const AppRoutes = () => {
             }
           />
 
-          {/* Nueva ruta para Hosting */}
+          {/* Rutas de Hosting */}
           <Route
             path="/hosting"
             element={
@@ -215,7 +219,6 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/hosting/web/plans"
             element={
@@ -233,7 +236,9 @@ const AppRoutes = () => {
             element={
               <ProtectedRoute>
                 <MainLayout>
-                  <PageTransition><ExistingHostingsList /></PageTransition>
+                  <PageTransition>
+                    <ExistingHostingsList />
+                  </PageTransition>
                 </MainLayout>
               </ProtectedRoute>
             }
@@ -245,6 +250,46 @@ const AppRoutes = () => {
                 <MainLayout>
                   <PageTransition>
                     <WordPressHostingPlanPage />
+                  </PageTransition>
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Nueva ruta para Carrito */}
+          <Route
+            path="/carrito"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <CartPage />
+                  </PageTransition>
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route 
+            path="/pedidos" 
+            element={
+            <ProtectedRoute>
+              <MainLayout>
+                <PageTransition>
+                  <OrdersPage />
+                </PageTransition>
+              </MainLayout>
+            </ProtectedRoute>
+            } 
+          />
+
+          <Route
+            path="/pedidos/:id_orden"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <OrderDetailPage/>
                   </PageTransition>
                 </MainLayout>
               </ProtectedRoute>
@@ -311,7 +356,18 @@ const AppRoutes = () => {
               </AdminRoute>
             }
           />
-
+          <Route
+            path="/checkout"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <PageTransition>
+                    <CheckoutPage />
+                  </PageTransition>
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </AnimatePresence>

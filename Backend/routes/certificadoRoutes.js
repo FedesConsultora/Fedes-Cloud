@@ -51,4 +51,7 @@ router.post('/:goDaddyCertId/revoke', authMiddleware, certificadoController.revo
 // Obtener site seal
 router.get('/:goDaddyCertId/site-seal', authMiddleware, certificadoController.getCertificateSiteSeal);
 
+// Ruta para actualizar manualmente el estado de certificados (por polling manual)
+router.post('/update-statuses', authMiddleware, certificadoController.updateCertificateStatuses);
+
 export default router;

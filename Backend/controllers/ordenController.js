@@ -1,4 +1,4 @@
-import { Orden, OrdenDetalle } from '../models/index.js';
+import { EstadoOrden, Orden, OrdenDetalle } from '../models/index.js';
 import logger from '../utils/logger.js';
 import { ValidationError, PermissionDeniedError } from '../utils/errors/GeneralErrors.js';
 import { Sequelize } from 'sequelize'; // IMPORTANTE si usarás funciones de agregación
@@ -59,7 +59,10 @@ export const getOrdenesByUser = async (req, res, next) => {
     const id_usuario = req.user.id_usuario;
     const ordenes = await Orden.findAll({
       where: { id_usuario },
-      include: [{ model: OrdenDetalle, as: 'detalles' }],
+      include: [
+        { model: OrdenDetalle, as: 'detalles' },
+        { model: EstadoOrden, as: 'estadoOrden' } // Incluir estado de la orden
+      ],
       order: [['createdAt', 'DESC']],
     });
     res.status(200).json({ success: true, data: ordenes });
@@ -77,7 +80,10 @@ export const getOrdenById = async (req, res, next) => {
     const { id_orden } = req.params;
     const orden = await Orden.findOne({
       where: { id_orden, id_usuario: req.user.id_usuario },
-      include: [{ model: OrdenDetalle, as: 'detalles' }],
+      include: [
+        { model: OrdenDetalle, as: 'detalles' },
+        { model: EstadoOrden, as: 'estadoOrden' } // Incluir estado de la orden
+      ],
     });
     if (!orden) {
       return res.status(404).json({ success: false, message: 'Orden no encontrada' });
@@ -88,6 +94,7 @@ export const getOrdenById = async (req, res, next) => {
     next(error);
   }
 };
+
 
 /**
  * Cancelar la orden

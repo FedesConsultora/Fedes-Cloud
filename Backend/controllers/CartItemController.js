@@ -9,7 +9,7 @@ import logger from '../utils/logger.js';
  */
 export const addCartItem = async (req, res, next) => {
   try {
-    const { id_carrito, tipoProducto, productoId, descripcion, cantidad, precioUnitario } = req.body;
+    const { id_carrito, tipoProducto, productoId, descripcion, cantidad, precioUnitario, metaDatos } = req.body;
     if (!id_carrito || !tipoProducto || !descripcion || !cantidad || !precioUnitario) {
       return res.status(400).json({
         success: false,
@@ -17,7 +17,7 @@ export const addCartItem = async (req, res, next) => {
       });
     }
     const subtotal = parseFloat(cantidad) * parseFloat(precioUnitario);
-    const newItem = await CartItem.create({
+    const newItem = await ItemCarrito.create({
       id_carrito,
       tipoProducto,
       productoId: productoId || null,
@@ -25,6 +25,7 @@ export const addCartItem = async (req, res, next) => {
       cantidad,
       precioUnitario,
       subtotal,
+      metaDatos: metaDatos || null  // Agregamos metaDatos aquí
     });
     logger.info(`Cart item added to cart ${id_carrito}: ID ${newItem.id_item}`);
     res.status(201).json({
@@ -51,7 +52,7 @@ export const getCartItems = async (req, res, next) => {
         message: 'Cart ID is required.'
       });
     }
-    const items = await CartItem.findAll({
+    const items = await ItemCarrito.findAll({
       where: { id_carrito },
       include: [{ association: 'complementos' }],
     });
@@ -71,7 +72,7 @@ export const getCartItems = async (req, res, next) => {
 export const updateCartItem = async (req, res, next) => {
   try {
     const { id_item } = req.params;
-    const item = await CartItem.findByPk(id_item);
+    const item = await ItemCarrito.findByPk(id_item);
     if (!item) {
       return res.status(404).json({
         success: false,
@@ -102,7 +103,7 @@ export const updateCartItem = async (req, res, next) => {
 export const deleteCartItem = async (req, res, next) => {
   try {
     const { id_item } = req.params;
-    const item = await CartItem.findByPk(id_item);
+    const item = await ItemCarrito.findByPk(id_item);
     if (!item) {
       return res.status(404).json({
         success: false,
